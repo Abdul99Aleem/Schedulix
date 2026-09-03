@@ -1,0 +1,74 @@
+/*
+ * qnx_can_adapter.c — TEMPLATE for future real QNX CAN driver integration.
+ *
+ * This file is NOT compiled by default. It is a stub showing where the
+ * real hardware adapter would be inserted tomorrow when the Raspberry Pi
+ * BSP and CAN hardware are available.
+ *
+ * IMPORTANT: Do NOT invent QNX CAN APIs without verifying the BSP.
+ *
+ * On QNX 8, CAN support is BSP/driver dependent. Typical approaches:
+ *
+ *  Situation A — QNX BSP provides a CAN driver (e.g., MCP2515 via SPI,
+ *                 or SJA1000, or vendor-specific):
+ *    - Driver exposes a character device, e.g., /dev/can1 or /dev/can_tx0
+ *    - Application opens it with open("/dev/can...", O_RDWR)
+ *    - Uses driver-specific ioctls / read/write of driver-defined structs
+ *      (there is NO single “/dev/can0 + SocketCAN” standard like Linux)
+ *    - You must consult:
+ *        * Raspberry Pi 4 QNX BSP documentation
+ *        * canctl / canmsg utilities if supplied with BSP
+ *        * driver header (e.g., <can/can.h> or BSP-specific header)
+ *      to discover the exact frame struct and API.
+ *    - Then adapt that struct -> can_frame_t inside can_adapter_receive().
+ *
+ *  Situation B — No QNX CAN driver exists for the Pi carrier / HAT:
+ *    - Keep using simulated_can_adapter.c
+ *    - OR implement a UART/SPI bridge where a microcontroller handles CAN
+ *      and QNX talks to it via /dev/spi* or /dev/ser*.
+ *
+ * Example skeleton (pseudo-code, DO NOT compile as-is without real driver):
+ */
+
+#if 0
+
+#include "can_adapter.h"
+#include "can_frame.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
+/* #include <can/can.h>   <-- only if BSP really provides this header */
+
+static int g_can_fd = -1;
+
+void can_adapter_init(void) {
+    /* Example: open driver device */
+    g_can_fd = open("/dev/can1", O_RDWR);
+    if (g_can_fd < 0) {
+        perror("open /dev/can1");
+    }
+
+    /* Any driver-specific init (bitrate, filters) would go here via ioctl() */
+}
+
+void can_adapter_shutdown(void) {
+    if (g_can_fd >= 0) close(g_can_fd);
+    g_can_fd = -1;
+}
+
+int can_adapter_receive(can_frame_t *frame) {
+    if (!frame || g_can_fd < 0) return -1;
+
+    // struct can_msg driver_msg;  // driver-specific type
+    // ssize_t n = read(g_can_fd, &driver_msg, sizeof(driver_msg));
+    // if (n != sizeof(driver_msg)) return -1;
+    //
+    // frame->id = driver_msg.id;
+    // frame->dlc = driver_msg.dlc;
+    // memcpy(frame->data, driver_msg.data, frame->dlc);
+    // can_frame_set_timestamp(frame);
+
+    return 0;
+}
+
+#endif

@@ -1,0 +1,808 @@
+$ ssh qnxuser@192.168.10.2
+(qnxuser@192.168.10.2) Password:
+Welcome to QNX 8.0!
+
+This QNX 8 target is now ready for your QNX applications. There are
+some sample applications included here to help you get started with
+development. Find the source code for most of them at gitlab.com/qnx.
+
+Here's how to run some of the bundled samples:
+
+|-------------------------------|----------------------------------------------------------|
+| $ gles2-gears                 | Displays hardware-rendered content using OpenGL ES 2.x.  |
+| $ gles2-maze                  | Shows how to use texture, vertex, and fragment shaders.  |
+| $ vkcubepp                    | Demonstrates 3D rendering capabilities using Vulkan.     |
+| $ camera_example3_viewfinder  | Displays a simulated camera signal or live camera feed.  |
+| $ st                          | The default terminal. Run it to open a new instance.     |
+|-------------------------------|----------------------------------------------------------|
+
+(You can use ALT-TAB to switch between windows.)
+
+Have questions? Find the community on Reddit at r/QNX, ask on StackOverflow,
+or log an issue at https://gitlab.com/qnx.
+qnxuser@qnxpi:~$
+qnxuser@qnxpi:~$ slay tracelogger
+slay: Unable to find process 'tracelogger'
+qnxuser@qnxpi:~$ rm /tmp/*.kev
+rm ro /tmp/schedulix.kev (y/N):y
+rm: /tmp/schedulix.kev: Operation not permitted
+qnxuser@qnxpi:~$
+qnxuser@qnxpi:~$ /tmp/schedulix_can --full
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[warning] kernel trace not captured (run as root: on -p 63 tracelogger)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15410987488222 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15410987488222 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411008008833 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411008008833 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411029006870 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411029006870 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411050011833 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411050011833 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 15411071007537 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 15411071007537 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411092074278 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411092074278 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411092473667 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411092473667 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411092863981 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411092863981 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411093268833 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411093268833 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411093659796 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411093659796 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411094044481 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411094044481 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411094418648 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411094418648 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411094798778 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411094798778 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411095197574 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411095197574 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15411095596278 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15411095596278 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+[warning] kernel trace not captured (tracelogger requires root, see docs). Analysis will be semantic-only.
+Manifest: manifest.json / manifest.txt (kernel FAILED, size 111129, gpio mock)
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 95 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 40 misses 0 (0.00%) mean 7.81 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 21 misses 0 (0.00%) mean 4.77 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+qnxuser@qnxpi:~$  cat manifest.json | grep cpu_count
+  "cpu_count": 4,
+qnxuser@qnxpi:~$ /tmp/schedulix_can --analyze
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 95 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 40 misses 0 (0.00%) mean 7.81 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 21 misses 0 (0.00%) mean 4.77 p50 5.01 p95 5.01 p99 5.01 max 5.01
+qnxuser@qnxpi:~$ /tmp/trace.bin
+-bash: /tmp/trace.bin: Permission denied
+qnxuser@qnxpi:~$ sudo !!
+sudo /tmp/trace.bin
+-bash: sudo: command not found
+qnxuser@qnxpi:~$ /tmp/schedulix_can --stress 1:20
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[S1_CPU_SATURATION] kernel trace unavailable
+[SCENARIO S1_CPU_SATURATION LOAD 20%] duration 10000 ms
+segmentation violation (core dumped)
+qnxuser@qnxpi:~$ /tmp/schedulix_can --stress 2
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[S2_PRIO_INVERSION] kernel trace unavailable
+[SCENARIO S2_PRIO_INVERSION] duration 10000 ms
+segmentation violation (core dumped)
+qnxuser@qnxpi:~$ /tmp/schedulix_can --stress 5
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[S5_MIXED_WORKLOAD] kernel trace unavailable
+[SCENARIO S5_MIXED_WORKLOAD] duration 10000 ms
+segmentation violation (core dumped)
+qnxuser@qnxpi:~$ /tmp/schedulix_can --sweep
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Load sweep S1 20..95%
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[S1 20%] kernel trace unavailable (run as root)
+[SCENARIO S1_CPU_SATURATION LOAD 20%] duration 10000 ms
+segmentation violation (core dumped)
+qnxuser@qnxpi:~$ ls trace_s1_*.bin
+ls: trace_s1_*.bin: No such file or directory
+qnxuser@qnxpi:~$ chmod +x /tmp/pi_validate.sh
+qnxuser@qnxpi:~$ cd /tmp/
+qnxuser@qnxpi:/tmp$ ./pi_validate.sh
+=== TEST 1: workloads ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== PHASE 1: Workload Model ===
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+
+Task       Priority  Period  Deadline  Target Exec
+--------------------------------------------------
+
+Initializing workloads...
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+3-4 threads running with distinct priorities/periods (BRAKE 20/10ms, ADAS 15/20ms, DIAG 10/50ms)
+Trace flushed to trace_phase1.bin, dropped=0 hw=670
+Manifest: manifest_phase1.json
+TEST1 workloads done; check: ECU threads started, trace_phase1.bin, manifest_phase1.json
+-rw-r--r--  1 qnxuser qnxuser 1.3K 1970-01-01 04:19 manifest_phase1.json
+-rw-r--r--  1 qnxuser qnxuser  31K 1970-01-01 04:19 trace_phase1.bin
+
+=== TEST 2: full core ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[warning] kernel trace not captured (run as root: on -p 63 tracelogger)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589834692093 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589834692093 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589856014519 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589856014519 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589877006222 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589877006222 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589898008630 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589898008630 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 15589919004870 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 15589919004870 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589940066444 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589940066444 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589940468259 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589940468259 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589940881926 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589940881926 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589941316426 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589941316426 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589941703870 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589941703870 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589942099111 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589942099111 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589942478852 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589942478852 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589942870704 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589942870704 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589943274167 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589943274167 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 15589943674407 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 15589943674407 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+[warning] kernel trace not captured (tracelogger requires root, see docs). Analysis will be semantic-only.
+Manifest: manifest.json / manifest.txt (kernel FAILED, size 111129, gpio mock)
+Schedulix Analysis
+==================
+Trace: records 858 dropped 0 cap 16384
+Task 1: act 101 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 43 misses 0 (0.00%) mean 7.82 p50 8.01 p95 8.01 p99 8.02 max 8.02
+Task 3: act 22 misses 0 (0.00%) mean 4.78 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+TEST2 full done; check trace.bin, trace_flight.bin, manifest.json, .kev
+-rw-r--r--  1 root root 109K 1970-01-01 02:47 /tmp/schedulix.kev
+-rw-r--r--  1 root root 1.2K 1970-01-01 02:46 manifest.json
+-rw-r--r--  1 root root  500 1970-01-01 02:46 manifest.txt
+-rw-r--r--  1 root root  40K 1970-01-01 02:46 trace.bin
+-rw-r--r--  1 root root  40K 1970-01-01 02:46 trace_flight.bin
+
+=== TEST 3: tracelogger ===
+tracelogger .kev exists: 111129 bytes
+Verify correlation: schedulix semantic + QNX kernel events in same window
+
+=== TEST 4: analyze ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Schedulix Analysis
+==================
+Trace: records 858 dropped 0 cap 16384
+Task 1: act 101 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 43 misses 0 (0.00%) mean 7.82 p50 8.01 p95 8.01 p99 8.02 max 8.02
+Task 3: act 22 misses 0 (0.00%) mean 4.78 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Check per-activation ready_wait / response / slack / root-cause
+
+=== TEST 5: stress knee ===
+S0 baseline (light) vs S1 saturation (heavy) should show knee
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[tracer] Permission denied: tracelogger requires root (qconn as root or 'on -p 63 tracelogger')
+[tracer] Documented root launch: 'su' or 'on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 &' or qconn as root
+[S0_BASELINE] kernel trace unavailable
+[SCENARIO S0_BASELINE] duration 10000 ms
+Schedulix Analysis
+==================
+Trace: records 6458 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 7.98 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.03
+mv: bad 'trace_stress.bin': No such file or directory
+qnxuser@qnxpi:/tmp$

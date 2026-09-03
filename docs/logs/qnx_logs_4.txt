@@ -1,0 +1,173 @@
+
+Have questions? Find the community on Reddit at r/QNX, ask on StackOverflow,
+or log an issue at https://gitlab.com/qnx.
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --stress 1:0; echo S1_0:$? # expect 0
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 0%] duration 10000 ms
+Schedulix Analysis
+==================
+Trace: records 6458 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 7.98 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+S1_0:0
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --stress 1:20; echo S1_20:$?; ls -lh trace_s*.bin # should now NOT core, produce trace_s1_20.bin
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 20%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_20
+[STRESS] worker 0 (STRESS_20) start prio 12 exec 2 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+S1_20:0
+-rw-r--r--  1 root root 346K 1970-01-01 04:51 trace_s1.bin
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --stress 2; echo S2:$?
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S2_PRIO_INVERSION] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_60
+[STRESS] worker 0 (STRESS_60) start prio 12 exec 6 period 10
+[S2] BRAKE trylock blocked (expected blocked)
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7377 dropped 0 cap 16384
+Task 1: act 770 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+S2:0
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --sweep; ls trace_s1_*.bin
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Load sweep S1 20..95%
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 20%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_20
+[STRESS] worker 0 (STRESS_20) start prio 12 exec 2 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_20.bin manifest_s1_20.json analysis_s1_20.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 40%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_40
+[STRESS] worker 0 (STRESS_40) start prio 12 exec 4 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_40.bin manifest_s1_40.json analysis_s1_40.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 60%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_60
+[STRESS] worker 0 (STRESS_60) start prio 12 exec 6 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_60.bin manifest_s1_60.json analysis_s1_60.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 70%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_70
+[STRESS] worker 0 (STRESS_70) start prio 12 exec 7 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_70.bin manifest_s1_70.json analysis_s1_70.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 80%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_80
+[STRESS] worker 0 (STRESS_80) start prio 12 exec 8 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_80.bin manifest_s1_80.json analysis_s1_80.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 85%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_85
+[STRESS] worker 0 (STRESS_85) start prio 12 exec 8 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_85.bin manifest_s1_85.json analysis_s1_85.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 90%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_90
+[STRESS] worker 0 (STRESS_90) start prio 12 exec 9 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_90.bin manifest_s1_90.json analysis_s1_90.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 95%] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_95
+[STRESS] worker 0 (STRESS_95) start prio 12 exec 9 period 10
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.02
+Wrote trace_s1_95.bin manifest_s1_95.json analysis_s1_95.json
+Sweep table: Load vs BRAKE P99 — see analysis_s1_*.json
+trace_s1_20.bin  trace_s1_40.bin  trace_s1_60.bin  trace_s1_70.bin  trace_s1_80.bin  trace_s1_85.bin  trace_s1_90.bin  trace_s1_95.bin
+root@qnxpi:~# # if still core: ls /tmp/*.core; scp core to host + ntoaarch64-gdb deploy/schedulix_can core -ex bt
+root@qnxpi:~#

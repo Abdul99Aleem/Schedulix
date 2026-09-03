@@ -1,0 +1,3438 @@
+User@DESKTOP-89I8MUE MINGW64 ~
+$ ssh root@192.168.10.2
+(root@192.168.10.2) Password:
+Welcome to QNX 8.0!
+
+This QNX 8 target is now ready for your QNX applications. There are
+some sample applications included here to help you get started with
+development. Find the source code for most of them at gitlab.com/qnx.
+
+Here's how to run some of the bundled samples:
+
+|-------------------------------|----------------------------------------------------------|
+| $ gles2-gears                 | Displays hardware-rendered content using OpenGL ES 2.x.  |
+| $ gles2-maze                  | Shows how to use texture, vertex, and fragment shaders.  |
+| $ vkcubepp                    | Demonstrates 3D rendering capabilities using Vulkan.     |
+| $ camera_example3_viewfinder  | Displays a simulated camera signal or live camera feed.  |
+| $ st                          | The default terminal. Run it to open a new instance.     |
+|-------------------------------|----------------------------------------------------------|
+
+(You can use ALT-TAB to switch between windows.)
+
+Have questions? Find the community on Reddit at r/QNX, ask on StackOverflow,
+or log an issue at https://gitlab.com/qnx.
+root@qnxpi:~#
+root@qnxpi:~# head -n 100 schedulix_validation.txt
+head: schedulix_validation.txt: No such file or directory
+root@qnxpi:~# head -n 100 /tmp/schedulix_validation.txt
+=== START ===
+Thu Jan  1 00:28:54 UTC 1970
+=== ID ===
+uid=0(root) gid=0(root) groups=0(root)
+QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le
+=== INSTR ===
+=== SYSPAGE ===
+Header size=0x000000f0, Total Size=0x00001138, Version=2.0, #Cpu=4, Type=4353
+Section:system_private offset:0x00000b58 size:0x00000060
+  syspage ptr user:0000007fffffc000 kernel:ffffff8040204000
+  cpupage ptr user:0000007ffffff000 kernel:ffffff8040207000 spacing:80
+  kdebug info:ffffff808827f000 callback:0000000000000000 num_ready:0
+  pagesize:00001000 flags:00000000, kdinfo:00000000
+Section:qtime offset:0x00000370 size:0x00000068
+  boot:00000000 CPS:000000000337f980 period/scale:1851851851/-17 intr:27
+  flags:00000002 epoch:1970 rr_mul:0 adj count/inc:0/0
+  nsec_inc:000f4240
+  nsec_tod_adj:0000000000000000 load_max:ffffffffffffffff
+Section:callout offset:0x000000f0 size:0x00000068
+  reboot:ffffff804020635c watchdog:0000000000000000
+  0) display:ffffff8040206390 poll:ffffff80402063bc break:ffffff80402063e4
+  1) display:0000000000000000 poll:0000000000000000 break:0000000000000000
+Section:cpuinfo offset:0x000003d8 size:0x00000080 elsize:0x00000020
+  0) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000000 cache i/d:0/1 name:64
+  1) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000001 cache i/d:0/1 name:64
+  2) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000002 cache i/d:0/1 name:64
+  3) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000003 cache i/d:0/1 name:64
+Section:cacheattr offset:0x000010f8 size:0x00000040 elsize:0x00000020
+  0) flags:01 size:0040 #lines:0300 ways:0003 control:ffffff8040206000 next:255
+  1) flags:02 size:0040 #lines:0200 ways:0002 control:ffffff8040206050 next:255
+Section:asinfo offset:0x00000e28 size:0x000001b0 elsize:0x00000018
+  0000) 0000000000000000-00000fffffffffff o:ffff /memory
+  0018) 0000000000000000-00000000ffffffff o:0000 /memory/below4G
+  0030) 0000000000000000-00000000fbffffff o:0018 /memory/below4G/ram
+  0048) 0000000100000000-00000001ffffffff o:0000 /memory/ram
+  0060) 000000003b400000-000000003fffffff o:0030 /memory/below4G/ram/vcram
+  0078) 0000000000000000-000000003b3fffff o:0030 /memory/below4G/ram/below1G
+  0090) 00000000ff841000-00000000ff841fff o:0000 /memory/gicd
+  00a8) 00000000ff842000-00000000ff843fff o:0000 /memory/gicc
+  00c0) 00000000000aa0e8-0000000000bb0663 o:0000 /memory/imagefs
+  00d8) 0000000000080fa0-00000000000aa0e7 o:0000 /memory/startup
+  00f0) 00000000000aa0e8-0000000000bb0663 o:0000 /memory/bootram
+  0108) 000000002eff1f00-000000002effff55 o:0000 /memory/fdt
+  0120) 0000000000001000-000000000000cfff o:0078 /memory/below4G/ram/below1G/sysram
+  0138) 0000000000019000-000000000007ffff o:0078 /memory/below4G/ram/below1G/sysram
+  0150) 0000000000bb1000-000000002eff0fff o:0078 /memory/below4G/ram/below1G/sysram
+  0168) 000000002f000000-000000003b3fffff o:0078 /memory/below4G/ram/below1G/sysram
+  0180) 0000000040000000-00000000fbffffff o:0030 /memory/below4G/ram/sysram
+  0198) 0000000100000000-00000001fa083fff o:0048 /memory/ram/sysram
+Section:hwinfo offset:0x00000d20 size:0x00000108
+  0) size:3 tag:3(Group) isize:3, iname:0(hw), owner:65535, kids:2
+  12) size:3 tag:17(Bus) isize:3, iname:9(unknown), owner:0, kids:3
+  24) size:4 tag:81(Device) isize:24, iname:75(genet), owner:0, kids:0
+     02 00 00 00
+  40) size:6 tag:88(location)
+     00 80 00 00 00 00 58 fd 00 00 00 00 00 00 00 00 00 00 00 00
+  64) size:2 tag:97(irq)
+     bd 00 00 00
+  72) size:6 tag:88(location)
+     00 80 00 00 00 00 58 fd 00 00 00 00 00 00 00 00 00 00 00 00
+  96) size:2 tag:97(irq)
+     be 00 00 00
+  104) size:4 tag:101(nicaddr)
+     06 00 00 00 2c cf 67 17 4f 7f 00 00
+  120) size:4 tag:81(Device) isize:13, iname:109(wdog), owner:12, kids:0
+     07 00 00 00
+  136) size:6 tag:88(location)
+     14 01 00 00 00 00 10 fe 00 00 00 00 00 00 00 00 00 00 00 00
+  160) size:3 tag:114(inputclk)
+     f4 01 00 00 01 00 00 00
+  172) size:4 tag:81(Device) isize:8, iname:123(wdt,options), owner:12, kids:0
+     00 00 00 00
+  188) size:2 tag:147(regname)
+     87 00 20 00
+  196) size:2 tag:147(regname)
+     9b 00 20 00
+  204) size:4 tag:81(Device) isize:11, iname:168(bcm2711-sdmmc), owner:12, kids:0
+     04 00 00 00
+  220) size:1 tag:182(pad)
+  224) size:6 tag:88(location)
+     00 00 00 fc 00 00 00 00 00 00 00 00 00 00 ff ff 00 00 00 00
+Section:typed_strings offset:0x00000bc0 size:0x00000058
+  off:0 type:5 string:'RaspberryPi4B'
+  off:20 type:8 string:'Sony UK'
+  off:32 type:6 string:'BCM2711'
+  off:44 type:7 string:'10000000b6c56c00'
+  off:68 type:2 string:'localhost'
+=== BINARY ===
+-rwxr-xr-x  1 root root 89K 1970-01-01 00:46 ./schedulix_can
+=== TRACEPARSER ===
+=== STATUS ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Unknown status
+Usage: ./schedulix_can [options]
+  (no args)               CAN sim (D1) — 5 frames
+  --tcp [port]            TCP injection server (default 5000)
+root@qnxpi:~# head -n 300 /tmp/schedulix_validation.txt
+=== START ===
+Thu Jan  1 00:28:54 UTC 1970
+=== ID ===
+uid=0(root) gid=0(root) groups=0(root)
+QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le
+=== INSTR ===
+=== SYSPAGE ===
+Header size=0x000000f0, Total Size=0x00001138, Version=2.0, #Cpu=4, Type=4353
+Section:system_private offset:0x00000b58 size:0x00000060
+  syspage ptr user:0000007fffffc000 kernel:ffffff8040204000
+  cpupage ptr user:0000007ffffff000 kernel:ffffff8040207000 spacing:80
+  kdebug info:ffffff808827f000 callback:0000000000000000 num_ready:0
+  pagesize:00001000 flags:00000000, kdinfo:00000000
+Section:qtime offset:0x00000370 size:0x00000068
+  boot:00000000 CPS:000000000337f980 period/scale:1851851851/-17 intr:27
+  flags:00000002 epoch:1970 rr_mul:0 adj count/inc:0/0
+  nsec_inc:000f4240
+  nsec_tod_adj:0000000000000000 load_max:ffffffffffffffff
+Section:callout offset:0x000000f0 size:0x00000068
+  reboot:ffffff804020635c watchdog:0000000000000000
+  0) display:ffffff8040206390 poll:ffffff80402063bc break:ffffff80402063e4
+  1) display:0000000000000000 poll:0000000000000000 break:0000000000000000
+Section:cpuinfo offset:0x000003d8 size:0x00000080 elsize:0x00000020
+  0) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000000 cache i/d:0/1 name:64
+  1) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000001 cache i/d:0/1 name:64
+  2) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000002 cache i/d:0/1 name:64
+  3) cpu:410fd083 flg:c0000c7a spd:1500 hwid:80000003 cache i/d:0/1 name:64
+Section:cacheattr offset:0x000010f8 size:0x00000040 elsize:0x00000020
+  0) flags:01 size:0040 #lines:0300 ways:0003 control:ffffff8040206000 next:255
+  1) flags:02 size:0040 #lines:0200 ways:0002 control:ffffff8040206050 next:255
+Section:asinfo offset:0x00000e28 size:0x000001b0 elsize:0x00000018
+  0000) 0000000000000000-00000fffffffffff o:ffff /memory
+  0018) 0000000000000000-00000000ffffffff o:0000 /memory/below4G
+  0030) 0000000000000000-00000000fbffffff o:0018 /memory/below4G/ram
+  0048) 0000000100000000-00000001ffffffff o:0000 /memory/ram
+  0060) 000000003b400000-000000003fffffff o:0030 /memory/below4G/ram/vcram
+  0078) 0000000000000000-000000003b3fffff o:0030 /memory/below4G/ram/below1G
+  0090) 00000000ff841000-00000000ff841fff o:0000 /memory/gicd
+  00a8) 00000000ff842000-00000000ff843fff o:0000 /memory/gicc
+  00c0) 00000000000aa0e8-0000000000bb0663 o:0000 /memory/imagefs
+  00d8) 0000000000080fa0-00000000000aa0e7 o:0000 /memory/startup
+  00f0) 00000000000aa0e8-0000000000bb0663 o:0000 /memory/bootram
+  0108) 000000002eff1f00-000000002effff55 o:0000 /memory/fdt
+  0120) 0000000000001000-000000000000cfff o:0078 /memory/below4G/ram/below1G/sysram
+  0138) 0000000000019000-000000000007ffff o:0078 /memory/below4G/ram/below1G/sysram
+  0150) 0000000000bb1000-000000002eff0fff o:0078 /memory/below4G/ram/below1G/sysram
+  0168) 000000002f000000-000000003b3fffff o:0078 /memory/below4G/ram/below1G/sysram
+  0180) 0000000040000000-00000000fbffffff o:0030 /memory/below4G/ram/sysram
+  0198) 0000000100000000-00000001fa083fff o:0048 /memory/ram/sysram
+Section:hwinfo offset:0x00000d20 size:0x00000108
+  0) size:3 tag:3(Group) isize:3, iname:0(hw), owner:65535, kids:2
+  12) size:3 tag:17(Bus) isize:3, iname:9(unknown), owner:0, kids:3
+  24) size:4 tag:81(Device) isize:24, iname:75(genet), owner:0, kids:0
+     02 00 00 00
+  40) size:6 tag:88(location)
+     00 80 00 00 00 00 58 fd 00 00 00 00 00 00 00 00 00 00 00 00
+  64) size:2 tag:97(irq)
+     bd 00 00 00
+  72) size:6 tag:88(location)
+     00 80 00 00 00 00 58 fd 00 00 00 00 00 00 00 00 00 00 00 00
+  96) size:2 tag:97(irq)
+     be 00 00 00
+  104) size:4 tag:101(nicaddr)
+     06 00 00 00 2c cf 67 17 4f 7f 00 00
+  120) size:4 tag:81(Device) isize:13, iname:109(wdog), owner:12, kids:0
+     07 00 00 00
+  136) size:6 tag:88(location)
+     14 01 00 00 00 00 10 fe 00 00 00 00 00 00 00 00 00 00 00 00
+  160) size:3 tag:114(inputclk)
+     f4 01 00 00 01 00 00 00
+  172) size:4 tag:81(Device) isize:8, iname:123(wdt,options), owner:12, kids:0
+     00 00 00 00
+  188) size:2 tag:147(regname)
+     87 00 20 00
+  196) size:2 tag:147(regname)
+     9b 00 20 00
+  204) size:4 tag:81(Device) isize:11, iname:168(bcm2711-sdmmc), owner:12, kids:0
+     04 00 00 00
+  220) size:1 tag:182(pad)
+  224) size:6 tag:88(location)
+     00 00 00 fc 00 00 00 00 00 00 00 00 00 00 ff ff 00 00 00 00
+Section:typed_strings offset:0x00000bc0 size:0x00000058
+  off:0 type:5 string:'RaspberryPi4B'
+  off:20 type:8 string:'Sony UK'
+  off:32 type:6 string:'BCM2711'
+  off:44 type:7 string:'10000000b6c56c00'
+  off:68 type:2 string:'localhost'
+=== BINARY ===
+-rwxr-xr-x  1 root root 89K 1970-01-01 00:46 ./schedulix_can
+=== TRACEPARSER ===
+=== STATUS ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Unknown status
+Usage: ./schedulix_can [options]
+  (no args)               CAN sim (D1) — 5 frames
+  --tcp [port]            TCP injection server (default 5000)
+  --workloads             Phase1: manifest + threads demo
+  --full                  Full core: workloads+trace+CAN+analyze
+  --core                  Alias for --full
+  --stress [id]           Run stress scenario S0..S6 (or all) S1:80% default, use 1:90 for load
+  --sweep                 S1 CPU load sweep 20/40/60/70/80/85/90/95 (manifest+analysis per load)
+  --analyze <trace.bin>   Analyze trace → report
+  --replay <trace.bin>    Replay trace
+  --manifest              Print workload table
+  --help                  This help
+=== TRACELOGGER ===
+Help, we're not keeping up (6/64 accumulated in the time we took to write 2)
+tracelogger_exit=0
+=== KEV ===
+-rw-r--r--  1 root root 2.4M 1970-01-01 00:28 /tmp/test.kev
+=== TRACEPRINTER ===
+-bash: traceprinter: command not found
+=== S4 ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Unknown experiment
+Usage: ./schedulix_can [options]
+  (no args)               CAN sim (D1) — 5 frames
+  --tcp [port]            TCP injection server (default 5000)
+  --workloads             Phase1: manifest + threads demo
+  --full                  Full core: workloads+trace+CAN+analyze
+  --core                  Alias for --full
+  --stress [id]           Run stress scenario S0..S6 (or all) S1:80% default, use 1:90 for load
+  --sweep                 S1 CPU load sweep 20/40/60/70/80/85/90/95 (manifest+analysis per load)
+  --analyze <trace.bin>   Analyze trace → report
+  --replay <trace.bin>    Replay trace
+  --manifest              Print workload table
+  --help                  This help
+S4_exit=1
+=== ARTIFACTS ===
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:02 /tmp/analysis_s1.json
+-rw-r--r--  1 root root 1.3K 1970-01-01 01:02 /tmp/manifest_s1.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:02 /tmp/trace_s1.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:02 /tmp/analysis_s0.json
+-rw-r--r--  1 root root 1.3K 1970-01-01 01:02 /tmp/manifest_s0.json
+-rw-r--r--  1 root root 303K 1970-01-01 01:02 /tmp/trace_s0.bin
+-rw-r--r--  1 root root 1.3K 1970-01-01 01:02 /tmp/manifest_phase1.json
+-rw-r--r--  1 root root  31K 1970-01-01 01:02 /tmp/trace_phase1.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:02 /tmp/analysis_s2.json
+-rw-r--r--  1 root root 1.3K 1970-01-01 01:02 /tmp/manifest_s2.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:02 /tmp/trace_s2.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:02 /tmp/analysis_s1_95.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:02 /tmp/manifest_s1_95.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:02 /tmp/trace_s1_95.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:02 /tmp/analysis_s1_90.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:02 /tmp/manifest_s1_90.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:02 /tmp/trace_s1_90.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_85.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_85.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_85.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_80.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_80.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_80.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_70.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_70.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_70.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_60.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_60.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_60.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_40.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_40.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_40.bin
+-rw-r--r--  1 root root 1.2K 1970-01-01 01:01 /tmp/analysis_s1_20.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 01:01 /tmp/manifest_s1_20.json
+-rw-r--r--  1 root root 346K 1970-01-01 01:01 /tmp/trace_s1_20.bin
+-rw-r--r--  1 root root 2.4M 1970-01-01 00:28 /tmp/test.kev
+-rw-r--r--  1 root root 890K 1970-01-01 00:13 /tmp/analysis_s4.json
+-rw-r--r--  1 root root 1.3K 1970-01-01 00:13 /tmp/manifest_s4.json
+-rw-r--r--  1 root root 896K 1970-01-01 00:13 /tmp/trace_s4.bin
+-rw-r--r--  1 root root 109K 1970-01-01 00:13 /tmp/schedulix.kev
+=== ANALYSIS ===
+----- /tmp/analysis_s0.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.012},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":7.983,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.010},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.010}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.988,"cpu":2,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.006,"slack":11.994,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.008,"slack":7.992,"cpu":3,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.008,"slack":7.992,"cpu":0,"root":"UNKNOWN"},
+    {"task":2,"act":2,"corr":0,"response":8.006,"slack":11.994,"cpu":3,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.011},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.007},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.013}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.010,"slack":7.989,"cpu":2,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.992,"cpu":3,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":3,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.006,"slack":7.994,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.007,"slack":7.992,"cpu":1,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_20.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.011},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.008},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.008,"max":5.011}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.011,"slack":7.989,"cpu":0,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.008,"slack":11.992,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.006,"slack":7.994,"cpu":2,"root":"UNKNOWN"},
+    {"task":2,"act":2,"corr":0,"response":8.007,"slack":11.993,"cpu":2,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_40.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.099},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.012},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.008}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.988,"cpu":3,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.006,"slack":7.994,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.007,"slack":7.992,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.006,"slack":7.993,"cpu":1,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_60.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.012},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.007},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.046}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.011,"slack":7.989,"cpu":3,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.007,"slack":7.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.007,"slack":7.993,"cpu":1,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_70.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.015},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.009},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.009}
+root@qnxpi:~# sed -n '300,600p' /tmp/schedulix_validation.txt
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.009}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.011,"slack":7.989,"cpu":2,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.992,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.006,"slack":7.994,"cpu":3,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.007,"slack":7.992,"cpu":2,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_80.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.012},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.008},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.013,"max":5.014}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.987,"cpu":3,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.006,"slack":7.994,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.007,"slack":7.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.007,"slack":7.993,"cpu":1,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_85.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.012},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.008},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.007}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.988,"cpu":3,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.006,"slack":7.994,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.006,"slack":7.994,"cpu":3,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_90.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.084},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.008},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.007}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.988,"cpu":2,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.006,"slack":7.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.006,"slack":7.994,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.006,"slack":7.994,"cpu":2,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s1_95.json -----
+{
+  "trace": {"records":1292,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.012},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.011},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.007}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.012,"slack":7.988,"cpu":1,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.007,"slack":7.993,"cpu":3,"root":"UNKNOWN"},
+    {"task":2,"act":2,"corr":0,"response":8.007,"slack":11.993,"cpu":0,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s2.json -----
+{
+  "trace": {"records":1293,"dropped":0},
+  "per_task": [
+    {"task_id":1,"activations":770,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.013},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.006,"p50":8.006,"p95":8.007,"p99":8.007,"max":8.009},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.007}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "0 misses",
+    "3_where_delay": "avg READY wait 0.00 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "UNKNOWN",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {"task":1,"act":1,"corr":0,"response":2.009,"slack":7.990,"cpu":0,"root":"UNKNOWN"},
+    {"task":2,"act":1,"corr":0,"response":8.007,"slack":11.993,"cpu":1,"root":"UNKNOWN"},
+    {"task":1,"act":2,"corr":0,"response":2.007,"slack":7.993,"cpu":2,"root":"UNKNOWN"},
+    {"task":1,"act":3,"corr":0,"response":2.007,"slack":7.993,"cpu":0,"root":"UNKNOWN"},
+    {"task":1,"act":4,"corr":0,"response":2.006,"slack":7.993,"cpu":1,"root":"UNKNOWN"}
+  ]
+}
+----- /tmp/analysis_s4.json -----
+{
+  "trace": {"records":2125,"dropped":4926},
+  "per_task": [
+    {"task_id":1,"activations":1923,"misses":1921,"miss_ratio":0.9990,"mean_ms":2.010,"p50":2.012,"p95":2.013,"p99":2.013,"max":2.019},
+    {"task_id":2,"activations":144,"misses":144,"miss_ratio":1.0000,"mean_ms":8.007,"p50":8.007,"p95":8.007,"p99":8.008,"max":8.008},
+    {"task_id":3,"activations":58,"misses":58,"miss_ratio":1.0000,"mean_ms":5.006,"p50":5.006,"p95":5.007,"p99":5.007,"max":5.007}
+  ],
+  "five_questions": {
+    "1_did_performance_degrade": "BRAKE P99 2.01 ms",
+    "2_did_timing_fail": "2123 misses",
+    "3_where_delay": "avg READY wait 0.01 ms, exec 2.00, blocked 0.00, preempt 0.00",
+    "4_why": "TRACE_LOSS",
+    "5_under_what_conditions": "see manifest stress_level/cpu_affinity"
+  },
+  "activations": [
+    {
+      "task_id": 1,
+      "activation_id": 1,
+      "correlation_id": 1,
+      "response_ns": 2017389,
+      "slack_ns": -805077657259,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805077657259,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 0,
+      "correlation_id": 1,
+      "response_ns": 0,
+      "slack_ns": 10000000,
+      "cpu_first": 65535,
+      "root_cause": "UNKNOWN",
+      "evidence_level": "UNKNOWN",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 0,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 2,
+      "correlation_id": 2,
+      "response_ns": 2012907,
+      "slack_ns": -805080027907,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805080027907,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 3,
+      "correlation_id": 3,
+      "response_ns": 2012352,
+      "slack_ns": -805083023296,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805083023296,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 4,
+      "correlation_id": 4,
+      "response_ns": 2012685,
+      "slack_ns": -805086022500,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805086022500,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 5,
+      "correlation_id": 5,
+      "response_ns": 2012926,
+      "slack_ns": -805089025315,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805089025315,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 6,
+      "correlation_id": 6,
+      "response_ns": 2012333,
+      "slack_ns": -805092023111,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805092023111,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 7,
+      "correlation_id": 7,
+      "response_ns": 2011500,
+      "slack_ns": -805095022278,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805095022278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 1,
+      "correlation_id": 1,
+      "response_ns": 8006611,
+      "slack_ns": -8503778,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8503778,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 8,
+      "correlation_id": 8,
+      "response_ns": 2012130,
+      "slack_ns": -805098024537,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+root@qnxpi:~# sed -n '600,900p' /tmp/schedulix_validation.txt
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805098024537,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 9,
+      "correlation_id": 9,
+      "response_ns": 2012981,
+      "slack_ns": -805101022407,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805101022407,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 10,
+      "correlation_id": 10,
+      "response_ns": 2012222,
+      "slack_ns": -805104022648,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805104022648,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 11,
+      "correlation_id": 11,
+      "response_ns": 2013204,
+      "slack_ns": -805107030852,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805107030852,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 12,
+      "correlation_id": 12,
+      "response_ns": 2013185,
+      "slack_ns": -805110025463,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805110025463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 13,
+      "correlation_id": 13,
+      "response_ns": 2012593,
+      "slack_ns": -805113023889,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805113023889,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 14,
+      "correlation_id": 14,
+      "response_ns": 2012852,
+      "slack_ns": -805116023000,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805116023000,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 15,
+      "correlation_id": 15,
+      "response_ns": 2013129,
+      "slack_ns": -805119025296,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805119025296,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 16,
+      "correlation_id": 16,
+      "response_ns": 2012556,
+      "slack_ns": -805122024852,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805122024852,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 17,
+      "correlation_id": 17,
+      "response_ns": 2011667,
+      "slack_ns": -805125022852,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805125022852,
+      "context_switches": 0
+    },
+    {
+      "task_id": 3,
+      "activation_id": 1,
+      "correlation_id": 1,
+      "response_ns": 5006574,
+      "slack_ns": -5386444,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 5386444,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 18,
+      "correlation_id": 18,
+      "response_ns": 2012797,
+      "slack_ns": -805128025204,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805128025204,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 19,
+      "correlation_id": 19,
+      "response_ns": 2011593,
+      "slack_ns": -805131020741,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805131020741,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 20,
+      "correlation_id": 20,
+      "response_ns": 2012611,
+      "slack_ns": -805134022685,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805134022685,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 21,
+      "correlation_id": 21,
+      "response_ns": 2012871,
+      "slack_ns": -805137028241,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805137028241,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 2,
+      "correlation_id": 2,
+      "response_ns": 8006926,
+      "slack_ns": -8504075,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8504075,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 22,
+      "correlation_id": 22,
+      "response_ns": 2012500,
+      "slack_ns": -805140024037,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805140024037,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 23,
+      "correlation_id": 23,
+      "response_ns": 2012518,
+      "slack_ns": -805143023111,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805143023111,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 24,
+      "correlation_id": 24,
+      "response_ns": 2012833,
+      "slack_ns": -805146023000,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805146023000,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 25,
+      "correlation_id": 25,
+      "response_ns": 2012315,
+root@qnxpi:~# sed -n '900,1500p' /tmp/schedulix_validation.txt
+      "response_ns": 2012315,
+      "slack_ns": -805149022778,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805149022778,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 26,
+      "correlation_id": 26,
+      "response_ns": 2012370,
+      "slack_ns": -805152024611,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805152024611,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 27,
+      "correlation_id": 27,
+      "response_ns": 2012444,
+      "slack_ns": -805155025444,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805155025444,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 28,
+      "correlation_id": 28,
+      "response_ns": 2012649,
+      "slack_ns": -805158024019,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805158024019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 29,
+      "correlation_id": 29,
+      "response_ns": 2011963,
+      "slack_ns": -805161021315,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805161021315,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 30,
+      "correlation_id": 30,
+      "response_ns": 2012463,
+      "slack_ns": -805164024019,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805164024019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 31,
+      "correlation_id": 31,
+      "response_ns": 2012407,
+      "slack_ns": -805167028222,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805167028222,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 32,
+      "correlation_id": 32,
+      "response_ns": 2013833,
+      "slack_ns": -805170030463,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805170030463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 33,
+      "correlation_id": 33,
+      "response_ns": 2013037,
+      "slack_ns": -805173024944,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805173024944,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 34,
+      "correlation_id": 34,
+      "response_ns": 2012556,
+      "slack_ns": -805176021963,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805176021963,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 3,
+      "correlation_id": 3,
+      "response_ns": 8006982,
+      "slack_ns": -8503408,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8503408,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 35,
+      "correlation_id": 35,
+      "response_ns": 2011463,
+      "slack_ns": -805179021241,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805179021241,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 36,
+      "correlation_id": 36,
+      "response_ns": 2012723,
+      "slack_ns": -805182030593,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805182030593,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 37,
+      "correlation_id": 37,
+      "response_ns": 2012370,
+      "slack_ns": -805185024389,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805185024389,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 38,
+      "correlation_id": 38,
+      "response_ns": 2012111,
+      "slack_ns": -805188023963,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805188023963,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 39,
+      "correlation_id": 39,
+      "response_ns": 2012481,
+      "slack_ns": -805191022185,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805191022185,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 40,
+      "correlation_id": 40,
+      "response_ns": 2012926,
+      "slack_ns": -805194023315,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805194023315,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 41,
+      "correlation_id": 41,
+      "response_ns": 2012481,
+      "slack_ns": -805197025185,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805197025185,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 42,
+      "correlation_id": 42,
+      "response_ns": 2012037,
+      "slack_ns": -805200023500,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805200023500,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 43,
+      "correlation_id": 43,
+      "response_ns": 2012074,
+      "slack_ns": -805203022889,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805203022889,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 44,
+      "correlation_id": 44,
+      "response_ns": 2012407,
+      "slack_ns": -805206022926,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805206022926,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 45,
+      "correlation_id": 45,
+      "response_ns": 2012426,
+      "slack_ns": -805209023556,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805209023556,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 46,
+      "correlation_id": 46,
+      "response_ns": 2011240,
+      "slack_ns": -805212025407,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805212025407,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 47,
+      "correlation_id": 47,
+      "response_ns": 2012870,
+      "slack_ns": -805215025037,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805215025037,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 4,
+      "correlation_id": 4,
+      "response_ns": 8006314,
+      "slack_ns": -8501926,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8501926,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 48,
+      "correlation_id": 48,
+      "response_ns": 2011778,
+      "slack_ns": -805218023167,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805218023167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 49,
+      "correlation_id": 49,
+      "response_ns": 2012982,
+      "slack_ns": -805221024593,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805221024593,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 50,
+      "correlation_id": 50,
+      "response_ns": 2012759,
+      "slack_ns": -805224025407,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805224025407,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 51,
+      "correlation_id": 51,
+      "response_ns": 2012574,
+      "slack_ns": -805227024407,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805227024407,
+      "context_switches": 0
+    },
+    {
+      "task_id": 3,
+      "activation_id": 2,
+      "correlation_id": 2,
+      "response_ns": 5006259,
+      "slack_ns": -5391796,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 5391796,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 52,
+      "correlation_id": 52,
+      "response_ns": 2012167,
+      "slack_ns": -805230025278,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805230025278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 53,
+      "correlation_id": 53,
+      "response_ns": 2012074,
+      "slack_ns": -805233023259,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805233023259,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 54,
+      "correlation_id": 54,
+      "response_ns": 2012500,
+      "slack_ns": -805236022389,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805236022389,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 55,
+      "correlation_id": 55,
+      "response_ns": 2011778,
+      "slack_ns": -805239022759,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805239022759,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 56,
+      "correlation_id": 56,
+      "response_ns": 2011926,
+      "slack_ns": -805242024037,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805242024037,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 57,
+      "correlation_id": 57,
+      "response_ns": 2011444,
+      "slack_ns": -805245022296,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805245022296,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 58,
+      "correlation_id": 58,
+      "response_ns": 2011296,
+      "slack_ns": -805248022074,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805248022074,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 59,
+      "correlation_id": 59,
+      "response_ns": 2012574,
+      "slack_ns": -805251022037,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+root@qnxpi:~# sed -n '1500,2100p' /tmp/schedulix_validation.txt
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805251022037,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 60,
+      "correlation_id": 60,
+      "response_ns": 2012111,
+      "slack_ns": -805254023167,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805254023167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 61,
+      "correlation_id": 61,
+      "response_ns": 2012166,
+      "slack_ns": -805257024759,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805257024759,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 5,
+      "correlation_id": 5,
+      "response_ns": 8007167,
+      "slack_ns": -8503056,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8503056,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 62,
+      "correlation_id": 62,
+      "response_ns": 2011667,
+      "slack_ns": -805260028778,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805260028778,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 63,
+      "correlation_id": 63,
+      "response_ns": 2012834,
+      "slack_ns": -805263026630,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805263026630,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 64,
+      "correlation_id": 64,
+      "response_ns": 2011611,
+      "slack_ns": -805266020333,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805266020333,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 65,
+      "correlation_id": 65,
+      "response_ns": 2013315,
+      "slack_ns": -805269025185,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805269025185,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 66,
+      "correlation_id": 66,
+      "response_ns": 2012963,
+      "slack_ns": -805272025944,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805272025944,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 67,
+      "correlation_id": 67,
+      "response_ns": 2012555,
+      "slack_ns": -805275026333,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805275026333,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 68,
+      "correlation_id": 68,
+      "response_ns": 2013149,
+      "slack_ns": -805278024019,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805278024019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 69,
+      "correlation_id": 69,
+      "response_ns": 2012963,
+      "slack_ns": -805281022241,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805281022241,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 70,
+      "correlation_id": 70,
+      "response_ns": 2012333,
+      "slack_ns": -805284022685,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805284022685,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 71,
+      "correlation_id": 71,
+      "response_ns": 2011722,
+      "slack_ns": -805287023444,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805287023444,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 72,
+      "correlation_id": 72,
+      "response_ns": 2011908,
+      "slack_ns": -805290022852,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805290022852,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 73,
+      "correlation_id": 73,
+      "response_ns": 2012722,
+      "slack_ns": -805293025796,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805293025796,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 74,
+      "correlation_id": 74,
+      "response_ns": 2012722,
+      "slack_ns": -805296022296,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805296022296,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 6,
+      "correlation_id": 6,
+      "response_ns": 8006222,
+      "slack_ns": -8502167,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 75,
+      "correlation_id": 75,
+      "response_ns": 2012074,
+      "slack_ns": -805299023926,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805299023926,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 76,
+      "correlation_id": 76,
+      "response_ns": 2011648,
+      "slack_ns": -805302027815,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805302027815,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 77,
+      "correlation_id": 77,
+      "response_ns": 2012556,
+      "slack_ns": -805305025389,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805305025389,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 78,
+      "correlation_id": 78,
+      "response_ns": 2011926,
+      "slack_ns": -805308023222,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805308023222,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 79,
+      "correlation_id": 79,
+      "response_ns": 2012667,
+      "slack_ns": -805311022130,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805311022130,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 80,
+      "correlation_id": 80,
+      "response_ns": 2012074,
+      "slack_ns": -805314022148,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805314022148,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 81,
+      "correlation_id": 81,
+      "response_ns": 2011834,
+      "slack_ns": -805317023667,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805317023667,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 82,
+      "correlation_id": 82,
+      "response_ns": 2012741,
+      "slack_ns": -805320025093,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805320025093,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 83,
+      "correlation_id": 83,
+      "response_ns": 2011759,
+      "slack_ns": -805323022389,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805323022389,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 84,
+      "correlation_id": 84,
+      "response_ns": 2012500,
+      "slack_ns": -805326022352,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805326022352,
+      "context_switches": 0
+    },
+    {
+      "task_id": 3,
+      "activation_id": 3,
+      "correlation_id": 3,
+      "response_ns": 5007463,
+      "slack_ns": -5386556,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 5386556,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 85,
+      "correlation_id": 85,
+      "response_ns": 2012037,
+      "slack_ns": -805329021833,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805329021833,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 86,
+      "correlation_id": 86,
+      "response_ns": 2012537,
+      "slack_ns": -805332028593,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805332028593,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 87,
+      "correlation_id": 87,
+      "response_ns": 2012297,
+      "slack_ns": -805335025241,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805335025241,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 7,
+      "correlation_id": 7,
+      "response_ns": 8007111,
+      "slack_ns": -8502389,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502389,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 88,
+      "correlation_id": 88,
+      "response_ns": 2012778,
+      "slack_ns": -805338025963,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805338025963,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 89,
+      "correlation_id": 89,
+      "response_ns": 2011741,
+      "slack_ns": -805341020704,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805341020704,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 90,
+      "correlation_id": 90,
+      "response_ns": 2011297,
+      "slack_ns": -805344021019,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805344021019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 91,
+      "correlation_id": 91,
+      "response_ns": 2012167,
+      "slack_ns": -805347023074,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805347023074,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 92,
+      "correlation_id": 92,
+      "response_ns": 2011018,
+      "slack_ns": -805350021685,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805350021685,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 93,
+      "correlation_id": 93,
+      "response_ns": 2012518,
+root@qnxpi:~# sed -n '2100,3300p' /tmp/schedulix_validation.txt
+      "response_ns": 2012518,
+      "slack_ns": -805353024537,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805353024537,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 94,
+      "correlation_id": 94,
+      "response_ns": 2011667,
+      "slack_ns": -805356021000,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805356021000,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 95,
+      "correlation_id": 95,
+      "response_ns": 2012296,
+      "slack_ns": -805359023796,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805359023796,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 96,
+      "correlation_id": 96,
+      "response_ns": 2011907,
+      "slack_ns": -805362022463,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805362022463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 97,
+      "correlation_id": 97,
+      "response_ns": 2011926,
+      "slack_ns": -805365024278,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805365024278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 98,
+      "correlation_id": 98,
+      "response_ns": 2011296,
+      "slack_ns": -805368021463,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805368021463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 99,
+      "correlation_id": 99,
+      "response_ns": 2012926,
+      "slack_ns": -805371023315,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805371023315,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 100,
+      "correlation_id": 100,
+      "response_ns": 2012204,
+      "slack_ns": -805374022500,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805374022500,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 101,
+      "correlation_id": 101,
+      "response_ns": 2012204,
+      "slack_ns": -805377023519,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805377023519,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 8,
+      "correlation_id": 8,
+      "response_ns": 8005982,
+      "slack_ns": -8501223,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8501223,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 102,
+      "correlation_id": 102,
+      "response_ns": 2012815,
+      "slack_ns": -805380028463,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805380028463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 103,
+      "correlation_id": 103,
+      "response_ns": 2012000,
+      "slack_ns": -805383022704,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805383022704,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 104,
+      "correlation_id": 104,
+      "response_ns": 2012833,
+      "slack_ns": -805386022426,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805386022426,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 105,
+      "correlation_id": 105,
+      "response_ns": 2012297,
+      "slack_ns": -805389024778,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805389024778,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 106,
+      "correlation_id": 106,
+      "response_ns": 2011722,
+      "slack_ns": -805392022796,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805392022796,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 107,
+      "correlation_id": 107,
+      "response_ns": 2012149,
+      "slack_ns": -805395024056,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805395024056,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 108,
+      "correlation_id": 108,
+      "response_ns": 2012371,
+      "slack_ns": -805398023167,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805398023167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 109,
+      "correlation_id": 109,
+      "response_ns": 2012296,
+      "slack_ns": -805401021481,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805401021481,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 110,
+      "correlation_id": 110,
+      "response_ns": 2012463,
+      "slack_ns": -805404021815,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805404021815,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 111,
+      "correlation_id": 111,
+      "response_ns": 2011296,
+      "slack_ns": -805407022074,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805407022074,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 112,
+      "correlation_id": 112,
+      "response_ns": 2012462,
+      "slack_ns": -805410023981,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805410023981,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 113,
+      "correlation_id": 113,
+      "response_ns": 2012166,
+      "slack_ns": -805413023444,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805413023444,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 114,
+      "correlation_id": 114,
+      "response_ns": 2012389,
+      "slack_ns": -805416024278,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805416024278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 9,
+      "correlation_id": 9,
+      "response_ns": 8006352,
+      "slack_ns": -8502760,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502760,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 115,
+      "correlation_id": 115,
+      "response_ns": 2011667,
+      "slack_ns": -805419021167,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805419021167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 116,
+      "correlation_id": 116,
+      "response_ns": 2012296,
+      "slack_ns": -805422030333,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805422030333,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 117,
+      "correlation_id": 117,
+      "response_ns": 2011944,
+      "slack_ns": -805425022833,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805425022833,
+      "context_switches": 0
+    },
+    {
+      "task_id": 3,
+      "activation_id": 4,
+      "correlation_id": 4,
+      "response_ns": 5006537,
+      "slack_ns": -5384926,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 5384926,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 118,
+      "correlation_id": 118,
+      "response_ns": 2011908,
+      "slack_ns": -805428024019,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805428024019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 119,
+      "correlation_id": 119,
+      "response_ns": 2013018,
+      "slack_ns": -805431022981,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805431022981,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 120,
+      "correlation_id": 120,
+      "response_ns": 2012259,
+      "slack_ns": -805434023185,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805434023185,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 121,
+      "correlation_id": 121,
+      "response_ns": 2012741,
+      "slack_ns": -805437025463,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805437025463,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 122,
+      "correlation_id": 122,
+      "response_ns": 2012241,
+      "slack_ns": -805440025056,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805440025056,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 123,
+      "correlation_id": 123,
+      "response_ns": 2012037,
+      "slack_ns": -805443022093,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805443022093,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 124,
+      "correlation_id": 124,
+      "response_ns": 2012871,
+      "slack_ns": -805446025278,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805446025278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 125,
+      "correlation_id": 125,
+      "response_ns": 2011759,
+      "slack_ns": -805449023037,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805449023037,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 126,
+      "correlation_id": 126,
+      "response_ns": 2012666,
+      "slack_ns": -805452023333,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805452023333,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 127,
+      "correlation_id": 127,
+      "response_ns": 2011722,
+      "slack_ns": -805455024111,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805455024111,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 10,
+      "correlation_id": 10,
+      "response_ns": 8006704,
+      "slack_ns": -8502019,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 128,
+      "correlation_id": 128,
+      "response_ns": 2011852,
+      "slack_ns": -805458023296,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805458023296,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 129,
+      "correlation_id": 129,
+      "response_ns": 2012314,
+      "slack_ns": -805461021870,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805461021870,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 130,
+      "correlation_id": 130,
+      "response_ns": 2011000,
+      "slack_ns": -805464021778,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805464021778,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 131,
+      "correlation_id": 131,
+      "response_ns": 2012352,
+      "slack_ns": -805467023704,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805467023704,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 132,
+      "correlation_id": 132,
+      "response_ns": 2012574,
+      "slack_ns": -805470024481,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805470024481,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 133,
+      "correlation_id": 133,
+      "response_ns": 2012130,
+      "slack_ns": -805473022667,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805473022667,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 134,
+      "correlation_id": 134,
+      "response_ns": 2011981,
+      "slack_ns": -805476020370,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805476020370,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 135,
+      "correlation_id": 135,
+      "response_ns": 2012481,
+      "slack_ns": -805479026611,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805479026611,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 136,
+      "correlation_id": 136,
+      "response_ns": 2012741,
+      "slack_ns": -805482024704,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805482024704,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 137,
+      "correlation_id": 137,
+      "response_ns": 2012259,
+      "slack_ns": -805485024611,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805485024611,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 138,
+      "correlation_id": 138,
+      "response_ns": 2011852,
+      "slack_ns": -805488023556,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805488023556,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 139,
+      "correlation_id": 139,
+      "response_ns": 2012686,
+      "slack_ns": -805491022167,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805491022167,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 140,
+      "correlation_id": 140,
+      "response_ns": 2011740,
+      "slack_ns": -805494022444,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805494022444,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 141,
+      "correlation_id": 141,
+      "response_ns": 2012092,
+      "slack_ns": -805497023870,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805497023870,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 11,
+      "correlation_id": 11,
+      "response_ns": 8006407,
+      "slack_ns": -8502019,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 142,
+      "correlation_id": 142,
+      "response_ns": 2012574,
+      "slack_ns": -805500028537,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805500028537,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 143,
+      "correlation_id": 143,
+      "response_ns": 2012241,
+      "slack_ns": -805503024537,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805503024537,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 144,
+      "correlation_id": 144,
+      "response_ns": 2013093,
+      "slack_ns": -805506022963,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805506022963,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 145,
+      "correlation_id": 145,
+      "response_ns": 2011519,
+      "slack_ns": -805509021352,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805509021352,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 146,
+      "correlation_id": 146,
+      "response_ns": 2011704,
+      "slack_ns": -805512023019,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805512023019,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 147,
+      "correlation_id": 147,
+      "response_ns": 2013148,
+      "slack_ns": -805515025407,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805515025407,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 148,
+      "correlation_id": 148,
+      "response_ns": 2012333,
+      "slack_ns": -805518023963,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805518023963,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 149,
+      "correlation_id": 149,
+      "response_ns": 2012426,
+      "slack_ns": -805521022574,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805521022574,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 150,
+      "correlation_id": 150,
+      "response_ns": 2012741,
+      "slack_ns": -805524026574,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805524026574,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 151,
+      "correlation_id": 151,
+      "response_ns": 2011555,
+      "slack_ns": -805527022074,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805527022074,
+      "context_switches": 0
+    },
+    {
+      "task_id": 3,
+      "activation_id": 5,
+      "correlation_id": 5,
+      "response_ns": 5006148,
+      "slack_ns": -5385000,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 5385000,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 152,
+      "correlation_id": 152,
+      "response_ns": 2012741,
+      "slack_ns": -805530029278,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805530029278,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 153,
+      "correlation_id": 153,
+      "response_ns": 2012259,
+      "slack_ns": -805533023685,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805533023685,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 154,
+      "correlation_id": 154,
+      "response_ns": 2012537,
+      "slack_ns": -805536021648,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805536021648,
+      "context_switches": 0
+    },
+    {
+      "task_id": 2,
+      "activation_id": 12,
+      "correlation_id": 12,
+      "response_ns": 8006686,
+      "slack_ns": -8502649,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 8502649,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 155,
+      "correlation_id": 155,
+      "response_ns": 2012223,
+      "slack_ns": -805539023630,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805539023630,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 156,
+      "correlation_id": 156,
+      "response_ns": 2011963,
+      "slack_ns": -805542026741,
+      "cpu_first": 3,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805542026741,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 157,
+      "correlation_id": 157,
+      "response_ns": 2012297,
+      "slack_ns": -805545027130,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805545027130,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 158,
+      "correlation_id": 158,
+      "response_ns": 2012871,
+      "slack_ns": -805548024519,
+      "cpu_first": 0,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805548024519,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 159,
+      "correlation_id": 159,
+      "response_ns": 2012685,
+      "slack_ns": -805551021852,
+      "cpu_first": 1,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805551021852,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 160,
+      "correlation_id": 160,
+      "response_ns": 2012870,
+      "slack_ns": -805554023722,
+      "cpu_first": 2,
+      "root_cause": "TRACE_LOSS",
+      "evidence_level": "INFERRED",
+      "interferer_pid": 0,
+      "interferer_tid": 0,
+      "interferer_priority": 0,
+      "preemption_duration_ns": 0,
+      "lateness_ns": 805554023722,
+      "context_switches": 0
+    },
+    {
+      "task_id": 1,
+      "activation_id": 161,
+      "correlation_id": 161,
+      "response_ns": 2011889,

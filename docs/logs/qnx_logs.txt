@@ -1,0 +1,6675 @@
+User@DESKTOP-89I8MUE MINGW64 ~/ide-8.0.3-workspace/schedulix_can/deploy
+$ ssh qnxuser@192.168.10.2
+(qnxuser@192.168.10.2) Password:
+Welcome to QNX 8.0!
+
+This QNX 8 target is now ready for your QNX applications. There are
+some sample applications included here to help you get started with
+development. Find the source code for most of them at gitlab.com/qnx.
+
+Here's how to run some of the bundled samples:
+
+|-------------------------------|----------------------------------------------------------|
+| $ gles2-gears                 | Displays hardware-rendered content using OpenGL ES 2.x.  |
+| $ gles2-maze                  | Shows how to use texture, vertex, and fragment shaders.  |
+| $ vkcubepp                    | Demonstrates 3D rendering capabilities using Vulkan.     |
+| $ camera_example3_viewfinder  | Displays a simulated camera signal or live camera feed.  |
+| $ st                          | The default terminal. Run it to open a new instance.     |
+|-------------------------------|----------------------------------------------------------|
+
+(You can use ALT-TAB to switch between windows.)
+
+Have questions? Find the community on Reddit at r/QNX, ask on StackOverflow,
+or log an issue at https://gitlab.com/qnx.
+qnxuser@qnxpi:~$
+qnxuser@qnxpi:~$ ls
+bin  cores  lib
+qnxuser@qnxpi:~$ cd /tmp
+qnxuser@qnxpi:/tmp$ ls
+blink  keep_files  manifest.json  manifest.txt  schedulix.kev  schedulix_can  trace.bin  trace_flight.bin
+qnxuser@qnxpi:/tmp$ ls
+blink  keep_files  manifest.json  manifest.txt  schedulix.kev  schedulix_can  trace.bin  trace_flight.bin
+qnxuser@qnxpi:/tmp$ cat trace.bin
+DHCS0@ZZZ▒▒P▒   ▒P▒     ▒CQ▒    ▒XQ▒    ▒▒▒▒cQ▒ qkQ▒    ▒▒o▒    ϑ▒p▒    K▒y▒▒▒aX
+                                                                                ▒       ▒▒▒+u
+                                                                                             ▒  ▒}
+                                                                                                  ▒     ▒+▒     L▒▒!+▒  *▒y▒▒▒PT▒▒      -1Ca▒▒  j▒▒     i▒▒▒    S▒▒▒    ▒슲      ▒▒Ҳ     ▒▒▒▒▒Ҳ  ▒Ҳ      ▒;▒     ▒▒▒F▒   ▒▒y▒▒▒▒▒▒       {!zȖ▒   ▒▒▒-1g▒▒        -1▒▒▒
+▒▒▒     ▒▒▒a    ▒▒▒▒z▒  E▒絷▒   ▒▒y▒▒▒Ζʳ        ▒▒ʳ     ˳       ▒"˳     ▒▒▒Z.˳  w7˳     W▒▒     ▒XLp▒▒  ▒▒▒▒▒▒#Z_▒      ▒▒▒h_▒  ▒p_▒    ▒~▒     ▒▒▒~▒   ▒▒y▒▒▒▒▒        -1=▒▒▒   ▒▒      ▒▒
+                  ▒     ▒       ▒%▒     ▒▒▒▒%▒  ▒▒%▒    ▒*5▒    h!z>5▒  8▒▒-1▒YD▒       E▒▒eD▒  b▒y▒▒▒▒▒        ▒▒▒I&▒  ],▒     ]▒
+▒       ▒▒▒▒
+▒       Z▒y▒▒▒Җu▒       -1q▒u▒  ▒▒u▒    򁲶      ▒▒▒љ▒▒  ▒▒▒▒    ▒2Ѷ     ▒▒
+▒y▒▒▒[▒▒       +zs▒     ▒Ķ-1▒H▒ ▒▒▒▒f▒  ▒m▒     ▒▒7▒    Z8▒     ΄8▒     ▒8▒             ▒▒▒▒8▒          ▒▒8▒            ▒)W▒            ▒▒▒9W▒          ▒▒y▒▒▒▒▒i▒      ▒VL▒▒i▒  ▒p▒▒▒▒#▒▒
+▒▒▒▒▒▒
+▒▒▒
+yo▒
+ƎW{▒
+<▒y▒▒▒S▒/▒      -19▒/▒  ▒▒/▒    ▒▒r▒    ▒r▒     ▒ws▒    xs▒
+                                                                ▒▒▒<▒s▒
+                                                                       ▒s▒
+                                                                                ▒▒w▒    xx▒     +^x▒    ▒;}▒   ▒D}▒    ▒}▒     M▒▒▒             ▒▒▒▒            ▒‸      <▒▒
+D▒▒
+▒s▒▒
+▒ƅ▒
+        ▒΅▒
+                N▒▒▒
+                        L▒▒
+                                ▒▒▒
+                                        -▒y▒▒▒▒(▒▒
+
+                                                        ▒▒▒▒.▒▒
+
+
+                                                                5▒▒
+
+                                                                        0▒▒     z#▒▒    ▒▒▒-1▒İ▒
+
+                                                                                                        ▒▒JͰ▒
+
+                                                                                                                n▒y▒▒հ▒
+▒▒▒▒۰▒
+▒᰸
+Qpϸ
+
+▒▒zϸ
+▒▒y▒▒▒E▒ϸ
+                ▒▒▒k▒ϸ
+                        ▒▒ϸ
+                                .▒
+                                        y▒'&▒
+                                                ▒▒y▒▒▒..▒
+                                                                ▒▒▒▒3▒
+                                                                        ▒9▒
+                                                                                ▒▒
+                                                                                  ▒
+                                                                                        %▒▒▒
+                                                                                            ▒
+                                                                                                ▒▒y▒▒▒▒▒
+                                                                                                        ▒
+                                                                                                                ▒▒▒▒
+                                                                                                                    ▒
+                                                                                                                        O▒
+                                                                                                                          ▒
+                                                                                                                                ▒z+▒
+                                                                                                                                        ɏ,▒+▒
+                                                                                                                                                ~▒y▒▒▒▒▒˹       ▒▒▒▒▒˹  z▒˹      ▒W▒     -1H]▒   nc▒     ▒▒▒     ▒▒▒▒    ▒▒y▒▒▒2d▒       G▒d▒    ▒▒-1▒▒s▒        ▒▒▒.▒s▒ ▒▒s▒    ▒8▒▒    ▒▒▒yB▒▒ !I▒▒    hذ▒     ▒/㰺    ▒▒y▒▒▒U▒▒       pTL▒%▒▒ g▒▒▒▒▒~▒X▒       ▒▒▒▒▒X▒ ŝX▒     ▒+w▒    2▒
+2w▒     <▒y▒▒▒4ۤ▒        -1U夻   h뤻     0▒▒     ▒▒▒▒▒   ▒
+▒       ▒▒▒     v▒▒-1S▒=▒       ▒▒▒=▒   S▒y▒▒▒9▒▒▒       ▒      ▒zw
+                                                        ▒▒▒▒
+                                                                L▒▒
+                                                                        'U▒▒
+                                                                                ▒▒▒▒_▒▒
+                                                                                        ▒e▒▒
+▒▒▒▒    }▒▒     ]s▒▒    ▒▒      ▒▒▒▒    ▒▒▒     7▒▒▒                                            iߏ▒
+                                                        G▒ ▒▒▒
+                                                                ▒y▒▒▒▒▒ ▒▒▒▒▒▒  ▒▒▒     *▒Ǽ     W▒ΨǼ    '▒y▒▒▒
+▒▒Xʽ    w▒y▒▒▒▒[ʽ▒Ǽ     ▒▒▒▒eʽ  ▒lʽX▒   b▒ٽ▒▒▒v▒▒ٽ     ▒▒▒-11▒▒ ▒UL▒▒▒  ▒▒▒▒▒r▒ ▒▒▒▒.r▒ ▒▒r▒▒▒▒i▒▒▒▒   -▒▒d▒▒▒ ▒▒▒▒y▒▒▒k▒▒▒     ▒▒▒▒▒▒▒ -1▒▒▒   qJʽ     1▒▒             ▒f8▒     ▒▒1r8▒  x8▒    W▒       ▒▒W▒    ▒y▒▒▒▒▒▒                ▒z▒▒▒           p▒▒-1▒▒▒▒       ▒▒▒▒▒▒▒ @▒▒▒    Yc▒     ▒▒l▒    ▒▒y▒▒▒▒▒▒       ▒▒▒
+                                                                                                                                                   '▒▒  E-▒▒    )d▒▒
+-1Jn▒▒
+▒t▒▒
+B▒▒▒    "▒▒▒▒▒  *▒y▒▒▒▒▒ ▒      ▒▒▒▒▒ ▒ ▒▒ ▒    ▒▒N▒
+Y▒N▒
+&▒▒-1%Cm▒       }XL▒Mm▒ ▒r▒▒▒▒▒|▒▒      ▒▒▒▒▒▒▒ \▒▒▒    ۪▒       ▒▒▒▒▒   ▒▒y▒▒▒W▒Q▒      ▒▒▒\▒Q▒ K▒Q▒    ^p▒     ▒x▒p▒   J▒y▒▒▒▒▒▒▒
+                                                                                                                                        -1▒▒▒
+                                                                                                                                                ▒▒▒
+        ▒                                                                                                                                               B
+                ▒z      ▒
+▒3▒▒    !▒▒y▒▒▒WXI▒             O▒-1▒+▒  ▒▒▒62▒  o8▒     ▒▒6▒    .▒a▒6▒  ▒▒y▒▒▒%▒▒▒     !▒▒▒*▒▒▒        !▒▒▒▒   !_)▒▒   !
+                        -1▒_I▒
+                                ▒eI▒
+                                        7)w▒    ▒▒▒▒1w▒ V8w▒    1▒▒     "▒▒▒▒▒▒ "*▒▒▒   "E▒▒▒
+                                                                                                ▒I▒▒▒
+                                                                                                        ▒▒-1݈▒▒  "▒▒▒▒▒  ▒VL▒▒▒▒ "R▒y▒▒▒▒▒▒      ▒▒▒▒▒▒▒Lk▒      #▒▒▒▒Vk▒#▒-1▒▒▒  %▒▒▒M▒1▒#▒a▒▒▒  $s▒1▒▒▒>$▒AP▒   $▒▒▒IP▒ $M▒y▒▒▒R        ~▒
+
+            ▒▒  %▒▒▒    %ơ▒     %▒▒▒▒▒  %▒▒y▒▒▒ &▒▒▒c▒▒ -1▒f▒▒  &Fl▒▒   6m▒▒    &▒s▒▒   ▒▒▒     ▒▒▒▒▒▒▒ -▒▒▒    ▒▒▒▒    &|▒▒▒   &▒▒y▒▒▒▒▒▒      ▒SL▒!▒▒ k▒▒▒▒▒b▒8▒      rz#▒8▒   2▒▒-19▒▒▒       '▒▒▒▒ń▒ 'Ē▒     'I]▒▒   '8▒▒f▒▒ '▒▒y▒▒▒
+                                                                K▒      (▒▒▒%(K▒        (q.K▒   (▒▒i▒   (|▒▒▒i▒ (▒▒y▒▒▒$▒x▒     -1▒▒x▒  ▒▒x▒    ▒▒      ▒▒▒▒    ▒-1▒z▒  )▒▒▒\▒▒  )▒▒     )▒0▒    )8▒7#0▒ ▒y▒▒▒▒▒▒▒       *▒▒▒▒▒▒▒        *▒▒▒▒   *▒v▒▒   *▒▒}▒▒  *▒▒y▒▒▒▒$▒     ▒▒▒▒$$▒ +$▒     e3▒      -1"o3▒  ▒u3▒    Ѐp▒    ▒UL▒▒p▒ N▒▒▒▒▒E0▒▒+▒▒▒`8▒▒        +?▒▒    +i▒▒▒   ▒▒▒▒▒   ▒-1^ͼ▒  +{▒▒Լ▒  +▒▒y▒▒▒▒d▒      ,▒▒▒l▒d▒        ,▒d▒    ,z0▒▒   ,A▒8▒▒  ,w▒y▒▒▒▒▒▒      -1▒▒▒▒  ▒▒      K▒*▒    -▒▒▒x▒*▒        -▒+▒     -/▒I▒   -5▒ŖI▒  -▒▒y▒▒▒▒
+                                h▒      ▒▒zxh▒  ▒▒-1iJ▒▒        .▒▒▒▒P▒▒        .6W▒▒   ▒▒      .ь▒▒▒   .▒▒y▒▒▒z▒z▒             ▒▒▒Y▒z▒         ▒▒z▒            ▒e▒▒    -1Zl▒▒   ▒r▒▒    U▒▒▒    /▒▒▒\▒▒▒        /▒     /^▒▒▒           ]TLl▒▒          ▒▒▒▒▒▒g?▒▒      /x▒nG▒▒ /7▒y▒▒▒8▒"▒     nz"▒    h▒-1▒~▒ 0▒▒▒{
+~▒      0▒~▒    0/▒▒▒   0V▒ʧ▒▒  0▒▒y▒▒▒▒^D▒     1▒▒▒▒eD▒        1▒kD▒   1▒▒b▒   -1Z▒b▒  ▒▒b▒    ▒▒b▒    1p▒}c▒  1?▒y▒▒▒l▒▒      ▒z▒▒    ▒▒-1▒▒
+▒       2▒▒▒6▒
+▒       2▒
+▒       28b)▒   2▒i)▒   2R▒y▒▒▒▒ ▒▒     3▒▒▒▒(▒▒        3▒.▒▒   3~1▒▒
+▒▒▒9▒▒
+▒>▒▒
+▒▒▒▒    3~▒K▒▒▒ ▒y▒▒▒▒f▒        -1▒l▒   1s▒     ▒▒
+pTLg▒▒
+▒▒▒▒▒▒▒t▒▒      4▒▒▒▒{▒▒        4ށ▒▒    4鐗▒    Iz▒▒▒▒  ▒▒-1▒▒▒ 4▒▒Q▒▒  4▒▒y▒▒▒▒▒]▒     5▒▒▒▒▒]▒        5$▒]▒   5▒o|▒   5Ŏlv|▒  5▒▒y▒▒▒▒▒▒▒     -1_▒▒▒  ▒▒▒▒    ▒3$▒    6▒▒▒<$▒  6_B$▒   6▒▒B▒   6e▒▒▒B▒ 6▒▒y▒▒▒bR▒      Iz▒ R▒ ▒-1
+                                                          ▒▒▒   7▒▒▒ܛ▒▒ 7▒▒▒▒   7▒/     ▒       7W▒7    ▒       7▒▒y▒▒▒▒'▒
+                                                                                                                                ▒▒▒A▒'▒
+                                                                                                                                        ▒▒'▒
+                                                                                                                                                ▒▒s▒
+                                                                                                                                                        )UL]t▒
+                                                                                                                                                                ▒▒▒▒▒▒nf▒▒▒▒     8▒y▒▒▒▒▒?t▒▒    "▒▒     8▒▒▒[▒▒ 8▒▒▒▒   8▒▒▒▒   8▒
+                ▒       (z▒▒
+                            ▒   ▒▒-1Hw▒ 9▒▒▒2Ow▒        9▒Tw▒   9▒▒▒    9؎"▒▒   9▒▒y▒▒▒▒▒=▒     :▒▒▒▒▒=▒        :▒▒=▒   :▒▒L▒   -1ZM▒   m
+                                                                                                                                         M▒     ▒D\▒    :▒▒▒K\▒ :▒▒y▒▒▒▒*▒▒      ▒z▒3▒▒  ▒-1▒▒   ;▒▒▒▒▒  ;6▒     ;▒▒"▒   ;▒▒ެ"▒   ;a▒y▒▒▒▒▒~▒
+                                                                        ▒▒▒▒#~▒
+                                                                                L)~▒
+                                                                                        ▒f▒▒    <▒▒▒cm▒▒        <▒s▒▒   <
+                                                                                                                         ▒▒▒
+                                                                                                                                dVLO▒▒▒
+▒▒▒     <7▒y▒▒▒m▒       -1u▒    N{▒     ▒▒▒▒    \zc▒▒▒  ▒▒-1½▒▒ =▒▒▒ Đ▒ =Fʐ▒    =       =Ս▒^▒▒  =▒y▒▒▒-W▒       >▒▒▒                    ▒▒▒▒▒▒▒▒▒       <
+                                                                                                                    W▒  >▒#W▒   >N▒u▒   >▒4▒u▒  >▒▒y▒▒▒▒▒▒▒     -1x▒▒▒  ▒▒▒▒▒▒▒Gp|▒▒▒▒▒▒▒▒-1▒v|▒ ▒▒||▒   ▒c7▒▒   A▒▒▒z>▒▒@▒▒y▒▒▒▒A▒-1f$<▒        ?▒▒y▒▒▒6▒▒▒
+                                                         D▒▒    A▒▒▒▒   AG▒L▒▒▒ AF▒y▒▒▒▒▒▒      ▒▒z-▒▒▒ ▒Y▒-1G▒p▒       B▒▒▒9▒p▒        B_▒p▒   B▒.▒▒   BҌ▒7▒▒  B▒▒y▒▒▒w▒6▒      C▒▒▒▒▒6▒        l▒6▒    C▒▒6▒   ▒6▒     C▒7▒    ▒U▒     CZ▒b▒U▒ Ca▒y▒▒▒▒▒       z
+                                                                                         '▒▒    ▒▒-1▒M▒▒        D▒▒▒oU▒▒        D▒[▒▒   D▒▒     D▒C▒    D▒▒y▒▒▒▒+▒      ▒▒▒>     ▒!+▒    ▒ww▒    ▒UL▒~w▒ ▒▒▒▒▒▒▒▒▒       E▒▒▒Բ▒▒ E¸▒▒    E>G▒▒   E{▒gN▒▒ E▒▒y▒▒▒▒n▒▒     -1▒t▒▒  ▒z▒▒    ▒▒k▒    ▒▒z7▒k▒ ▒▒-1%
+▒▒      F▒▒▒U▒▒ F▒▒     F稨▒    F▒▒m▒▒▒ Fa▒y▒▒▒▒gP▒     G▒▒▒▒oP▒        G▒uP▒   G▒o▒    G▒▒▒o▒  G▒▒y▒▒▒▒▒       -1▒▒▒▒  ▒▒▒▒    f▒▒     H▒▒▒▒▒▒ H▒▒     H▒&▒    ▒▒#&▒   ▒▒-1X5▒  H▒▒^5▒  H▒▒y▒▒▒▒▒       ▒▒▒▒▒▒  g▒▒▒    ▒▒▒▒    ▒UL
+▒▒▒     )▒▒▒▒▒▒ ▒▒      I▒▒▒▒(▒▒        IY/▒▒   I|▒▒▒   IG▒▒▒▒▒ I▒▒y▒▒▒Yuf▒     -1^|f▒  ▒f▒     x▒▒     J▒▒▒G~▒▒        Jm▒▒▒   J▒▒▒    J1▒▒▒▒  J▒▒y▒▒▒▒▒▒▒     ▒▒z▒▒▒▒ _▒-1l▒i▒ K▒▒▒▒▒i▒        K▒▒i▒   K▒|▒▒   K▒f▒▒▒  KN▒y▒▒▒▒▒ ▒     -1▒▒ ▒  ▒!▒     ?60▒    L▒▒▒h=0▒        L▒C0▒   L▒▒N▒   L
+                                                                                                                         ▒▒N▒   L▒y▒▒▒▒▒▒       ▒3'▒▒   R▒-1▒▒▒ ▒▒▒T▒▒  ▒▒▒      ▒▒▒▒    M▒▒▒▒▒▒▒        M*▒▒▒   M*▒     MŎ▒0▒   M▒▒y▒▒▒bv$▒     gWL▒~$▒ ▒▒▒▒▒▒q▒▒       N▒▒▒v▒▒▒        N▒▒▒▒   N▒q▒▒    -1▒x▒▒  ▒▒      ▒▒▒    N▒▒S▒▒▒ N▒y▒▒▒3▒U▒       Q▒▒▒▒▒  Q,▒-1▒L▒Q▒"▒    !▒,-▒S▒▒!$▒-▒.▒ ▒▒▒ç.▒  ▒▒.▒    Q"▒▒.▒  ▒▒.▒▒▒▒~Q<▒y▒▒▒▒{▒▒▒▒▒I▒UL▒     Pw▒I▒   P{Sh▒   P▒▒[h▒  P▒▒y▒▒▒▒▒▒▒     !-1d▒▒▒ !▒▒▒    !E
+{▒      e▒▒▒▒▒▒c▒▒      R▒▒▒▒l▒▒        R▒r▒▒   RY▒▒    R▒v
+                                                           ▒▒   R▒▒y▒▒▒PwP▒     "-1y~P▒ "▒P▒    "@Ɯ▒    S▒▒▒i͜▒  S▒Ӝ▒    S▒b▒▒   S▒▒h▒▒  S▒▒y▒▒▒ϟ▒▒      "w▒zʩ▒▒ "▒▒-1▒"c▒T▒▒▒▒*c▒        T1c▒    T▒▒▒▒   T▒▒▒ȁ▒  T▒▒y▒▒▒!▒
+▒       #-1,
+            ▒   #R
+▒       #3▒)▒   U▒▒▒▒▒)▒        Uz▒)▒   Ue'H▒   Uَ▒.H▒   U▒y▒▒▒I
+                                                               ▒▒       ▒▒▒r▒▒  Ѕ▒      ▒*▒▒    #Iz~2▒▒ #<▒-1▒m▒▒       ▒TL▒v▒▒ Ѝ▒▒▒▒▒▒▒▒       V▒▒▒B▒▒▒        V▒▒▒▒   VA|▒     V▒▒▒▒   V▒▒y▒▒▒'9▒▒     W▒▒▒TA▒▒        W▒G▒▒   W▒z▒▒   $-1!▒▒▒ $G▒▒▒   $!▒▒▒   W&▒;▒▒▒ W▒y▒▒▒▒▒?▒      $▒▒?▒   $X▒-1Z▒|▒       X▒▒▒9▒|▒        X▒▒|▒   XV,▒▒   X▒▒▒3▒▒  XM▒y▒▒▒
+▒a▒     Y(▒y▒▒▒▒▒▒      %-1X▒▒B▒%▒      Y\▒B▒   Y-▒a▒   Y▒
+                                  ▒▒    %{▒▒▒   ▒▒▒▒▒▒▒ *▒▒▒    h(▒▒    %▒%0▒▒  %▒▒-1▒T ▒       Z▒▒▒]   ▒       Zlc     ▒       Z▒▒'▒   ▒TL▒▒'▒ Z▒▒▒▒'▒ ▒▒▒▒▒▒▒▒'▒      Z0▒y▒▒▒▒▒▒▒      [▒▒▒▒▒▒▒        [▒▒▒▒   [▒P▒▒   [~▒5Y▒▒ [y▒▒▒J▒:▒       &-1▒▒:▒ &э:▒    &d
+▒▒      \▒▒▒▒▒  \▒▒▒    \▒     &
+                                 &▒▒▒   \▒▒▒▒▒  &$▒-1C▒▒▒       \▒▒y▒▒▒▒h\▒     ]▒▒▒<o\▒        ]▒t\▒   ]▒{▒    ]▒▒
+                                                                                                                   {▒   ]▒▒y▒▒▒d▒▒▒     '-1▒▒▒  '▒▒▒    '▒▒"▒   ^▒▒▒▒▒"▒^R▒"▒    ^V2▒    ▒▒▒▒#2▒ *2▒     ▒_A▒    ^G▒▒fA▒ ^▒▒y▒▒▒F&o▒     '▒z▒/o▒ '▒▒-1▒~~▒       ▒TL
+▒~▒     O▒▒▒▒▒I"▒▒      _▒▒▒r)▒▒        _/▒▒    _▒▒▒    _▒▒▒▒▒  _:▒y▒▒▒▒       `▒▒▒▒▒▒ (-1r▒▒▒ `N▒▒▒   (▒▒▒    `斯▒    (▒▒▒    `▒▒▒'▒▒ `k▒y▒▒▒▒▒)▒     (▒z▒)▒  (▒▒▒-1▒▒u▒       a▒▒▒▒▒u▒        a▒▒u▒   aeu▒▒   al▒▒{▒▒ a▒▒y▒▒▒▒9<▒     b▒▒▒ZB<▒        b$H<▒   b▒Z▒    by▒v▒Z▒ b▒▒y▒▒▒▒j▒      )-1▒j▒  )j▒     )Ԉ▒▒    ▒▒▒▒▒▒  =▒▒▒    ▒▒▒▒    ;ULp▒▒▒  6▒▒▒▒▒▒(▒▒      )d▒z_0▒▒        )▒▒-1}▒▒        c▒▒▒7▒▒ c]▒▒    c▒1!▒   cV▒\8!▒ c▒y▒▒▒▒▒▒▒      d▒▒▒▒▒▒ d▒▒▒    d▒▒▒    dW▒▒▒▒  d!▒y▒▒▒C}$▒     *-1i▒$▒ *▒▒$▒   *▒▒▒▒    *▒▒z]▒▒▒        *▒▒-1qnxuser@qnxpi:/tmp$
+qnxuser@qnxpi:/tmp$ ls
+blink  keep_files  manifest.json  manifest.txt  schedulix.kev  schedulix_can  trace.bin  trace_flight.bin
+qnxuser@qnxpi:/tmp$ ./schedulix_can --full
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461125080037 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461125080037 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+tracelogger: open: Permission denied
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461146013074 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461146013074 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461167005759 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461167005759 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461188006815 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461188006815 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 10461209006556 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 10461209006556 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461230067907 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461230067907 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461230456389 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461230456389 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461230826630 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461230826630 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461231267148 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461231267148 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461231653426 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461231653426 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461232037778 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461232037778 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461232410278 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461232410278 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461232784667 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461232784667 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461233170000 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461233170000 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10461233540667 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10461233540667 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+Manifest: manifest.json / manifest.txt
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 101 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 43 misses 0 (0.00%) mean 7.82 p50 8.01 p95 8.01 p99 8.02 max 8.02
+Task 3: act 22 misses 0 (0.00%) mean 4.78 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+qnxuser@qnxpi:/tmp$
+qnxuser@qnxpi:/tmp$ uname -a
+QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le
+qnxuser@qnxpi:/tmp$ pidin info
+CPU:AARCH64 Release:8.0.0  FreeMem:7448MB/8128MB BootTime:Jan 01 00:00:00 UTC 1970
+Processes: 45, Threads: 274
+Processor1: 1091555459 Cortex-A72 1500MHz FPU
+Processor2: 1091555459 Cortex-A72 1500MHz FPU
+Processor3: 1091555459 Cortex-A72 1500MHz FPU
+Processor4: 1091555459 Cortex-A72 1500MHz FPU
+qnxuser@qnxpi:/tmp$ ls -lh /tmp/schedulix_can
+-rwxr-xr-x  1 root root 76K 1970-01-01 02:45 /tmp/schedulix_can
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --workloads
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== PHASE 1: Workload Model ===
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+
+Task       Priority  Period  Deadline  Target Exec
+--------------------------------------------------
+
+Initializing workloads...
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+3-4 threads running with distinct priorities/periods (BRAKE 20/10ms, ADAS 15/20ms, DIAG 10/50ms)
+Trace flushed to trace_phase1.bin, dropped=0 hw=670
+Manifest: manifest_phase1.json
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --full
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586082987222 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586082987222 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+tracelogger: open: Permission denied
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586104009481 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586104009481 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586125007093 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586125007093 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586146011778 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586146011778 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 10586167006130 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 10586167006130 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586188065889 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586188065889 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586188484167 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586188484167 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586188873352 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586188873352 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586189284074 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586189284074 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586189689111 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586189689111 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586190099481 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586190099481 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586190474444 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586190474444 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586190855574 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586190855574 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586191255000 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586191255000 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10586191629981 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10586191629981 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+Manifest: manifest.json / manifest.txt
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 101 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 43 misses 0 (0.00%) mean 7.82 p50 8.01 p95 8.01 p99 8.02 max 8.02
+Task 3: act 22 misses 0 (0.00%) mean 4.78 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+qnxuser@qnxpi:/tmp$ ls -lh trace.bin
+-rw-r--r--  1 root root 40K 1970-01-01 02:46 trace.bin
+qnxuser@qnxpi:/tmp$ ls -lh trace_flight.bin
+-rw-r--r--  1 root root 40K 1970-01-01 02:46 trace_flight.bin
+qnxuser@qnxpi:/tmp$ ls -lh manifest.json
+-rw-r--r--  1 root root 1.2K 1970-01-01 02:46 manifest.json
+qnxuser@qnxpi:/tmp$ ls -lh schedulix.kev
+-rw-r--r--  1 root root 109K 1970-01-01 02:47 schedulix.kev
+qnxuser@qnxpi:/tmp$ cat manifest
+manifest.json         manifest.txt          manifest_phase1.json  manifest_phase1.txt
+qnxuser@qnxpi:/tmp$ cat manifest.txt
+scenario_id: FULL_CORE
+qnx_version: QNX 8.0.0
+bsp_version: qnx800-rpi4
+cpu_count: 0
+task BRAKE prio 20 period 10000000 deadline 10000000 exec 2000000 crit 2 cpu 255
+task ADAS prio 15 period 20000000 deadline 20000000 exec 8000000 crit 1 cpu 255
+task DIAG prio 10 period 50000000 deadline 50000000 exec 5000000 crit 0 cpu 255
+task IDLE_LOAD prio 5 period 0 deadline 0 exec 1000000 crit 0 cpu 255
+trace cap 16384 mode 0 n 0 dur 1211704908 rec 858 dropped 0
+semantic trace.bin kernel /tmp/schedulix.kev
+qnxuser@qnxpi:/tmp$ cat manifest_phase1.txt
+scenario_id: S0_PHASE1
+qnx_version: QNX 8.0.0
+bsp_version: qnx800-rpi4
+cpu_count: 0
+task BRAKE prio 20 period 10000000 deadline 10000000 exec 2000000 crit 2 cpu 255
+task ADAS prio 15 period 20000000 deadline 20000000 exec 8000000 crit 1 cpu 255
+task DIAG prio 10 period 50000000 deadline 50000000 exec 5000000 crit 0 cpu 255
+task IDLE_LOAD prio 5 period 0 deadline 0 exec 1000000 crit 0 cpu 255
+trace cap 8192 mode 0 n 0 dur 1000000000 rec 670 dropped 0
+semantic trace_phase1.bin kernel /tmp/schedulix.kev
+qnxuser@qnxpi:/tmp$ cat manifest.json
+{
+  "scenario": "FULL_CORE",
+  "stress_level": -1,
+  "duration_ms": 1211,
+  "qnx_version": "QNX 8.0.0",
+  "bsp_version": "qnx800-rpi4",
+  "cpu_count": 0,
+  "cpu_affinity": "BRAKE:any ADAS:any DIAG:any IDLE_LOAD:any ",
+  "stress_config": "none",
+  "event_sequence": "",
+  "trace_mode": "FULL",
+  "tasks": [
+    {"task_id":1,"name":"BRAKE","priority":20,"period_ns":10000000,"deadline_ns":10000000,"target_exec_ns":2000000,"criticality":2,"cpu_affinity":255},
+    {"task_id":2,"name":"ADAS","priority":15,"period_ns":20000000,"deadline_ns":20000000,"target_exec_ns":8000000,"criticality":1,"cpu_affinity":255},
+    {"task_id":3,"name":"DIAG","priority":10,"period_ns":50000000,"deadline_ns":50000000,"target_exec_ns":5000000,"criticality":0,"cpu_affinity":255},
+    {"task_id":4,"name":"IDLE_LOAD","priority":5,"period_ns":0,"deadline_ns":0,"target_exec_ns":1000000,"criticality":0,"cpu_affinity":255},
+    {"note":"end"}
+  ],
+  "priorities": "BRAKE20 ADAS15 DIAG10",
+  "periods": "BRAKE10ms ADAS20ms DIAG50ms",
+  "deadlines": "BRAKE10ms ADAS20ms DIAG50ms",
+  "trace": {"capacity":16384,"mode":0,"sampling_n":0,"duration_ns":1211704908,"records":858,"dropped_records":0},
+  "files": {"semantic":"trace.bin","kernel":"/tmp/schedulix.kev","analysis":"analysis.json"}
+}
+qnxuser@qnxpi:/tmp$ cat manifest_phase1.json
+{
+  "scenario": "S0_PHASE1",
+  "stress_level": -1,
+  "duration_ms": 1000,
+  "qnx_version": "QNX 8.0.0",
+  "bsp_version": "qnx800-rpi4",
+  "cpu_count": 0,
+  "cpu_affinity": "BRAKE:any ADAS:any DIAG:any IDLE_LOAD:any ",
+  "stress_config": "none",
+  "event_sequence": "",
+  "trace_mode": "FULL",
+  "tasks": [
+    {"task_id":1,"name":"BRAKE","priority":20,"period_ns":10000000,"deadline_ns":10000000,"target_exec_ns":2000000,"criticality":2,"cpu_affinity":255},
+    {"task_id":2,"name":"ADAS","priority":15,"period_ns":20000000,"deadline_ns":20000000,"target_exec_ns":8000000,"criticality":1,"cpu_affinity":255},
+    {"task_id":3,"name":"DIAG","priority":10,"period_ns":50000000,"deadline_ns":50000000,"target_exec_ns":5000000,"criticality":0,"cpu_affinity":255},
+    {"task_id":4,"name":"IDLE_LOAD","priority":5,"period_ns":0,"deadline_ns":0,"target_exec_ns":1000000,"criticality":0,"cpu_affinity":255},
+    {"note":"end"}
+  ],
+  "priorities": "BRAKE20 ADAS15 DIAG10",
+  "periods": "BRAKE10ms ADAS20ms DIAG50ms",
+  "deadlines": "BRAKE10ms ADAS20ms DIAG50ms",
+  "trace": {"capacity":8192,"mode":0,"sampling_n":0,"duration_ns":1000000000,"records":670,"dropped_records":0},
+  "files": {"semantic":"trace_phase1.bin","kernel":"/tmp/schedulix.kev","analysis":"analysis.json"}
+}
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --analyze /tmp/trace.bin
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Schedulix Analysis
+==================
+Trace: records 0 dropped 0 cap 0
+Task 1: act 101 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 43 misses 0 (0.00%) mean 7.82 p50 8.01 p95 8.01 p99 8.02 max 8.02
+Task 3: act 22 misses 0 (0.00%) mean 4.78 p50 5.01 p95 5.01 p99 5.01 max 5.01
+qnxuser@qnxpi:/tmp$ ls
+blink       manifest.json  manifest_phase1.json  schedulix.kev  trace.bin         trace_phase1.bin
+keep_files  manifest.txt   manifest_phase1.txt   schedulix_can  trace_flight.bin
+qnxuser@qnxpi:/tmp$ ls -lh /tmp/schedulix.kev
+-rw-r--r--  1 root root 109K 1970-01-01 02:47 /tmp/schedulix.kev
+qnxuser@qnxpi:/tmp$ which traceparser
+qnxuser@qnxpi:/tmp$ pidin threads
+     pid tid name                         thread name          STATE          Blocked
+       1   1 /proc/boot/procnto-smp-instr 1                    RUNNING
+       1   2 /proc/boot/procnto-smp-instr 2                    READY
+       1   3 /proc/boot/procnto-smp-instr 3                    READY
+       1   4 /proc/boot/procnto-smp-instr 4                    RUNNING
+       1   5 /proc/boot/procnto-smp-instr 5                    INTR
+       1   6 /proc/boot/procnto-smp-instr 6                    INTR
+       1   7 /proc/boot/procnto-smp-instr 7                    INTR
+       1   8 /proc/boot/procnto-smp-instr 8                    INTR
+       1   9 /proc/boot/procnto-smp-instr 9                    INTR
+       1  10 /proc/boot/procnto-smp-instr 10                   INTR
+       1  11 /proc/boot/procnto-smp-instr 11                   INTR
+       1  12 /proc/boot/procnto-smp-instr 12                   INTR
+       1  13 /proc/boot/procnto-smp-instr 13                   NANOSLEEP
+       1  15 /proc/boot/procnto-smp-instr 15                   RECEIVE        1
+       1  16 /proc/boot/procnto-smp-instr 16                   RECEIVE        1
+       1  17 /proc/boot/procnto-smp-instr 17                   RECEIVE        1
+       1  18 /proc/boot/procnto-smp-instr 18                   RECEIVE        1
+       1  19 /proc/boot/procnto-smp-instr 19                   RECEIVE        1
+       1  21 /proc/boot/procnto-smp-instr 21                   RECEIVE        1
+       1  22 /proc/boot/procnto-smp-instr 22                   RECEIVE        1
+       1  23 /proc/boot/procnto-smp-instr 23                   RECEIVE        1
+       1  24 /proc/boot/procnto-smp-instr 24                   RECEIVE        1
+       1  25 /proc/boot/procnto-smp-instr 25                   RECEIVE        1
+       1  28 /proc/boot/procnto-smp-instr 28                   RUNNING
+   12291   1 proc/boot/slogger2           1                    RECEIVE        1
+   24580   1 proc/boot/pci-server         1                    RECEIVE        1
+   24580   2 proc/boot/pci-server         2                    RECEIVE        1
+   24580   3 proc/boot/pci-server         3                    RECEIVE        1
+   24580   4 proc/boot/pci-server         4                    RECEIVE        1
+   45061   1 proc/boot/devc-serminiuart   1                    RECEIVE        1
+   45061   2 proc/boot/devc-serminiuart   2                    INTR
+   53255   1 proc/boot/ksh                1                    REPLY          45061
+   57350   1 proc/boot/fsevmgr            1                    SIGWAITINFO
+   57350   2 proc/boot/fsevmgr            2                    RECEIVE        1
+   57350   3 proc/boot/fsevmgr            3                    RECEIVE        2
+   57350   4 proc/boot/fsevmgr            4                    RECEIVE        1
+   61448   1 proc/boot/devb-sdmmc-bcm2711 1                    SIGWAITINFO
+   61448   2 proc/boot/devb-sdmmc-bcm2711 2                    RECEIVE        1
+   61448   3 proc/boot/devb-sdmmc-bcm2711 3                    RECEIVE        2
+   61448   4 proc/boot/devb-sdmmc-bcm2711 4                    INTR
+   61448   5 proc/boot/devb-sdmmc-bcm2711 5                    RECEIVE        3
+   61448   6 proc/boot/devb-sdmmc-bcm2711 6                    RECEIVE        5
+   61448   7 proc/boot/devb-sdmmc-bcm2711 7                    RECEIVE        6
+   61448   8 proc/boot/devb-sdmmc-bcm2711 8                    RECEIVE        7
+   61448   9 proc/boot/devb-sdmmc-bcm2711 9                    RECEIVE        4
+   61448  10 proc/boot/devb-sdmmc-bcm2711 10                   RECEIVE        4
+   61448  11 proc/boot/devb-sdmmc-bcm2711 11                   RECEIVE        4
+   61448  12 proc/boot/devb-sdmmc-bcm2711 12                   RECEIVE        4
+   61448  13 proc/boot/devb-sdmmc-bcm2711 13                   RECEIVE        4
+   61448  14 proc/boot/devb-sdmmc-bcm2711 14                   RECEIVE        4
+   61448  15 proc/boot/devb-sdmmc-bcm2711 15                   RECEIVE        4
+   61448  16 proc/boot/devb-sdmmc-bcm2711 16                   RECEIVE        4
+  208905   1 system/bin/random            1                    SIGWAITINFO
+  208905   2 system/bin/random            2                    NANOSLEEP
+  208905   3 system/bin/random            3                    RECEIVE        1
+  208905   4 system/bin/random            4                    RECEIVE        2
+  221194   1 system/bin/pipe              1                    SIGWAITINFO
+  221194   2 system/bin/pipe              2                    RECEIVE        1
+  221194   4 system/bin/pipe              4                    RECEIVE        1
+  221194   5 system/bin/pipe              5                    RECEIVE        1
+  221194   6 system/bin/pipe              6                    RECEIVE        1
+  233483   1 system/bin/devc-pty          1                    RECEIVE        1
+  237580   1 system/bin/dumper            1                    RECEIVE        1
+  237580   2 system/bin/dumper            2                    RECEIVE        2
+  241677   1 system/bin/io-sock           1                    SIGWAITINFO
+  241677   2 system/bin/io-sock           2                    SIGWAITINFO
+  241677   3 system/bin/io-sock           3                    SEM            0
+  241677   4 system/bin/io-sock           4                    SEM            0
+  241677   5 system/bin/io-sock           5                    SEM            0
+  241677   6 system/bin/io-sock           6                    SEM            0
+  241677   7 system/bin/io-sock           7                    SEM            0
+  241677   8 system/bin/io-sock           8                    SEM            0
+  241677   9 system/bin/io-sock           9                    SEM            0
+  241677  10 system/bin/io-sock           10                   SEM            0
+  241677  11 system/bin/io-sock           11                   RECEIVE        2
+  241677  12 system/bin/io-sock           12                   RECEIVE        3
+  241677  13 system/bin/io-sock           13                   SEM            0
+  241677  14 system/bin/io-sock           14                   RECEIVE        4
+  241677  15 system/bin/io-sock           15                   RECEIVE        5
+  241677  16 system/bin/io-sock           16                   SEM            0
+  241677  17 system/bin/io-sock           17                   CONDVAR        (0x0)
+  241677  18 system/bin/io-sock           18                   CONDVAR        (0x0)
+  241677  19 system/bin/io-sock           19                   RECEIVE        6
+  241677  20 system/bin/io-sock           20                   RECEIVE        7
+  241677  21 system/bin/io-sock           21                   RECEIVE        8
+  241677  22 system/bin/io-sock           22                   RUNNING        1
+  241677  23 system/bin/io-sock           23                   RECEIVE        1
+  241677  24 system/bin/io-sock           24                   RECEIVE        1
+  241677  25 system/bin/io-sock           25                   CONDVAR        (0x0)
+  241677  26 system/bin/io-sock           26                   RECEIVE        1
+  241677  27 system/bin/io-sock           27                   RECEIVE        1
+  241677  28 system/bin/io-sock           28                   SEM            0
+  241677  29 system/bin/io-sock           29                   SEM            0
+  241677  30 system/bin/io-sock           30                   SEM            0
+  241677  31 system/bin/io-sock           31                   SEM            0
+  241677  32 system/bin/io-sock           32                   SEM            0
+  241677  33 system/bin/io-sock           33                   INTR
+  241677  34 system/bin/io-sock           34                   INTR
+  241677  35 system/bin/io-sock           35                   SEM            0
+  241677  36 system/bin/io-sock           36                   RECEIVE        9
+  241677  37 system/bin/io-sock           37                   INTR
+  241677  38 system/bin/io-sock           38                   SEM            0
+  241677  39 system/bin/io-sock           39                   SEM            0
+  241677  40 system/bin/io-sock           40                   RECEIVE        10
+  282639   1 stem/bin/wpa_supplicant-2.11 1                    SIGWAITINFO
+  352274   1 system/bin/mdnsd             1                    SIGWAITINFO
+  360464   1 system/bin/sshd              1                    SIGWAITINFO
+  364558   1 system/bin/qconn             1                    SIGWAITINFO
+  364558   2 system/bin/qconn             2                    RECEIVE        1
+  364558   3 system/bin/qconn             3                    SIGWAITINFO
+  368657   1 system/bin/mqueue            1                    RECEIVE        1
+  421909   1 proc/boot/io-usb-otg         1                    SIGWAITINFO
+  421909   2 proc/boot/io-usb-otg         2                    CONDVAR        (0x0)
+  421909   3 proc/boot/io-usb-otg         3                    CONDVAR        (0x0)
+  421909   4 proc/boot/io-usb-otg         4                    CONDVAR        (0x0)
+  421909   5 proc/boot/io-usb-otg         5                    RECEIVE        1
+  421909   6 proc/boot/io-usb-otg         6                    RECEIVE        2
+  421909   7 proc/boot/io-usb-otg         7                    RECEIVE        3
+  421909   8 proc/boot/io-usb-otg         8                    RECEIVE        4
+  421909  10 proc/boot/io-usb-otg         10                   RECEIVE        5
+  421909  11 proc/boot/io-usb-otg         11                   RECEIVE        6
+  421909  12 proc/boot/io-usb-otg         12                   INTR
+  421909  13 proc/boot/io-usb-otg         13                   RECEIVE        2
+  421909  14 proc/boot/io-usb-otg         14                   CONDVAR        (0x0)
+  421909  15 proc/boot/io-usb-otg         15                   CONDVAR        (0x0)
+  421909  16 proc/boot/io-usb-otg         16                   CONDVAR        (0x0)
+  421909  17 proc/boot/io-usb-otg         17                   CONDVAR        (0x0)
+  421909  19 proc/boot/io-usb-otg         19                   CONDVAR        (0x0)
+  421909  20 proc/boot/io-usb-otg         20                   CONDVAR        (0x0)
+  421909  21 proc/boot/io-usb-otg         21                   RECEIVE        1
+  421909  22 proc/boot/io-usb-otg         22                   RECEIVE        1
+  421909  25 proc/boot/io-usb-otg         25                   RECEIVE        1
+  446484   1 system/bin/usblauncher_otg   1                    RECEIVE        1
+  446484   2 system/bin/usblauncher_otg   2                    SIGWAITINFO
+  446484   3 system/bin/usblauncher_otg   3                    RECEIVE        2
+  446484   4 system/bin/usblauncher_otg   4                    CONDVAR        (0x0)
+  446484   5 system/bin/usblauncher_otg   5                    REPLY          421909
+  446484   6 system/bin/usblauncher_otg   6                    REPLY          421909
+  446484   7 system/bin/usblauncher_otg   7                    RECEIVE        3
+  446484   8 system/bin/usblauncher_otg   8                    CONDVAR        (0x0)
+  446484   9 system/bin/usblauncher_otg   9                    RECEIVE        4
+  446484  10 system/bin/usblauncher_otg   10                   CONDVAR        (0x0)
+  446484  11 system/bin/usblauncher_otg   11                   CONDVAR        (0x0)
+  446484  12 system/bin/usblauncher_otg   12                   RECEIVE        5
+  446484  13 system/bin/usblauncher_otg   13                   CONDVAR        (0x0)
+  450582   1 system/bin/io-hid            1                    SIGWAITINFO
+  450582   2 system/bin/io-hid            2                    RECEIVE        1
+  450582   3 system/bin/io-hid            3                    RECEIVE        2
+  450582   4 system/bin/io-hid            4                    RECEIVE        2
+  450582   6 system/bin/io-hid            6                    REPLY          421909
+  450582   7 system/bin/io-hid            7                    REPLY          421909
+  462871   1 system/bin/i2c-bcm2711       1                    RECEIVE        1
+  462871   2 system/bin/i2c-bcm2711       2                    INTR
+  475160   1 system/bin/i2c-bcm2711       1                    RECEIVE        1
+  475160   2 system/bin/i2c-bcm2711       2                    INTR
+  487449   1 system/bin/spi-bcm2711       1                    SIGWAITINFO
+  487449   2 system/bin/spi-bcm2711       2                    INTR
+  487449   3 system/bin/spi-bcm2711       3                    INTR
+  487449   4 system/bin/spi-bcm2711       4                    RECEIVE        1
+  487449   5 system/bin/spi-bcm2711       5                    INTR
+  487449   6 system/bin/spi-bcm2711       6                    INTR
+  487449   7 system/bin/spi-bcm2711       7                    RECEIVE        2
+  516123   1 system/bin/mdnsd             1                    SIGWAITINFO
+  540698   1 system/bin/screen            1                    SIGWAITINFO
+  540698   2 system/bin/screen            2                    CONDVAR        (0x0)
+  540698   3 system/bin/screen            3                    CONDVAR        (0x0)
+  540698   4 system/bin/screen            4                    SIGWAITINFO
+  540698   5 system/bin/screen            5                    CONDVAR        (0x0)
+  540698   6 system/bin/screen            6                    CONDVAR        (0x0)
+  540698   7 system/bin/screen            7                    CONDVAR        (0x0)
+  540698   8 system/bin/screen            8                    RECEIVE        2
+  540698   9 system/bin/screen            9                    RECEIVE        2
+  540698  10 system/bin/screen            10                   RECEIVE        2
+  540698  11 system/bin/screen            11                   RECEIVE        2
+  540698  12 system/bin/screen            12                   RECEIVE        2
+  540698  13 system/bin/screen            13                   RECEIVE        2
+  540698  14 system/bin/screen            14                   RECEIVE        2
+  540698  15 system/bin/screen            15                   REPLY          450582
+  540698  16 system/bin/screen            16                   RECEIVE        2
+  540698  17 system/bin/screen            17                   RECEIVE        2
+  540698  18 system/bin/screen            18                   RECEIVE        2
+  544796   1 system/bin/drm-rpi5          1                    SIGWAITINFO
+  544796   2 system/bin/drm-rpi5          2                    CONDVAR        (0x0)
+  544796   3 system/bin/drm-rpi5          3                    CONDVAR        (0x0)
+  544796   4 system/bin/drm-rpi5          4                    CONDVAR        (0x0)
+  544796   5 system/bin/drm-rpi5          5                    CONDVAR        (0x0)
+  544796   6 system/bin/drm-rpi5          6                    CONDVAR        (0x0)
+  544796   7 system/bin/drm-rpi5          7                    CONDVAR        (0x0)
+  544796   8 system/bin/drm-rpi5          8                    CONDVAR        (0x0)
+  544796   9 system/bin/drm-rpi5          9                    CONDVAR        (0x0)
+  544796  10 system/bin/drm-rpi5          10                   CONDVAR        (0x0)
+  544796  11 system/bin/drm-rpi5          11                   CONDVAR        (0x0)
+  544796  12 system/bin/drm-rpi5          12                   RECEIVE        1
+  544796  13 system/bin/drm-rpi5          13                   CONDVAR        (0x0)
+  544796  14 system/bin/drm-rpi5          14                   CONDVAR        (0x0)
+  544796  15 system/bin/drm-rpi5          15                   RECEIVE        2
+  544796  16 system/bin/drm-rpi5          16                   CONDVAR        (0x0)
+  544796  17 system/bin/drm-rpi5          17                   RECEIVE        3
+  544796  18 system/bin/drm-rpi5          18                   CONDVAR        (0x0)
+  544796  19 system/bin/drm-rpi5          19                   NANOSLEEP
+  544796  20 system/bin/drm-rpi5          20                   RECEIVE        4
+  544796  21 system/bin/drm-rpi5          21                   CONDVAR        (0x0)
+  544796  22 system/bin/drm-rpi5          22                   INTR
+  544796  23 system/bin/drm-rpi5          23                   INTR
+  544796  24 system/bin/drm-rpi5          24                   CONDVAR        (0x0)
+  544796  25 system/bin/drm-rpi5          25                   CONDVAR        (0x0)
+  544796  26 system/bin/drm-rpi5          26                   CONDVAR        (0x0)
+  544796  27 system/bin/drm-rpi5          27                   CONDVAR        (0x0)
+  544796  28 system/bin/drm-rpi5          28                   CONDVAR        (0x0)
+  544796  29 system/bin/drm-rpi5          29                   CONDVAR        (0x0)
+  544796  30 system/bin/drm-rpi5          30                   INTR
+  544796  31 system/bin/drm-rpi5          31                   INTR
+  544796  32 system/bin/drm-rpi5          32                   INTR
+  544796  33 system/bin/drm-rpi5          33                   INTR
+  544796  34 system/bin/drm-rpi5          34                   INTR
+  544796  35 system/bin/drm-rpi5          35                   INTR
+  544796  36 system/bin/drm-rpi5          36                   INTR
+  544796  37 system/bin/drm-rpi5          37                   INTR
+  544796  38 system/bin/drm-rpi5          38                   INTR
+  544796  39 system/bin/drm-rpi5          39                   CONDVAR        (0x0)
+  544796  40 system/bin/drm-rpi5          40                   CONDVAR        (0x0)
+  544796  41 system/bin/drm-rpi5          41                   CONDVAR        (0x0)
+  544796  42 system/bin/drm-rpi5          42                   CONDVAR        (0x0)
+  544796  43 system/bin/drm-rpi5          43                   CONDVAR        (0x0)
+  544796  44 system/bin/drm-rpi5          44                   CONDVAR        (0x0)
+  544796  45 system/bin/drm-rpi5          45                   RECEIVE        4
+  544796  46 system/bin/drm-rpi5          46                   RECEIVE        2
+  544796  47 system/bin/drm-rpi5          47                   RECEIVE        2
+  544796  48 system/bin/drm-rpi5          48                   RECEIVE        3
+  544796  49 system/bin/drm-rpi5          49                   RECEIVE        4
+  544796  50 system/bin/drm-rpi5          50                   RECEIVE        3
+  544796  51 system/bin/drm-rpi5          51                   RECEIVE        4
+  544796  52 system/bin/drm-rpi5          52                   RECEIVE        4
+  561181   1 system/bin/mtouch            1                    REPLY          540698
+  561181   2 system/bin/mtouch            2                    REPLY          450582
+  561181   3 system/bin/mtouch            3                    RECEIVE        1
+  561181   4 system/bin/mtouch            4                    CONDVAR        (0x0)
+  565278   1 system/bin/rpi_mbox          1                    RECEIVE        1
+  577567   1 system/bin/rpi_gpio          1                    RECEIVE        1
+  577567   2 system/bin/rpi_gpio          2                    INTR
+  589856   1 system/bin/rpi_thermal       1                    RECEIVE        1
+  602145   1 system/bin/io-snd            1                    SIGWAITINFO
+  602145   2 system/bin/io-snd            2                    RECEIVE        2
+  602145   3 system/bin/io-snd            3                    RECEIVE        3
+  602145   4 system/bin/io-snd            4                    INTR
+  602145   5 system/bin/io-snd            5                    CONDVAR        (0x0)
+  602145   6 system/bin/io-snd            6                    REPLY          421909
+  602145   7 system/bin/io-snd            7                    RECEIVE        1
+  602145   8 system/bin/io-snd            8                    RECEIVE        1
+  639010   1 system/bin/bcm-rpi4-vchiq    1                    RECEIVE        1
+  639010   2 system/bin/bcm-rpi4-vchiq    2                    INTR
+  639010   3 system/bin/bcm-rpi4-vchiq    3                    CONDVAR        (0x0)
+  639010   4 system/bin/bcm-rpi4-vchiq    4                    CONDVAR        (0x0)
+  651299   1 system/bin/bcm-rpi4-vcsm     1                    RECEIVE        2
+  651299   2 system/bin/bcm-rpi4-vcsm     2                    RECEIVE        1
+  663588   1 system/bin/sensor            1                    SIGWAITINFO
+  663588   2 system/bin/sensor            2                    RECEIVE        1
+  663588   3 system/bin/sensor            3                    RECEIVE        1
+  675877   1 system/bin/fullscreen-winmgr 1                    REPLY          540698
+  675878   1 system/bin/demolauncher      1                    REPLY          540698
+  675878   2 system/bin/demolauncher      2                    REPLY          241677
+  675881   1 system/sbin/mm-renderer      1                    SIGWAITINFO
+  675881   2 system/sbin/mm-renderer      2                    RECEIVE        1
+  675881   3 system/sbin/mm-renderer      3                    RECEIVE        1
+  675881   4 system/sbin/mm-renderer      4                    RECEIVE        1
+  675881   5 system/sbin/mm-renderer      5                    RECEIVE        1
+  774146   1 system/bin/st                1                    RECEIVE        1
+  774163   1 bin/bash                     1                    REPLY          1
+  794663   1 bin/login                    1                    REPLY          1
+  802856   1 bin/bash                     1                    SIGWAITINFO
+ 1183786   1 system/bin/sshd-session      1                    SIGWAITINFO
+ 1196075   1 system/bin/sshd-session      1                    REPLY          241677
+ 1196076   1 bin/bash                     1                    REPLY          1
+ 1429549   1 proc/boot/pidin              1                    REPLY          1
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --sweep
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Load sweep S1 20..95%
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S1_CPU_SATURATION LOAD 20%] duration 10000 ms
+tracelogger: open: Permission denied
+segmentation violation (core dumped)
+qnxuser@qnxpi:/tmp$ ls -lh /tmp/trace_s1_*
+ls: /tmp/trace_s1_*: No such file or directory
+qnxuser@qnxpi:/tmp$ ls
+blink       manifest.json  manifest_phase1.json  schedulix.kev  trace.bin         trace_phase1.bin
+keep_files  manifest.txt   manifest_phase1.txt   schedulix_can  trace_flight.bin
+qnxuser@qnxpi:/tmp$ cat trace_phase1.bin
+DHCS0 ▒▒▒▒▒▒▒   ▒▒▒▒▒▒▒▒        )▒▒▒▒   ▒▒▒▒▒   ▒▒;▒▒▒▒ ▒▒y▒▒▒▒U▒▒      ▒▒▒▒▒U▒▒        a▒U▒▒   *9t▒▒   ▒A@t▒▒  |▒y▒▒▒i"▒▒▒     ▒▒▒▒*▒▒▒        ▒0▒▒▒   0▒χ▒    c▒▒▒χ▒  ▒▒y▒▒▒(▒
+       ▒▒       ▒▒▒▒▒
+                     ▒▒ _▒
+                          ▒▒    ▒▒+▒▒   -1▒ +▒▒ ▒&+▒▒   ▒F+▒▒   ▒▒O+▒▒  ▒▒y▒▒▒qC▒▒▒     YzEL▒▒▒ ▒▒-1▒҈▒  ▒▒▒▒҈▒   ӈ▒      Α▒      ȏ▒▒     ▒▒y▒▒▒▒M▒▒▒     ▒▒▒▒W▒▒▒        ▒^▒▒▒    ▒▒     ]▒Y▒▒▒▒ ▒▒y▒▒▒Y▒剞      -1▒▒剞  G▒剞    0 ▒▒    ▒▒▒▒(▒▒ /▒▒     ŅP▒▒    ▒UL▒▒P▒▒        ▒▒▒▒▒▒_▒▒       ▒▒▒~▒_▒▒        8▒_▒▒   }▒_▒▒   ▒z▒▒_▒▒ #▒▒-1▒P~▒▒       ▒▒=X~▒▒ m▒y▒▒▒▒&▒▒     ▒▒▒▒&▒▒ ▒&▒▒    ▒D▒▒    Ս▒▒D▒▒  C▒y▒▒▒▒▒▒▒       -1C▒▒▒▒ ▒ ▒▒▒   ▒\싞            ▒▒▒jc싞         ▒i싞            ▒▒
+▒▒              ▒▒▒
+                   ▒▒           ▒▒y▒▒▒▒:▒▒▒     ▒z▒B▒▒▒ ▒▒-1N▒▒▒▒
+▒▒▒▒ɲ▒▒
+▒в▒▒
+)aь▒
+J▒▒hь▒
+▒y▒▒▒R▒Z▒▒      -1D▒Z▒▒ j▒Z▒▒   ▒Z▒▒    ▒▒▒▒Z▒▒ ▒▒Z▒▒   ▒▒▒
+                                                                ▒▒▒▒$y▒▒
+                                                                                ▒*y▒▒
+                                                                                        ▒▒▒
+                                                                                                ▒>▒▒
+                                                                                                        ▒▒y▒▒▒▒▒▒▒      ▒VLS$▒▒▒        Q▒▒▒▒▒5▒ԍ▒      [z▒▒ԍ▒  ▒-1▒?▒▒
+                                                                                                                                                                        ▒▒▒ ▒?▒▒
+        ▒▒?▒▒
+                ▒/^▒▒
+                        4▒87^▒▒
+▒▒y▒▒▒▒D▒▒▒"▒▒  Y)▒▒    ▒t$▒▒   ▒▒y▒▒▒/▒▒▒
+                ▒K▒▒▒   ▒▒-1    1̏▒      ▒▒▒▒9̏▒  n?̏▒     ▒▒ꏞ    ▒▒▒▒ꏞ  h▒y▒▒▒o▒▒▒▒     ▒▒▒Л▒▒▒ ▒▒▒     ▒▒▒▒▒   ▒▒▒%▒▒▒ *+▒▒▒   .2▒▒▒   ▒▒▒:▒▒▒ ▒▒y▒▒▒ϐ▒        -1p▒ϐ▒  ▒ϐ▒      ▒▒▒▒    BWL0▒▒▒▒        ▒▒▒▒U▒I▒▒       ▒z▒I▒▒  m▒▒-1q▒X▒▒      ▒▒▒|▒X▒▒        j▒X▒▒   R▒w▒▒   œw▒▒
+                                                                                                                ▒y▒▒▒▒R▒▒       ▒▒▒;[▒▒ ▒▒      *▒=▒▒   ▒A▒=▒▒  ▒y▒▒▒▒▒▒-1▒#▒▒▒  g*▒▒▒   s▒咞    ▒▒▒▒咞  Ÿ咞     cF▒▒    h▒H▒▒   ɏ▒Q▒▒   ▒▒y▒▒▒▒R▒▒      ▒▒-1e▒▒▒        ▒▒▒▒▒▒▒ ▒▒▒     P▒ʓ▒    ]▒g▒ʓ▒  ▒▒y▒▒▒ӓ▒▒       ▒▒▒▒▒▒▒ ▒▒▒     j▒D▒▒  -1mr▒▒   ▒jsr▒▒  ▒▒▒▒▒    G▒8▒▒S▒▒        h▒▒▒▒▒▒dr▒▒     ▒▒▒
+▒▒▒     ▒▒y▒▒▒▒Ⱦ▒▒     ▒zо▒▒   h▒-1п8▒▒ ▒▒▒0▒8▒▒        ▒▒8▒▒   ▒ZW▒▒   ▒▒cW▒▒  ▒y▒▒▒▒ ▒▒▒      ▒▒▒▒'▒▒▒        .▒▒▒    (0▒▒▒           -1▒7▒▒▒         @=▒▒▒           D▒▒▒     ▒▒▒▒▒   }▒y▒▒▒aYy▒▒             z\cy▒▒          $▒-1▒{Ŗ▒        ▒▒▒H▒Ŗ▒ n▒Ŗ▒    ▒䖞     ▒▒ 䖞   ▒▒y▒▒▒h^▒▒      ▒▒▒"^▒▒ @(^▒▒   ▒؋▒▒    ▒▒▒+▒▒▒▒        ▒拗▒    ▒s▒▒▒    S▒▒z▒▒▒ ▒▒y▒▒▒▒▒▒▒      yWLg▒▒▒▒        v▒▒▒▒▒꠹▒▒
+-1▒▒▒▒▒
+▒▒▒▒
+▒▒3▒▒
+U▒3▒▒
+n▒-17R▒▒        ▒▒▒?R▒▒ ▒ER▒▒   ▒▒p▒▒   i▒%▒p▒▒ ▒▒y▒▒▒▒▒▒▒      ▒▒▒▒K▒▒▒        ▒'▒▒▒   ▒7.7▒▒  ▒▒▒▒77▒▒        ▒▒▒y▒▒▒!t▒▒
+                                                                                                                                -1▒'t▒▒
+                                                                                                                                        v.t▒▒                           
+                                                                                                                                                ▒▒ޙ▒    ▒▒n▒ޙ▒  ߙ▒      ▒zUX
+        R▒-1▒▒▒▒        ▒▒▒▒▒▒  ▒y▒▒▒▒M▒▒▒      ▒▒▒▒V▒▒▒        3]▒▒▒   ▒▒▒▒▒   ▒▒▒=▒▒▒▒        ▒▒▒▒▒   C▒Ú▒    ▒▒▒▒Ú▒  ▒▒y▒▒▒▒▒▒▒      UWL5▒▒  x▒▒▒▒▒▒▒.▒▒
+                                                                                                                                                                -1▒▒.▒▒
+                                                                                                                                                                        ▒▒.▒▒
+        ;▒k▒▒   ▒▒▒Ȳk▒▒ ۸k▒▒    ▒F▒▒▒   ▒▒O▒▒▒  d▒y▒▒▒Ψ▒▒
+                                                                Ez,ը▒▒
+                                                                        ▒▒-1▒
+▒▒-1▒Ǿ▒▒▒▒▒▒j▒▒▒ ▒▒▒▒о▒▒Uq▒▒▒    C׾▒▒    .fݝ▒▒   ▒y▒▒▒S 霞
+lݝ▒      ▒▒y▒▒▒▒
+                ▒▒      ▒▒▒▒
+                             ▒▒ \'
+                                  ▒▒    J{W▒▒   ▒SLw▒W▒▒        [▒▒▒▒▒▒!▒▒▒     !▒▒▒▒(▒▒▒       !p.▒▒▒  !▒▒▒▒▒  -1f▒▒▒▒ !▒▒U▒▒▒▒        X£▒▒    !▒▒y▒▒▒▒ǣ▒▒     }▒▒▒    nz:▒▒▒   ▒▒▒-1▒|K▒▒      "▒▒▒z▒K▒▒       "4▒K▒▒  "▒j▒▒   "ۏ▒#j▒▒ "▒▒y▒▒▒▒▒▒▒     #▒▒▒▒▒▒▒        #X▒▒▒   #▒t0▒▒  #A▒A{0▒▒        #n▒y▒▒▒{)^▒▒    -1,3^▒▒ -9^▒▒   ▒7ؠ▒    $▒▒▒?ؠ▒  $▒Eؠ▒   $Uؠ▒    ▒_ؠ▒    ▒▒-1▒▒▒▒▒       $       ▒▒▒▒▒▒  $▒y▒▒▒▒▒a▒▒    ▒▒▒˔a▒▒ `▒a▒▒  ▒▒▒▒      %▒▒▒"▒▒▒▒       %'▒▒▒▒  %▒𭡞   )UL%▒▒▒▒W▒▒▒▒▒9▒▒▒       %▒▒▒A▒▒▒%<▒y▒▒▒H▒▒▒      -1:▒▒▒  ▒▒▒     ▒▒d▒▒   &▒▒▒3▒d▒▒       &▒e▒▒   &▒▒▒▒   &
+                                                                         ▒▒▒▒▒▒ &
+                                                                                 ▒y▒▒▒ђ▒▒       ▒▒z)ْ▒▒  :▒-1▒S+▒▒       '▒▒▒$]+▒▒       '▒c+▒▒  'D▒I▒▒  '▒▒▒▒I▒▒        '▒▒U▒▒▒▒&(▒y▒▒▒dSM▒▒/ӣ▒  ▒z▒[M▒▒ <▒-1▒   (▒▒▒2▒▒ (▒▒▒    (hK▒▒   (
+▒▒▒     )▒▒▒▒▒▒▒        )▒▒▒▒           ▒▒▒▒▒▒▒ )▒▒▒▒           ($▒▒▒           ֤֫▒       )N▒▒֤▒   )Z▒y▒▒▒y▒▒              ▒TLĀ▒▒          y▒▒▒▒▒▒i~▒▒     *▒▒▒▒q~▒▒       *Jx~▒▒   *.▒▒▒▒  -1▒▒▒▒  ▒▒▒▒▒   ▒▒▒▒    *▒▒▒▒▒  *▒▒y▒▒▒▒▒▒▒     ▒z▒▒▒▒  *▒-1▒▒D▒▒       +▒▒▒H▒D▒▒       +▒▒D▒▒  +bc▒▒   +▒▒ohc▒▒        +▒▒y▒▒▒▒%
+                                                                                                                                                 ▒▒     ,▒▒▒Q/
+                                                                                                                                                              ▒▒        ,▒5
+  ▒▒    ,▒▒)▒▒  ,x▒▒▒)▒▒        ,▒▒y▒▒▒`1H▒▒    -1▒9H▒▒ @H▒▒
+\§▒     h▒f§▒   B▒-1▒ѧ▒ -▒▒▒▒ѧ▒ -▒▒ѧ▒   -▒▒     -▒▒▒$▒  -U▒y▒▒▒▒▒▒
+▒▒▒▒▒▒
+K▒▒▒
+}▒Z▒▒
+BWL▒Z▒▒
+W▒▒▒▒▒▒ܗ▒▒      .▒▒▒▒㗨▒        .       ꗨ▒      .y▒▒▒   .▒▒Q▒▒▒ .▒▒y▒▒▒Ĭ▒▒      -1r▒▒▒  ▒▒▒     ▒K^▒▒   /▒▒▒R^▒▒        /▒X^▒▒  /▒▒|▒▒  nz▒|▒▒  ▒▒▒-1▒▒|▒▒      /D▒▒▒|▒▒/▒▒y▒▒▒Ś$▒▒      0▒▒▒▒▒$▒▒       0▒$▒▒   0▒<C▒▒  0]▒▒GC▒▒        0E▒y▒▒▒▒2▒▒▒    -1      ;▒▒▒    gA▒▒▒   G▒ꪞ     1▒▒▒▒▒ꪞ 1▒ꪞ     1▒      ▒▒      1ɏ▒▒    ▒▒      1▒▒y▒▒▒D_7▒▒     ▒zZf7▒▒ ▒▒▒-1▒e▒▒
+                                ▒▒▒
+                                   e▒▒
+                                        ▒e▒▒
+                                                ▒R▒▒▒   2▒▒▒0Z▒▒▒       2▒`▒▒▒  2jf▒▒▒
+                                                                                        ▒TL▒l▒▒▒
+                                                                                                        ▒▒▒▒▒▒  ▒ϫ▒     2D▒▒▒ϫ▒ 23▒y▒▒▒▒▒w▒▒    3▒▒▒2▒w▒▒       -1q▒w▒▒ b▒w▒▒    3▒▒w▒▒  ▒▒w▒▒   3▒S▒▒▒  3i▒z[▒▒▒        3▒y▒▒▒▒▒▒       ▒▒▒     ▒▒-1▒▒▒ 4▒▒▒▒#>▒▒       4▒)>▒▒  4▒\▒▒   4i▒▒\▒▒ 4▒▒y▒▒▒▒m▒▒     5▒▒▒▒w▒▒        5*~▒▒   5▒
+                                                                                                                                                                  #▒▒   5▒▒#▒▒   5▒▒y▒▒▒▒.2▒▒    -1o52▒▒ ▒;2▒▒   ▒V▒▒▒
+                                                ▒\▒▒▒   n▒-1H▒▒▒▒
+                                                                        ▒▒▒΍▒▒▒
+                                                                                Q▒▒▒▒
+                                                                                        i▒ʮ▒    6▒▒▒▒▒ʮ▒        6▒▒ʮ▒   6F`鮞   6.▒▒g鮞 6k▒y▒▒▒?▒▒▒
+                                                                                                                                                        ▒SLV▒▒▒
+                                                                                                                                                                Q▒▒▒▒▒+"▒▒▒      7▒▒▒▒)▒▒▒       7X0▒▒▒  7
+                                 ▒▒▒▒   7▒▒▒ů▒▒ 7
+                                                 ▒y▒▒▒h▒쯞      -1s▒쯞  -▒쯞    ▒▒W▒▒   8▒▒▒K▒W▒▒       8͒W▒▒    8▒▒f▒▒  ▒zb▒f▒▒ ▒▒▒-1▒!v▒▒      8▒▒▒)v▒▒        8▒▒y▒▒▒F▒늮▒▒▒▒▒▒▒▒k!▒▒▒▒;▒▒▒▒▒▒▒▒▒▒▒▒   ;w▒▒▒▒  ;w3ɲ▒<▒▒;▒G;ɲ▒  ;y▒▒▒޶a▒▒▒▒     ▒-1▒▒a▒▒F▒▒▒    ▒=䱞    :▒▒▒7F䱞        :L䱞    :▒▒▒▒   :p▒t▒▒▒ :▒y▒▒▒▒▒
+                                                                                         ▒a▒▒   ▒▒▒p▒▒  <▒▒▒▒▒p▒▒       <dq▒▒   <▒▒▒▒▒  <4▒1▒▒▒▒        <1▒y▒▒▒0▒۳▒     ▒▒z▒▒۳▒  ▒▒▒-1▒U7▒▒      =▒▒▒▒_7▒▒       =Hf7▒▒  =▒▒U▒▒  =Y▒▒▒U▒▒        =▒▒y▒▒▒N▒▒▒▒    >▒▒▒▒▒▒▒▒       >.▒▒▒▒  >E3▒▒   ▒9▒▒    ?▒▒     ▒▒      >V▒W▒▒  >▒▒y▒▒▒▒▒h▒▒    ▒▒▒Ñh▒▒  ▒h▒▒    ▒]▒▒▒   z▒i▒▒▒  ▒-1cﴵ▒  ▒VL▒▒▒▒▒
+▒▒▒▒▒▒ ĵ▒       ?▒▒▒▒'ĵ▒        ?=.ĵ▒   ?׺ⵞ     ?▒▒8▒ⵞ  ?:▒y▒▒▒sf▒▒▒    @▒▒▒▒m▒▒▒       @▒s▒▒▒  @▒▒▒    @▒▒.▒▒▒ @!▒y▒▒▒&▒ֶ▒      -1@▒ֶ▒   ▒▒ֶ▒     ▒P▒▒    A▒▒▒(▒P▒▒       A;▒P▒▒   A▒▒P▒▒  nz>▒P▒▒ N▒-1▒do▒▒       Ae▒lo▒▒ A{▒y▒▒▒▒4▒▒     B▒▒▒R>▒▒        B
+▒▒▒     ▒ݸ▒     C▒▒▒▒ݸ▒ C-▒ݸ▒   C▒1▒▒▒  Cx▒9▒▒▒ C▒▒y▒▒▒d                         E▒▒    BW▒5▒▒  B8▒H▒5▒▒        B▒▒y▒▒▒@▒▒▒     -1▒I▒▒▒ ▒O▒▒▒   ▒▒▒▒▒   ▒▒▒▒▒▒▒ `
+                                                        ▒▒      ▒VL;l
+                                                                     ▒▒ #▒▒▒▒▒▒k
+                                                                                ▒▒      ▒▒t
+                                                                                           ▒▒   d▒-1▒⣹▒ D▒▒▒▒죹▒        DR󣹞     D▒▒¹▒   DZ▒▒▒¹▒ D▒▒y▒▒▒V▒K▒▒    -1▒▒K▒▒ ▒▒K▒▒    59j▒▒   E▒▒▒▒?j▒▒       E▒Ej▒▒  E▒Ԉ▒▒   E▒▒ۈ▒▒  E▒▒y▒▒▒▒▒ź▒     kz▒▒ź▒  ▒▒-1▒0▒▒        F▒▒▒@▒0▒▒       F▒0▒▒   F▒=O▒▒  FƎDO▒▒  F-▒y▒▒▒▒▒▒▒     G▒▒▒`▒▒▒▒       G▒▒▒▒    GS<▒▒   -1▒B▒▒  ▒H▒▒    a▒▒▒    GZ▒▒▒▒▒ ▒▒▒▒▒▒▒ G▒y▒▒▒,▒▒▒
+                                                                        ▒▒▒     ▒▒a▒▒   TLb▒▒   Z▒▒▒▒▒▒d▒▒▒     ▒6m▒▒▒  ▒▒-1▒S▒▒▒       H▒▒▒▒Z▒▒▒       H<a▒▒▒  H#▒ۼ▒   H▒▒:▒ۼ▒  H▒▒y▒▒▒ǳ▒▒▒     I▒▒▒▒▒▒▒        Is▒▒▒▒  IP▒▒▒   I2▒YZ▒▒▒        IX▒y▒▒▒▒▒▒       -1K▒▒▒▒         '▒▒▒▒   ▒▒:▒▒   !z▒▒:▒▒         ▒▒-1\  J▒▒     J▒▒▒;J▒▒        JOJ▒▒    J▒▒h▒▒  J▒▒▒h▒▒ J▒▒y▒▒▒▒q▒▒     K▒▒▒▒|▒▒        K▒▒▒▒   K|/▒▒   Kސ/▒▒   K▒▒y▒▒▒▒▒k▒▒    ▒▒▒▒l▒▒ ▒
+c▒▒▒    !▒▒g▒▒▒ LG▒▒j▒▒▒        !▒G{▒▒  !▒b▒▒▒  ▒VL▒l▒▒▒        &▒▒▒▒▒L▒ֿ▒       L▒▒▒c▒ֿ▒ L▒▒ֿ▒    L
+                                 ▒-14o▒▒▒       L▒▒y▒▒▒9*▒▒▒    M▒▒▒▒1▒▒▒       My8▒▒▒  M▒Ȼ▒▒   M▒▒     ӻ▒▒     Mw▒y▒▒▒▒5▒▒     "-1$▒5▒▒        "▒▒5▒▒  "▒c▒▒   N▒▒▒▒▒c▒▒N▒▒c▒▒  N'▒▒▒   N▒▒e-▒▒▒        N▒▒y▒▒▒B▒▒▒     "w▒z4▒▒▒        "U▒-1▒▒)        O▒▒▒4▒) O▒▒)    O▒xH    O▒▒▒H   OX▒y▒▒▒vw▒      ▒▒▒▒▒▒  ▒▒      *@▒     P▒▒▒!C▒ #-1KJ▒  PgM▒     #Q▒     PkT▒    #z▒Þ    ▒UL▒Þ   P▒,▒Þ   Ɗ▒▒▒▒y▒Þ        P▒▒y▒▒▒pjÞ      #▒▒wjÞ  #^▒▒-1▒▒▒Þ      Q▒▒▒q▒▒Þ        QΥ▒Þ    Q;5▒Þ   QƎ▒?▒Þ  QF▒y▒▒▒qnxuser@qnxpi:/tmp$ 64;1;2;4;6;9;11;15;21;22;28;29c^C
+qnxuser@qnxpi:/tmp$ ls -lh /tmp/*analysis*
+ls: /tmp/*analysis*: No such file or directory
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --stress 2
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S2_PRIO_INVERSION] duration 10000 ms
+tracelogger: open: Permission denied
+segmentation violation (core dumped)
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --stress 3
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S3_BURST_TRAFFIC] duration 10000 ms
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+tracelogger: open: Permission denied
+
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --stress 4
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S4_EVENT_STORM] duration 10000 ms
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+tracelogger: open: Permission denied
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --stress 5
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S5_MIXED_WORKLOAD] duration 10000 ms
+tracelogger: open: Permission denied
+segmentation violation (core dumped)
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --stress 6
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S6_CPU_AFFINITY] duration 10000 ms
+[S6] Case A unconstrained (affinity none) then Case B pinned
+tracelogger: open: Permission denied
+
+qnxuser@qnxpi:/tmp$ pidin threads
+     pid tid name                         thread name          STATE          Blocked
+       1   1 /proc/boot/procnto-smp-instr 1                    RUNNING
+       1   2 /proc/boot/procnto-smp-instr 2                    RUNNING
+       1   3 /proc/boot/procnto-smp-instr 3                    RUNNING
+       1   4 /proc/boot/procnto-smp-instr 4                    RUNNING
+       1   5 /proc/boot/procnto-smp-instr 5                    INTR
+       1   6 /proc/boot/procnto-smp-instr 6                    INTR
+       1   7 /proc/boot/procnto-smp-instr 7                    INTR
+       1   8 /proc/boot/procnto-smp-instr 8                    INTR
+       1   9 /proc/boot/procnto-smp-instr 9                    INTR
+       1  10 /proc/boot/procnto-smp-instr 10                   INTR
+       1  11 /proc/boot/procnto-smp-instr 11                   INTR
+       1  12 /proc/boot/procnto-smp-instr 12                   INTR
+       1  13 /proc/boot/procnto-smp-instr 13                   NANOSLEEP
+       1  15 /proc/boot/procnto-smp-instr 15                   RECEIVE        1
+       1  16 /proc/boot/procnto-smp-instr 16                   RECEIVE        1
+       1  17 /proc/boot/procnto-smp-instr 17                   RECEIVE        1
+       1  18 /proc/boot/procnto-smp-instr 18                   RECEIVE        1
+       1  19 /proc/boot/procnto-smp-instr 19                   RECEIVE        1
+       1  21 /proc/boot/procnto-smp-instr 21                   RECEIVE        1
+       1  22 /proc/boot/procnto-smp-instr 22                   RECEIVE        1
+       1  23 /proc/boot/procnto-smp-instr 23                   RECEIVE        1
+       1  24 /proc/boot/procnto-smp-instr 24                   RUNNING
+       1  25 /proc/boot/procnto-smp-instr 25                   RECEIVE        1
+       1  28 /proc/boot/procnto-smp-instr 28                   RECEIVE        1
+   12291   1 proc/boot/slogger2           1                    RECEIVE        1
+   24580   1 proc/boot/pci-server         1                    RECEIVE        1
+   24580   2 proc/boot/pci-server         2                    RECEIVE        1
+   24580   3 proc/boot/pci-server         3                    RECEIVE        1
+   24580   4 proc/boot/pci-server         4                    RECEIVE        1
+   45061   1 proc/boot/devc-serminiuart   1                    RECEIVE        1
+   45061   2 proc/boot/devc-serminiuart   2                    INTR
+   53255   1 proc/boot/ksh                1                    REPLY          45061
+   57350   1 proc/boot/fsevmgr            1                    SIGWAITINFO
+   57350   2 proc/boot/fsevmgr            2                    RECEIVE        1
+   57350   3 proc/boot/fsevmgr            3                    RECEIVE        2
+   57350   4 proc/boot/fsevmgr            4                    RECEIVE        1
+   61448   1 proc/boot/devb-sdmmc-bcm2711 1                    SIGWAITINFO
+   61448   2 proc/boot/devb-sdmmc-bcm2711 2                    RECEIVE        1
+   61448   3 proc/boot/devb-sdmmc-bcm2711 3                    RECEIVE        2
+   61448   4 proc/boot/devb-sdmmc-bcm2711 4                    INTR
+   61448   5 proc/boot/devb-sdmmc-bcm2711 5                    RECEIVE        3
+   61448   6 proc/boot/devb-sdmmc-bcm2711 6                    RECEIVE        5
+   61448   7 proc/boot/devb-sdmmc-bcm2711 7                    RECEIVE        6
+   61448   8 proc/boot/devb-sdmmc-bcm2711 8                    RECEIVE        7
+   61448   9 proc/boot/devb-sdmmc-bcm2711 9                    RECEIVE        4
+   61448  10 proc/boot/devb-sdmmc-bcm2711 10                   RECEIVE        4
+   61448  11 proc/boot/devb-sdmmc-bcm2711 11                   RECEIVE        4
+   61448  12 proc/boot/devb-sdmmc-bcm2711 12                   RECEIVE        4
+   61448  13 proc/boot/devb-sdmmc-bcm2711 13                   RECEIVE        4
+   61448  14 proc/boot/devb-sdmmc-bcm2711 14                   RECEIVE        4
+   61448  15 proc/boot/devb-sdmmc-bcm2711 15                   RECEIVE        4
+   61448  16 proc/boot/devb-sdmmc-bcm2711 16                   RECEIVE        4
+  208905   1 system/bin/random            1                    SIGWAITINFO
+  208905   2 system/bin/random            2                    NANOSLEEP
+  208905   3 system/bin/random            3                    RECEIVE        1
+  208905   4 system/bin/random            4                    RECEIVE        2
+  221194   1 system/bin/pipe              1                    SIGWAITINFO
+  221194   2 system/bin/pipe              2                    RECEIVE        1
+  221194   4 system/bin/pipe              4                    RECEIVE        1
+  221194   5 system/bin/pipe              5                    RECEIVE        1
+  221194   6 system/bin/pipe              6                    RECEIVE        1
+  233483   1 system/bin/devc-pty          1                    RECEIVE        1
+  237580   1 system/bin/dumper            1                    RECEIVE        1
+  237580   2 system/bin/dumper            2                    RECEIVE        2
+  241677   1 system/bin/io-sock           1                    SIGWAITINFO
+  241677   2 system/bin/io-sock           2                    SIGWAITINFO
+  241677   3 system/bin/io-sock           3                    SEM            0
+  241677   4 system/bin/io-sock           4                    SEM            0
+  241677   5 system/bin/io-sock           5                    SEM            0
+  241677   6 system/bin/io-sock           6                    SEM            0
+  241677   7 system/bin/io-sock           7                    SEM            0
+  241677   8 system/bin/io-sock           8                    SEM            0
+  241677   9 system/bin/io-sock           9                    SEM            0
+  241677  10 system/bin/io-sock           10                   SEM            0
+  241677  11 system/bin/io-sock           11                   RECEIVE        2
+  241677  12 system/bin/io-sock           12                   RECEIVE        3
+  241677  13 system/bin/io-sock           13                   SEM            0
+  241677  14 system/bin/io-sock           14                   RECEIVE        4
+  241677  15 system/bin/io-sock           15                   RECEIVE        5
+  241677  16 system/bin/io-sock           16                   SEM            0
+  241677  17 system/bin/io-sock           17                   CONDVAR        (0x0)
+  241677  18 system/bin/io-sock           18                   CONDVAR        (0x0)
+  241677  19 system/bin/io-sock           19                   RECEIVE        6
+  241677  20 system/bin/io-sock           20                   RECEIVE        7
+  241677  21 system/bin/io-sock           21                   RECEIVE        8
+  241677  22 system/bin/io-sock           22                   RUNNING
+  241677  23 system/bin/io-sock           23                   RECEIVE        1
+  241677  24 system/bin/io-sock           24                   RECEIVE        1
+  241677  25 system/bin/io-sock           25                   CONDVAR        (0x0)
+  241677  26 system/bin/io-sock           26                   RECEIVE        1
+  241677  27 system/bin/io-sock           27                   RECEIVE        1
+  241677  28 system/bin/io-sock           28                   SEM            0
+  241677  29 system/bin/io-sock           29                   SEM            0
+  241677  30 system/bin/io-sock           30                   SEM            0
+  241677  31 system/bin/io-sock           31                   SEM            0
+  241677  32 system/bin/io-sock           32                   SEM            0
+  241677  33 system/bin/io-sock           33                   INTR
+  241677  34 system/bin/io-sock           34                   INTR
+  241677  35 system/bin/io-sock           35                   SEM            0
+  241677  36 system/bin/io-sock           36                   RECEIVE        9
+  241677  37 system/bin/io-sock           37                   INTR
+  241677  38 system/bin/io-sock           38                   SEM            0
+  241677  39 system/bin/io-sock           39                   SEM            0
+  241677  40 system/bin/io-sock           40                   RECEIVE        10
+  282639   1 stem/bin/wpa_supplicant-2.11 1                    SIGWAITINFO
+  352274   1 system/bin/mdnsd             1                    SIGWAITINFO
+  360464   1 system/bin/sshd              1                    SIGWAITINFO
+  364558   1 system/bin/qconn             1                    SIGWAITINFO
+  364558   2 system/bin/qconn             2                    RECEIVE        1
+  364558   3 system/bin/qconn             3                    SIGWAITINFO
+  368657   1 system/bin/mqueue            1                    RECEIVE        1
+  421909   1 proc/boot/io-usb-otg         1                    SIGWAITINFO
+  421909   2 proc/boot/io-usb-otg         2                    CONDVAR        (0x0)
+  421909   3 proc/boot/io-usb-otg         3                    CONDVAR        (0x0)
+  421909   4 proc/boot/io-usb-otg         4                    CONDVAR        (0x0)
+  421909   5 proc/boot/io-usb-otg         5                    RECEIVE        1
+  421909   6 proc/boot/io-usb-otg         6                    RECEIVE        2
+  421909   7 proc/boot/io-usb-otg         7                    RECEIVE        3
+  421909   8 proc/boot/io-usb-otg         8                    RECEIVE        4
+  421909  10 proc/boot/io-usb-otg         10                   RECEIVE        5
+  421909  11 proc/boot/io-usb-otg         11                   RECEIVE        6
+  421909  12 proc/boot/io-usb-otg         12                   INTR
+  421909  13 proc/boot/io-usb-otg         13                   RECEIVE        2
+  421909  14 proc/boot/io-usb-otg         14                   CONDVAR        (0x0)
+  421909  15 proc/boot/io-usb-otg         15                   CONDVAR        (0x0)
+  421909  16 proc/boot/io-usb-otg         16                   CONDVAR        (0x0)
+  421909  17 proc/boot/io-usb-otg         17                   CONDVAR        (0x0)
+  421909  19 proc/boot/io-usb-otg         19                   CONDVAR        (0x0)
+  421909  20 proc/boot/io-usb-otg         20                   CONDVAR        (0x0)
+  421909  21 proc/boot/io-usb-otg         21                   RECEIVE        1
+  421909  22 proc/boot/io-usb-otg         22                   RECEIVE        1
+  421909  25 proc/boot/io-usb-otg         25                   RECEIVE        1
+  446484   1 system/bin/usblauncher_otg   1                    RECEIVE        1
+  446484   2 system/bin/usblauncher_otg   2                    SIGWAITINFO
+  446484   3 system/bin/usblauncher_otg   3                    RECEIVE        2
+  446484   4 system/bin/usblauncher_otg   4                    CONDVAR        (0x0)
+  446484   5 system/bin/usblauncher_otg   5                    REPLY          421909
+  446484   6 system/bin/usblauncher_otg   6                    REPLY          421909
+  446484   7 system/bin/usblauncher_otg   7                    RECEIVE        3
+  446484   8 system/bin/usblauncher_otg   8                    CONDVAR        (0x0)
+  446484   9 system/bin/usblauncher_otg   9                    RECEIVE        4
+  446484  10 system/bin/usblauncher_otg   10                   CONDVAR        (0x0)
+  446484  11 system/bin/usblauncher_otg   11                   CONDVAR        (0x0)
+  446484  12 system/bin/usblauncher_otg   12                   RECEIVE        5
+  446484  13 system/bin/usblauncher_otg   13                   CONDVAR        (0x0)
+  450582   1 system/bin/io-hid            1                    SIGWAITINFO
+  450582   2 system/bin/io-hid            2                    RECEIVE        1
+  450582   3 system/bin/io-hid            3                    RECEIVE        2
+  450582   4 system/bin/io-hid            4                    RECEIVE        2
+  450582   6 system/bin/io-hid            6                    REPLY          421909
+  450582   7 system/bin/io-hid            7                    REPLY          421909
+  462871   1 system/bin/i2c-bcm2711       1                    RECEIVE        1
+  462871   2 system/bin/i2c-bcm2711       2                    INTR
+  475160   1 system/bin/i2c-bcm2711       1                    RECEIVE        1
+  475160   2 system/bin/i2c-bcm2711       2                    INTR
+  487449   1 system/bin/spi-bcm2711       1                    SIGWAITINFO
+  487449   2 system/bin/spi-bcm2711       2                    INTR
+  487449   3 system/bin/spi-bcm2711       3                    INTR
+  487449   4 system/bin/spi-bcm2711       4                    RECEIVE        1
+  487449   5 system/bin/spi-bcm2711       5                    INTR
+  487449   6 system/bin/spi-bcm2711       6                    INTR
+  487449   7 system/bin/spi-bcm2711       7                    RECEIVE        2
+  516123   1 system/bin/mdnsd             1                    SIGWAITINFO
+  540698   1 system/bin/screen            1                    SIGWAITINFO
+  540698   2 system/bin/screen            2                    CONDVAR        (0x0)
+  540698   3 system/bin/screen            3                    CONDVAR        (0x0)
+  540698   4 system/bin/screen            4                    SIGWAITINFO
+  540698   5 system/bin/screen            5                    CONDVAR        (0x0)
+  540698   6 system/bin/screen            6                    CONDVAR        (0x0)
+  540698   7 system/bin/screen            7                    CONDVAR        (0x0)
+  540698   8 system/bin/screen            8                    RECEIVE        2
+  540698   9 system/bin/screen            9                    RECEIVE        2
+  540698  10 system/bin/screen            10                   RECEIVE        2
+  540698  11 system/bin/screen            11                   RECEIVE        2
+  540698  12 system/bin/screen            12                   RECEIVE        2
+  540698  13 system/bin/screen            13                   RECEIVE        2
+  540698  14 system/bin/screen            14                   RECEIVE        2
+  540698  15 system/bin/screen            15                   REPLY          450582
+  540698  16 system/bin/screen            16                   RECEIVE        2
+  540698  17 system/bin/screen            17                   RECEIVE        2
+  540698  18 system/bin/screen            18                   RECEIVE        2
+  544796   1 system/bin/drm-rpi5          1                    SIGWAITINFO
+  544796   2 system/bin/drm-rpi5          2                    CONDVAR        (0x0)
+  544796   3 system/bin/drm-rpi5          3                    CONDVAR        (0x0)
+  544796   4 system/bin/drm-rpi5          4                    CONDVAR        (0x0)
+  544796   5 system/bin/drm-rpi5          5                    CONDVAR        (0x0)
+  544796   6 system/bin/drm-rpi5          6                    CONDVAR        (0x0)
+  544796   7 system/bin/drm-rpi5          7                    CONDVAR        (0x0)
+  544796   8 system/bin/drm-rpi5          8                    CONDVAR        (0x0)
+  544796   9 system/bin/drm-rpi5          9                    CONDVAR        (0x0)
+  544796  10 system/bin/drm-rpi5          10                   CONDVAR        (0x0)
+  544796  11 system/bin/drm-rpi5          11                   CONDVAR        (0x0)
+  544796  12 system/bin/drm-rpi5          12                   RECEIVE        1
+  544796  13 system/bin/drm-rpi5          13                   CONDVAR        (0x0)
+  544796  14 system/bin/drm-rpi5          14                   CONDVAR        (0x0)
+  544796  15 system/bin/drm-rpi5          15                   RECEIVE        2
+  544796  16 system/bin/drm-rpi5          16                   CONDVAR        (0x0)
+  544796  17 system/bin/drm-rpi5          17                   RECEIVE        3
+  544796  18 system/bin/drm-rpi5          18                   CONDVAR        (0x0)
+  544796  19 system/bin/drm-rpi5          19                   NANOSLEEP
+  544796  20 system/bin/drm-rpi5          20                   RECEIVE        4
+  544796  21 system/bin/drm-rpi5          21                   CONDVAR        (0x0)
+  544796  22 system/bin/drm-rpi5          22                   INTR
+  544796  23 system/bin/drm-rpi5          23                   INTR
+  544796  24 system/bin/drm-rpi5          24                   CONDVAR        (0x0)
+  544796  25 system/bin/drm-rpi5          25                   CONDVAR        (0x0)
+  544796  26 system/bin/drm-rpi5          26                   CONDVAR        (0x0)
+  544796  27 system/bin/drm-rpi5          27                   CONDVAR        (0x0)
+  544796  28 system/bin/drm-rpi5          28                   CONDVAR        (0x0)
+  544796  29 system/bin/drm-rpi5          29                   CONDVAR        (0x0)
+  544796  30 system/bin/drm-rpi5          30                   INTR
+  544796  31 system/bin/drm-rpi5          31                   INTR
+  544796  32 system/bin/drm-rpi5          32                   INTR
+  544796  33 system/bin/drm-rpi5          33                   INTR
+  544796  34 system/bin/drm-rpi5          34                   INTR
+  544796  35 system/bin/drm-rpi5          35                   INTR
+  544796  36 system/bin/drm-rpi5          36                   INTR
+  544796  37 system/bin/drm-rpi5          37                   INTR
+  544796  38 system/bin/drm-rpi5          38                   INTR
+  544796  39 system/bin/drm-rpi5          39                   CONDVAR        (0x0)
+  544796  40 system/bin/drm-rpi5          40                   CONDVAR        (0x0)
+  544796  41 system/bin/drm-rpi5          41                   CONDVAR        (0x0)
+  544796  42 system/bin/drm-rpi5          42                   CONDVAR        (0x0)
+  544796  43 system/bin/drm-rpi5          43                   CONDVAR        (0x0)
+  544796  44 system/bin/drm-rpi5          44                   CONDVAR        (0x0)
+  544796  45 system/bin/drm-rpi5          45                   RECEIVE        4
+  544796  46 system/bin/drm-rpi5          46                   RECEIVE        2
+  544796  47 system/bin/drm-rpi5          47                   RECEIVE        2
+  544796  48 system/bin/drm-rpi5          48                   RECEIVE        3
+  544796  49 system/bin/drm-rpi5          49                   RECEIVE        4
+  544796  50 system/bin/drm-rpi5          50                   RECEIVE        3
+  544796  51 system/bin/drm-rpi5          51                   RECEIVE        4
+  544796  52 system/bin/drm-rpi5          52                   RECEIVE        4
+  561181   1 system/bin/mtouch            1                    REPLY          540698
+  561181   2 system/bin/mtouch            2                    REPLY          450582
+  561181   3 system/bin/mtouch            3                    RECEIVE        1
+  561181   4 system/bin/mtouch            4                    CONDVAR        (0x0)
+  565278   1 system/bin/rpi_mbox          1                    RECEIVE        1
+  577567   1 system/bin/rpi_gpio          1                    RECEIVE        1
+  577567   2 system/bin/rpi_gpio          2                    INTR
+  589856   1 system/bin/rpi_thermal       1                    RECEIVE        1
+  602145   1 system/bin/io-snd            1                    SIGWAITINFO
+  602145   2 system/bin/io-snd            2                    RECEIVE        2
+  602145   3 system/bin/io-snd            3                    RECEIVE        3
+  602145   4 system/bin/io-snd            4                    INTR
+  602145   5 system/bin/io-snd            5                    CONDVAR        (0x0)
+  602145   6 system/bin/io-snd            6                    REPLY          421909
+  602145   7 system/bin/io-snd            7                    RECEIVE        1
+  602145   8 system/bin/io-snd            8                    RECEIVE        1
+  639010   1 system/bin/bcm-rpi4-vchiq    1                    RECEIVE        1
+  639010   2 system/bin/bcm-rpi4-vchiq    2                    INTR
+  639010   3 system/bin/bcm-rpi4-vchiq    3                    CONDVAR        (0x0)
+  639010   4 system/bin/bcm-rpi4-vchiq    4                    CONDVAR        (0x0)
+  651299   1 system/bin/bcm-rpi4-vcsm     1                    RECEIVE        2
+  651299   2 system/bin/bcm-rpi4-vcsm     2                    RECEIVE        1
+  663588   1 system/bin/sensor            1                    SIGWAITINFO
+  663588   2 system/bin/sensor            2                    RECEIVE        1
+  663588   3 system/bin/sensor            3                    RECEIVE        1
+  675877   1 system/bin/fullscreen-winmgr 1                    REPLY          540698
+  675878   1 system/bin/demolauncher      1                    REPLY          540698
+  675878   2 system/bin/demolauncher      2                    REPLY          241677
+  675881   1 system/sbin/mm-renderer      1                    SIGWAITINFO
+  675881   2 system/sbin/mm-renderer      2                    RECEIVE        1
+  675881   3 system/sbin/mm-renderer      3                    RECEIVE        1
+  675881   4 system/sbin/mm-renderer      4                    RECEIVE        1
+  675881   5 system/sbin/mm-renderer      5                    RECEIVE        1
+  774146   1 system/bin/st                1                    RECEIVE        1
+  774163   1 bin/bash                     1                    REPLY          1
+  794663   1 bin/login                    1                    REPLY          1
+  802856   1 bin/bash                     1                    SIGWAITINFO
+ 1183786   1 system/bin/sshd-session      1                    SIGWAITINFO
+ 1196075   1 system/bin/sshd-session      1                    RUNNING        241677
+ 1196076   1 bin/bash                     1                    REPLY          1
+ 1544237   1 proc/boot/pidin              1                    REPLY          1
+qnxuser@qnxpi:/tmp$ /tmp/schedulix_can --tcp 5000
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+--- CAN sim ---
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10859577703741 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10859577703741 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10859578101870 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10859578101870 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10859578495148 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10859578495148 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10859578883574 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10859578883574 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 10859579287019 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 10859579287019 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+--- sim 5 ---
+--- TCP server port 5000 ---
+[CAN INJECTOR] Listening on TCP port 5000
+[CAN INJECTOR] Send lines like: "0x100 1 01"  (one frame per line)
+[CAN INJECTOR] Press Ctrl-C to stop.
+[injector] Client connected: 192.168.10.1:62227
+
+[TCP] Received injected frame
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10891619729481 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10891619729481 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+[TCP] Received injected frame
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10891820547000 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10891820547000 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+
+[TCP] Received injected frame
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10892020827463 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10892020827463 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+
+[TCP] Received injected frame
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 10892221133259 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 10892221133259 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+
+[TCP] Received injected frame
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 10892421633981 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 10892421633981 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+[injector] Client disconnected
+
+qnxuser@qnxpi:/tmp$ ls -lh /tmp/*.bin *.json *.kev 2>/dev/null
+-rw-r--r--  1 root    root     40K 1970-01-01 02:46 /tmp/trace.bin
+-rw-r--r--  1 root    root     40K 1970-01-01 02:46 /tmp/trace_flight.bin
+-rw-r--r--  1 qnxuser qnxuser  31K 1970-01-01 02:56 /tmp/trace_phase1.bin
+-rw-r--r--  1 root    root    1.2K 1970-01-01 02:46 manifest.json
+-rw-r--r--  1 qnxuser qnxuser 1.2K 1970-01-01 02:56 manifest_phase1.json
+-rw-r--r--  1 root    root    109K 1970-01-01 02:47 schedulix.kev
+qnxuser@qnxpi:/tmp$

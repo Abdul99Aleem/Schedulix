@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- QNX System Profiler custom user-event formatting for Schedulix
+     Import into Momentics: System Profiler → Trace Events → User Events → Import
+     Based on https://www.qnx.com/developers/docs/8.0/com.qnx.doc.ide.userguide/topic/formatting_user_events_with_the_system_profiler.html
+     User class _NTO_TRACE_USERFIRST + offset
+-->
+<trace_events>
+  <event id="1" name="SCHEDULIX_EXTERNAL_EVENT_RX">
+    <field name="source" type="uint32" text="source"/>
+    <field name="can_id" type="uint32" format="hex" text="CAN ID"/>
+    <field name="dlc" type="uint32" text="DLC"/>
+    <field name="correlation_id" type="uint32" text="Correlation"/>
+  </event>
+  <event id="2" name="SCHEDULIX_EVENT_DECODED">
+    <field name="task_id" type="uint32" text="Task"/>
+    <field name="can_id" type="uint32" format="hex" text="CAN ID"/>
+    <field name="correlation_id" type="uint32" text="Correlation"/>
+  </event>
+  <event id="3" name="SCHEDULIX_WORKLOAD_RELEASE">
+    <field name="task_id" type="uint32" text="Task"/>
+    <field name="activation_id" type="uint32" text="Activation"/>
+    <field name="correlation_id" type="uint32" text="Correlation"/>
+    <field name="deadline_ns" type="uint64" text="Deadline ns"/>
+  </event>
+  <event id="4" name="SCHEDULIX_WORKLOAD_READY"/>
+  <event id="5" name="SCHEDULIX_WORKLOAD_START"/>
+  <event id="6" name="SCHEDULIX_WORKLOAD_END">
+    <field name="exec_ns" type="uint64" text="Exec ns"/>
+  </event>
+  <event id="7" name="SCHEDULIX_WORKLOAD_DEADLINE">
+    <field name="slack_ns" type="int64" text="Slack ns"/>
+    <field name="deadline_ns" type="uint64" text="Deadline"/>
+  </event>
+  <event id="8" name="SCHEDULIX_WORKLOAD_DEADLINE_MISS"/>
+  <event id="10" name="SCHEDULIX_BLOCK_BEGIN"/>
+  <event id="11" name="SCHEDULIX_BLOCK_END"/>
+</trace_events>

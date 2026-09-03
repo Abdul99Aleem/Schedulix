@@ -1,0 +1,45 @@
+# Host-side fallback Makefile (Windows gcc/MINGW, Linux, macOS)
+# For QNX Momentics, use primary Makefile, not this.
+# Usage: make -f Makefile.host [ENABLE_TCP=1]
+
+ARTIFACT = schedulix_can
+BUILD_DIR = build-host
+TARGET = $(BUILD_DIR)/$(ARTIFACT)
+
+CC ?= gcc
+CFLAGS = -Wall -Wextra -O0 -g -std=c99 -I src -pthread
+LDFLAGS = -pthread -lm -lrt
+
+ENABLE_TCP ?= 1
+ifeq ($(ENABLE_TCP),1)
+  CFLAGS += -DENABLE_TCP
+  ifeq ($(OS),Windows_NT)
+    LDFLAGS += -lws2_32
+  endif
+endif
+
+SRCS = src/can_frame.c src/can_decoder.c src/sched_event.c src/event_manager.c src/simulated_can_adapter.c src/can_injector.c src/main.c src/workload_config.c src/workload.c src/trace_schema.c src/trace_collector.c src/trace_instrumentation.c src/analyzer.c src/qnx_tracer.c src/replay.c src/stress_scenarios.c src/stress_generator.c src/gpio_marker.c src/manifest.c src/uart_adapter.c src/qnx_kernel_trace_parser.c src/scheduler_correlator.c
+
+OBJS = $(patsubst src/%.c,$(BUILD_DIR)/src/%.o,$(SRCS))
+
+all: $(TARGET)
+
+$(BUILD_DIR)/src/%.o: src/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -MMD -MP -c $< -o $@
+
+$(TARGET): $(OBJS)
+	@mkdir -p $(dir $@)
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+test_decoder: $(BUILD_DIR)/test_decoder
+	./$(BUILD_DIR)/test_decoder
+
+$(BUILD_DIR)/test_decoder: tests/test_decoder.c src/can_frame.c src/can_decoder.c src/sched_event.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+-include $(OBJS:.o=.d)

@@ -1,0 +1,890 @@
+User@DESKTOP-89I8MUE MINGW64 ~
+$ ssh root@192.168.10.2
+(root@192.168.10.2) Password:
+Welcome to QNX 8.0!
+
+This QNX 8 target is now ready for your QNX applications. There are
+some sample applications included here to help you get started with
+development. Find the source code for most of them at gitlab.com/qnx.
+
+Here's how to run some of the bundled samples:
+
+|-------------------------------|----------------------------------------------------------|
+| $ gles2-gears                 | Displays hardware-rendered content using OpenGL ES 2.x.  |
+| $ gles2-maze                  | Shows how to use texture, vertex, and fragment shaders.  |
+| $ vkcubepp                    | Demonstrates 3D rendering capabilities using Vulkan.     |
+| $ camera_example3_viewfinder  | Displays a simulated camera signal or live camera feed.  |
+| $ st                          | The default terminal. Run it to open a new instance.     |
+|-------------------------------|----------------------------------------------------------|
+
+(You can use ALT-TAB to switch between windows.)
+
+Have questions? Find the community on Reddit at r/QNX, ask on StackOverflow,
+or log an issue at https://gitlab.com/qnx.
+root@qnxpi:~#  slay tracelogger; rm -f /tmp/schedulix.kev /tmp/trace*.bin /tmp/manifest*.json
+slay: Unable to find process 'tracelogger'
+root@qnxpi:~# pidin info # 4 CPUs
+CPU:AARCH64 Release:8.0.0  FreeMem:7475MB/8128MB BootTime:Jan 01 00:00:00 UTC 1970
+Processes: 46, Threads: 273
+Processor1: 1091555459 Cortex-A72 1500MHz FPU
+Processor2: 1091555459 Cortex-A72 1500MHz FPU
+Processor3: 1091555459 Cortex-A72 1500MHz FPU
+Processor4: 1091555459 Cortex-A72 1500MHz FPU
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --sweep; ls -lh trace_s1_*.bin manifest_s1_*.json; cat analysis_s1_90.json | grep -E "p99|miss"
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Load sweep S1 20..95%  S1-A system-wide (prio12 any) vs S1-B same-CPU pinned CPU0 prio18
+Running S1-B same-CPU for controlled contention (BRAKE/ADAS/DIAG/STRESS pinned CPU0)
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 20% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_20_P0
+[STRESS] worker 0 (STRESS_20_P0) start prio 20 exec 2 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_20.bin manifest_s1_20.json analysis_s1_20.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 40% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_40_P0
+[STRESS] worker 0 (STRESS_40_P0) start prio 20 exec 4 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.02
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_40.bin manifest_s1_40.json analysis_s1_40.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 60% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_60_P0
+[STRESS] worker 0 (STRESS_60_P0) start prio 20 exec 6 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_60.bin manifest_s1_60.json analysis_s1_60.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 70% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_70_P0
+[STRESS] worker 0 (STRESS_70_P0) start prio 20 exec 7 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_70.bin manifest_s1_70.json analysis_s1_70.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 80% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_80_P0
+[STRESS] worker 0 (STRESS_80_P0) start prio 20 exec 8 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_80.bin manifest_s1_80.json analysis_s1_80.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 85% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_85_P0
+[STRESS] worker 0 (STRESS_85_P0) start prio 20 exec 8 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Wrote trace_s1_85.bin manifest_s1_85.json analysis_s1_85.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 90% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_90_P0
+[STRESS] worker 0 (STRESS_90_P0) start prio 20 exec 9 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 9.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.02 p99 5.08 max 6.02
+Wrote trace_s1_90.bin manifest_s1_90.json analysis_s1_90.json
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[S1-B] S1-B 95% CPU0
+[STRESS] start 1 workers
+[STRESS] created STRESS_95_P0
+[STRESS] worker 0 (STRESS_95_P0) start prio 20 exec 9 period 10 cpu 0
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7370 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.02
+Wrote trace_s1_95.bin manifest_s1_95.json analysis_s1_95.json
+Sweep table: Load vs BRAKE P99 — see analysis_s1_*.json (S1-B pinned should show knee)
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:47 manifest_s1_20.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_40.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_60.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_70.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_80.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_85.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:48 manifest_s1_90.json
+-rw-r--r--  1 root root 1.4K 1970-01-01 00:49 manifest_s1_95.json
+-rw-r--r--  1 root root 346K 1970-01-01 00:47 trace_s1_20.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_40.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_60.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_70.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_80.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_85.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:48 trace_s1_90.bin
+-rw-r--r--  1 root root 346K 1970-01-01 00:49 trace_s1_95.bin
+    {"task_id":1,"activations":769,"misses":0,"miss_ratio":0.0000,"mean_ms":2.006,"p50":2.006,"p95":2.007,"p99":2.007,"max":2.011},
+    {"task_id":2,"activations":345,"misses":0,"miss_ratio":0.0000,"mean_ms":8.009,"p50":8.006,"p95":8.007,"p99":8.010,"max":9.006},
+    {"task_id":3,"activations":178,"misses":0,"miss_ratio":0.0000,"mean_ms":5.014,"p50":5.006,"p95":5.019,"p99":5.078,"max":6.016}
+    "2_did_timing_fail": "0 misses",
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --stress 2; cat analysis_s2.json | grep -E "MUTEX_BLOCK|blocking|confidence"
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S2_PRIO_INVERSION] duration 10000 ms
+[STRESS] start 1 workers
+[STRESS] created STRESS_60
+[STRESS] worker 0 (STRESS_60) start prio 12 exec 6 period 10 cpu -1
+[S2] BRAKE trylock blocked (expected blocked)
+[STRESS] worker 0 exit
+Schedulix Analysis
+==================
+Trace: records 7377 dropped 0 cap 16384
+Task 1: act 770 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.02
+Task 2: act 345 misses 0 (0.00%) mean 8.01 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.08
+root@qnxpi:~# on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5 & sleep 1; ls -lh /tmp/schedulix.kev # >0 current
+[1] 1990702
+[1]+  Done                    on -p 63 tracelogger -f /tmp/schedulix.kev -s 8192 -n 5
+-rw-r--r--  1 root root 109K 1970-01-01 00:49 /tmp/schedulix.kev
+root@qnxpi:~# on -p 63 /tmp/schedulix_can --full; traceparser -f /tmp/schedulix.kev 2>&1 | head -20
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978435614889 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978435614889 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978457005852 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978457005852 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978478007259 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978478007259 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978499007648 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978499007648 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 2978520007185 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 2978520007185 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978541061870 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978541061870 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978541449778 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978541449778 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978541808389 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978541808389 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978542169333 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978542169333 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978542545148 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978542545148 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978542914574 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978542914574 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978543297278 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978543297278 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978543687426 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978543687426 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978544068148 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978544068148 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 2978544450852 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 2978544450852 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+Manifest: manifest.json / manifest.txt (kernel OK, size 116265, gpio mock)
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 95 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 40 misses 0 (0.00%) mean 7.81 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 21 misses 0 (0.00%) mean 4.77 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+-bash: traceparser: command not found
+root@qnxpi:~# cat manifest.json | grep -E "cpu_count|run_id|kernel_provenance|gpio_mode" # cpu_count 4
+  "run_id": "2979-2019374",
+  "cpu_count": 4,
+  "kernel_provenance": "size=116265 generated=1 privileged=1 err=",
+  "gpio_mode": "mock",
+root@qnxpi:~# /tmp/./pi_validate.sh
+=== TEST 1: workloads ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== PHASE 1: Workload Model ===
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+
+Task       Priority  Period  Deadline  Target Exec  Affinity
+------------------------------------------------------------
+
+Initializing workloads...
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+3-4 threads running with distinct priorities/periods (BRAKE 20/10ms, ADAS 15/20ms, DIAG 10/50ms)
+Trace flushed to trace_phase1.bin, dropped=0 hw=670
+Manifest: manifest_phase1.json
+TEST1 workloads done; check: ECU threads started, trace_phase1.bin, manifest_phase1.json
+-rw-r--r--  1 root root 1.3K 1970-01-01 00:50 manifest_phase1.json
+-rw-r--r--  1 root root  31K 1970-01-01 00:50 trace_phase1.bin
+
+=== TEST 2: full core ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+=== SCHEDULIX CORE FULL DEMO (Phases 1-5) ===
+Diagnostic question: Why did workload miss deadline? — correlation, not just metrics
+
+Task       Priority  Period  Deadline  Target Exec  Crit  CPU
+------------------------------------------------------------
+BRAKE          20    10.0ms     10.0ms      2.0ms     2  any
+ADAS           15    20.0ms     20.0ms      8.0ms     1  any
+DIAG           10    50.0ms     50.0ms      5.0ms     0  any
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+Workloads started. Feeding CAN events → Event Manager → workload release
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004786634370 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004786634370 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x200
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004808008426 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : ADAS
+CAN ID    : 0x200
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004808008426 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : ADAS event
+
+CAN FRAME
+---------
+ID        : 0x300
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004829008241 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : DIAGNOSTIC
+CAN ID    : 0x300
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004829008241 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : diagnostic event
+
+CAN FRAME
+---------
+ID        : 0x999
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004850009148 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : UNKNOWN
+CAN ID    : 0x999
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004850009148 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : UNKNOWN event - log/reject (ID=0x999)
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 3
+DATA      : AA BB CC
+TIMESTAMP : 3004871007296 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 3
+DATA      : AA BB CC
+TIMESTAMP : 3004871007296 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+Fed 5 simulated CAN frames
+Injecting burst 10x BRAKE in 1ms (S3)
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004892064759 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004892064759 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004892465130 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004892465130 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004892853315 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004892853315 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004893222648 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004893222648 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004893613741 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004893613741 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004893982370 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004893982370 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004894387444 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004894387444 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004894773574 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004894773574 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004895174648 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004895174648 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+CAN FRAME
+---------
+ID        : 0x100
+DLC       : 1
+DATA      : 01
+TIMESTAMP : 3004895545000 ns
+
+SCHEDULIX EVENT
+---------------
+TYPE      : BRAKE
+CAN ID    : 0x100
+DATA LEN  : 1
+DATA      : 01
+TIMESTAMP : 3004895545000 ns
+
+EVENT MANAGER
+-------------
+DISPATCH  : brake event
+
+
+Trace: trace.bin + trace_flight.bin flushed. Dropped=0 high=808
+Manifest: manifest.json / manifest.txt (kernel OK, size 114137, gpio mock)
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 95 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 40 misses 0 (0.00%) mean 7.81 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 21 misses 0 (0.00%) mean 4.77 p50 5.01 p95 5.01 p99 5.01 max 5.01
+
+FULL DEMO DONE — replay: schedulix_can --replay trace.bin | analyze: schedulix_can --analyze trace.bin
+TEST2 full done; check trace.bin, trace_flight.bin, manifest.json, .kev
+-rw-r--r--  1 root root 111K 1970-01-01 00:50 /tmp/schedulix.kev
+-rw-r--r--  1 root root 1.3K 1970-01-01 00:50 manifest.json
+-rw-r--r--  1 root root  500 1970-01-01 00:50 manifest.txt
+-rw-r--r--  1 root root  38K 1970-01-01 00:50 trace.bin
+-rw-r--r--  1 root root  38K 1970-01-01 00:50 trace_flight.bin
+
+=== TEST 3: tracelogger ===
+tracelogger .kev exists: 114137 bytes
+Verify correlation: schedulix semantic + QNX kernel events in same window
+
+=== TEST 4: analyze ===
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+Schedulix Analysis
+==================
+Trace: records 808 dropped 0 cap 16384
+Task 1: act 95 misses 0 (0.00%) mean 1.99 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 40 misses 0 (0.00%) mean 7.81 p50 8.01 p95 8.01 p99 8.01 max 8.01
+Task 3: act 21 misses 0 (0.00%) mean 4.77 p50 5.01 p95 5.01 p99 5.01 max 5.01
+Check per-activation ready_wait / response / slack / root-cause
+
+=== TEST 5: stress knee ===
+S0 baseline (light) vs S1 saturation (heavy) should show knee
+SCHEDULIX CAN EVENT MANAGER
+===========================
+Phases 1-5 Core + Deliverable 1 CAN pipeline
+Mode: TCP-capable build
+
+[GPIO] no HW, mock mode (validation uses sw timestamps)
+[SCENARIO S0_BASELINE] duration 10000 ms
+Schedulix Analysis
+==================
+Trace: records 6458 dropped 0 cap 16384
+Task 1: act 769 misses 0 (0.00%) mean 2.01 p50 2.01 p95 2.01 p99 2.01 max 2.01
+Task 2: act 345 misses 0 (0.00%) mean 7.98 p50 8.01 p95 8.01 p99 8.01 max 8.02
+Task 3: act 178 misses 0 (0.00%) mean 5.01 p50 5.01 p95 5.01 p99 5.01 max 5.01
+mv: bad 'trace_stress.bin': No such file or directory
+root@qnxpi:~#

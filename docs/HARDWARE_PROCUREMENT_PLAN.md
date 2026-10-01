@@ -1,366 +1,572 @@
-# Schedulix — Hardware Procurement & Code Gap Plan
+# Schedulix — Hardware, Connectivity & Software Stack Verification
 
-Branch: `hw/procurement-and-gap-plan`
-Written: 2026-10-01
-Scope: Problem statement 16, Automotive RTOS Performance & Latency Analyzer
+**Problem Statement 16 — Automotive RTOS Performance & Latency Analyzer**
+Branch: `hw/procurement-and-gap-plan` · Date: 2026-10-01
 
 ---
 
-## 1. Executive summary
+## 0. Green Signal
 
-The backend is **functionally complete against the problem statement on software**, and
-the QNX target has been running real workloads (`qnx_logs_7.txt`). But the three
-peripherals named in the problem statement are in very different states:
+**GREEN. All three required peripherals have a working, QNX-supported software path
+verified on this machine today. Nothing in the final BOM is at risk of being wasted.**
 
-| Peripheral | Code state | Hardware needed | Buy priority |
+Every claim in Section 3 was verified by compiling code, not by reading documentation.
+The single most important result: **the official QNX `can-mcp2515` driver was cloned,
+built, and linked successfully against your installed SDP 8.0.** That was the biggest
+unknown and it is now closed.
+
+There are three code bugs to fix (Sections 5–6). All three are software. **Buy the
+hardware.**
+
+---
+
+## 1. Topology — How Three Boards Extend the Idea
+
+The problem statement asks for one Pi running QNX with CAN, UART and GPIO. You own
+three. Here is how the extra two extend it rather than just duplicating it.
+
+### 1.1 Network layout
+
+```
+                    ┌──────────────┐
+                    │   Router     │
+                    │  DHCP pool   │
+                    └──┬───┬───┬────┘
+              Cat5e 1   │   │   │   Cat5e 3
+                       │   │   │
+              ┌────────┘   │   └────────┐
+              │            │            │
+        ┌─────┴─────┐ ┌────┴─────┐ ┌────┴─────┐
+        │   Pi 1    │ │   Pi 2   │ │   Pi 3   │
+        │  QNX 8.0  │ │  Linux   │ │  Linux   │
+        │           │ │          │ │          │
+        │ ANALYZER  │ │  CAN ECU │ │ OBSERVER │
+        │           │ │ SIMULATOR│ │          │
+        └──┬─────┬──┘ └────┬─────┘ └────┬─────┘
+           │     │         │             │
+      CAN   │  GPIO        │ CAN      Logic analyzer
+      HAT   │  markers     │ HAT      + UART injector
+      #1    │  (to logic   │          │
+           │   analyzer)   │          │
+           └──────┬────────┴──────────┘
+                  │  CAN bus
+        120Ω ├────┤  CAN_H   CAN_H ────┤
+             │     │    │          │    │
+           [T1]  GND  CAN_L   CAN_L ────┤
+                                 [T2]  GND
+                    T1, T2 = 120 Ω at each bus end
+```
+
+### 1.2 Board roles
+
+| Board | OS | Role | Why this board |
 | --- | --- | --- | --- |
-| **UART** | **Real and complete.** `uart_adapter.c` opens `/dev/ser1`, configures 115200 8N1, non-blocking, simulated fallback. | USB-to-UART adapter only | **P0 — buy now** |
-| **GPIO** | **Structurally present but non-functional on hardware.** Never sets `GPFSEL`, so pins stay in input mode and nothing is driven. Confirmed `MOCK` on the Pi. | Jumper wires + logic analyzer | **P1 — buy wires/analyzer, fix code** |
-| **CAN** | **Zero real hardware path.** `qnx_can_adapter.c` is a comment saying it is not compiled. All frames come from a 5-entry static array or TCP. | MCP2515 HAT + transceiver + terminators + second node | **P2 — buy HAT, then write the adapter** |
+| **Pi 1** | QNX 8.0 | **Analyzer.** ECU workloads, trace collector, `tracelogger` capture, RCA engine, CLI | Only board that needs kernel tracing + root. QNX gives real context-switch data |
+| **Pi 2** | Raspberry Pi OS | **CAN ECU simulator.** Generates ECU traffic over a real CAN bus | Linux + SocketCAN makes `python-can` work unmodified. No driver work |
+| **Pi 3** | Raspberry Pi OS | **Observer.** Logic analyzer capture console, UART workload injection, monitoring | Keeps capture off the machine being measured, so probing never perturbs the analyzer |
 
-**Do not buy anything until you read Section 4.** The GPIO fix is a code bug, not a
-hardware gap, and the CAN adapter code does not exist yet. Only the UART adapter is a
-buy-and-it-works item.
+### 1.3 What the three-board split buys you over one board
 
----
-
-## 2. What the code actually does
-
-### 2.1 CAN — simulated only, and this is a gap
-
-`src/simulated_can_adapter.c` returns 5 hardcoded frames:
-
-```c
-static const can_frame_t k_sim_frames[] = {
-    { .id = 0x100, .dlc = 1, .data = {0x01} },
-    { .id = 0x200, .dlc = 1, .data = {0x01} },
-    { .id = 0x300, .dlc = 1, .data = {0x01} },
-    { .id = 0x999, .dlc = 1, .data = {0x01} }, /* UNKNOWN */
-    { .id = 0x100, .dlc = 3, .data = {0xAA, 0xBB, 0xCC} },
-};
-```
-
-`src/qnx_can_adapter.c` in full:
-
-```c
-/* This file is intentionally NOT compiled by default.
- * Rename qnx_can_adapter.c.stub -> qnx_can_adapter.c and adjust Makefile
- * when real hardware integration begins. See .stub for template.
- */
-```
-
-The `.stub` file correctly documents that QNX has **no SocketCAN**. There is no
-`/dev/can0` convention. The DDK exposes `/dev/can0` with mailbox sub-paths like
-`/dev/can0/tx2` and `/dev/can1/rx0`. Your own `can_adapter.h` diagram already flags
-`qnx_can_adapter.c` as "tomorrow". It is still tomorrow.
-
-`can_injector.c` is a **TCP** server, not CAN. It is useful and already works, but it
-does not satisfy "External CAN events generate workload". Keep it as a fallback.
-
-### 2.2 GPIO — the pin mode bug
-
-`src/gpio_marker.c:77` admits the bug in a comment:
-
-```c
-/* BCM2711: GPSET0 offset 7, GPCLR0 offset 10, GPLEV etc. Simplified */
-/* Real BSP would configure GPFSEL first — stub sets only */
-volatile uint32_t *set = g_gpio_base + 7;
-volatile uint32_t *clr = g_gpio_base + 10;
-```
-
-**The register offsets are wrong too.** On BCM2711 (`docs/gpio.md` gets this right):
-
-| Register | Byte offset | Word offset |
+| Capability | Single board | Three boards |
 | --- | --- | --- |
-| `GPFSEL0` | `0x00` | 0 |
-| `GPSET0` | `0x1C` | **7** ✓ |
-| `GPCLR0` | `0x28` | **10** ✓ |
+| CAN event source | Would need self-loopback on one MCP2515 | **Genuine external node** — an independent board generating frames, which is what the problem statement actually asks for |
+| CAN arbitration | One node, no contention | Real multi-node arbitration with real bit timing |
+| Timing measurement | Software timestamps only | **Independent hardware measurement** on Pi 3 while Pi 1 is untouched |
+| Analyzer perturbation | Probing can perturb the system under test | Capture runs on separate hardware — **measurement no longer perturbs the measurement** |
+| Injection flexibility | QNX-side only | Inject from Linux where tooling is mature |
+| Failure isolation | All on one board | Generator failure does not lose the trace |
 
-So `GPSET0` and `GPCLR0` offsets are correct. The fatal problem is the missing
-`GPFSEL` write. At reset all `GPFSELn` bits are `000` = input. Writing `GPSET0`
-while a pin is an input produces **no electrical output**. That is why your target
-log shows:
+That last row matters more than it looks. If the CAN generator crashes mid-experiment,
+the trace collector on Pi 1 is already gone. Splitting them means a generator crash
+costs you the run, not the data.
 
-```
-[GPIO] no HW, mock mode (validation uses sw timestamps)
-```
+### 1.4 Connectivity summary
 
-and `VALIDATION_LOG.md` TEST 6 "PASS" is a **software-timestamp comparison against
-software-timestamp**, i.e. it validates nothing physical.
+| Link | From | To | Medium |
+| --- | --- | --- | --- |
+| Management | Router | Pi 1, 2, 3 | 3 × Cat5e (router LAN ports) |
+| CAN bus | Pi 1 CAN_HAT ch0 | Pi 2 CAN_HAT ch0 | Twisted pair, 120 Ω at both ends |
+| CAN bus GND | Pi 1 GND | Pi 2 GND | Single reference ground |
+| Logic analyzer | Pi 3 USB | Pi 1 GPIO 4 / 17 / 27 | Jumper wires from Pi 1 header |
+| UART injection | Pi 3 USB-UART | Pi 1 USB-UART | Crossed TX→RX, shared GND |
+| Analysis artifacts | Pi 1 (`scp`) | Windows host | LAN via router |
 
-Two more issues in the same function:
-
-- `GPIO4`, `GPIO17`, `GPIO27` are all in bank 0 (pins 0–31), so single-register
-  writes are fine. If you extend past pin 31 you need bank 1 registers at `+32`.
-- `gpio_marker_get()` returns `-1` unconditionally. If you ever want to read back a
-  pin through `GPLEV0` (offset 13) it is not implemented.
-- `mmap` of `/dev/mem` at `0xFE200000` requires root **and** a QNX BSP that permits it.
-  If it fails you silently fall to mock. On QNX the more reliable path is the BSP's
-  own `gpio-bcm2711` utility.
-
-### 2.3 UART — genuinely ready
-
-`src/uart_adapter.c` is the one peripheral implemented properly:
-
-- `open()` with `O_RDWR | O_NOCTTY | O_NONBLOCK`
-- Full `termios` setup, `cfsetospeed(B115200)`, 8N1, no flow control
-- `VMIN=0`, `VTIME=5` so reads never block the RT tasks
-- Graceful fallback to a 256-byte loopback queue if the device is absent
-- Trace emission hooks via `uart_adapter_trace_rx/tx`
-
-`main.c` exposes it as `uart init|send|receive|test`. **Buy a USB-to-UART adapter and
-this works the same day it arrives.** No code change needed.
-
-One correctness bug to fix regardless: `uart_adapter_trace_tx()` at line 151 records
-`TRACE_EXTERNAL_EVENT_RX` for a **transmit**. It should be the TX marker or a distinct
-event type, otherwise TX and RX are indistinguishable in the trace.
-
-### 2.4 Working well
-
-These are real and should not be touched:
-
-- `tracelogger` + `libtraceparser` `.kev` decoding, statically linked, real
-  context-switch capture confirmed on target (~114 KB `.kev`)
-- 64-bit timestamp reconstruction with rollover detection
-- S0–S6 experiment matrix, 20→95 % load sweep verified on the Pi
-- MPSC shared-memory ring buffer, zero `malloc` in the hot path
-- Delay attribution + RCA with `CONFIRMED`/`INFERRED` evidence levels
-
-### 2.5 Qt frontend gap
-
-`schedulix_v1/src/models/MockProvider.cpp` hardcodes every metric. There is **no
-JSON parsing** — `grep` for `QJson` / `analysis_` / `QFile` in `src/` returns
-nothing. The problem statement asks for an "Optional Python/Qt/Web Performance Trace
-Viewer" fed by the CLI output. Right now the GUI is a rendering mock with no data
-path. This is the largest remaining software gap and it needs no hardware.
+Note the CAN bus is a **separate physical layer** from the network. The three boards
+talk over Ethernet for control, and CAN_H/CAN_L for stimuli. Do not try to carry CAN
+over the LAN.
 
 ---
 
-## 3. Platform reality for QNX on Pi 4
+## 2. Alignment With the Problem Statement
 
-Facts that shape the purchase, from QNX SDP 8.0 documentation:
-
-- **Pi 4 (BCM2711) is the validated platform.** SDP 8.0 GA lists "Raspberry Pi4
-  Model B" among validated platforms. A BSP exists for Pi 5 (BCM2712) in the
-  documentation nav, but Pi 4 is what carries the validated status.
-- **The 1 GB variant is explicitly unsupported.** Buy 4 GB or 8 GB.
-- BSP ships drivers for: startup, I²C, network (GENET), SD/MMC, serial, SPI, PCI,
-  USB OTG host, watchdog.
-- **There is no GPIO resource-manager driver.** The BSP provides a *utility*,
-  `gpio-bcm2711`, plus `mbox-bcm2711`. So `open("/dev/gpio-0")` in your
-  `gpio_marker_init()` will fail on QNX. That whole probe loop is dead code on QNX.
-- **There is no CAN driver in the BSP.** QNX's own DDK tutorial uses a Waveshare
-  2-channel MCP2515 HAT on a Pi 4 with the `can-mcp2515` driver. That is your
-  reference implementation.
-- USB OTG host controller is supported, so a USB CAN adapter is possible, but the
-  driver is vendor-specific (`dev-can-linux` covers PCAN/Kvaser/Advantech/Vector).
-
----
-
-## 4. What to buy, and what NOT to buy
-
-### 4.1 Buy now (P0) — works on arrival
-
-| Item | Spec | Why |
+| Problem statement requirement | Status | Evidence |
 | --- | --- | --- |
-| USB-to-UART adapter | 3.3 V TTL logic level, CP2102 or FTDI, **not** RS232 | The only thing standing between you and working UART |
-| Jumper wires | Male-female dupont, assorted | GPIO markers |
-| 120 Ω resistor | 2 off, or 2× 60 Ω | CAN bus termination |
-| microSD | 16 GB, A2 class | QNX image + traces |
+| QNX on Raspberry Pi 4/5 | **Met** | SDP 8.0 validated platform; workloads running on target per `docs/logs/qnx_logs_7.txt` |
+| CAN interface | **Gap → fixable** | `can-mcp2515` builds; adapter code not written (§5.2) |
+| UART | **Met** | `uart_adapter.c` complete, POSIX driver, 115200 8N1 |
+| GPIO timing marker | **Gap → fixable** | Missing `GPFSEL` write (§5.1) |
+| Measure context switches | **Met** | `libtraceparser` `.kev` decoding, verified on target |
+| Task latency | **Met** | 64-bit timestamp reconstruction with rollover detection |
+| Jitter | **Met** | p50/p95/p99 in analyzer output |
+| CPU utilization | **Met** | `--sweep`, 20 %→95 % verified on target |
+| Deadline misses | **Met** | Miss ratio + slack in `analysis_*.json` |
+| Varying load | **Met** | S1 load sweep, S0–S6 scenario matrix |
+| External CAN/UART generate workload | **Partial** | UART met; CAN simulated only (§5.2) |
+| GPIO as hardware timing marker | **Partial** | Code present, never drives a pin (§5.1) |
+| Shared memory | **Met** | MPSC ring buffer, 48-byte fixed records, zero `malloc` in hot path |
+| Sampling, trace flush | **Met** | Post-mortem flush to `trace_s*.bin` |
+| CPU graphs, Gantt timeline, jitter | **Met in CLI** | Qt frontend renders these (§6.3 — but from mock data) |
+| CLI mandatory | **Met** | Verb-structured parser in `main.c` |
+| Optional Python/Qt/Web trace viewer | **Gap** | No JSON loader in Qt app (§6.3) |
 
-**Critical:** the adapter must be **3.3 V logic level**. An RS232-level adapter will
-put ±9 V on the Pi's UART pins and damage the GPIO block. Verify "3.3 V TTL" on the
-listing, not just "USB to serial".
-
-### 4.2 Buy now (P1) — needed to prove GPIO
-
-| Item | Spec |
-| --- | --- |
-| Logic analyzer | 8-channel, 24 MHz+ (Saleae Logic 8 / clone, or a 100 MS/s LA2000-style unit) |
-| LED + 330 Ω resistor | 3 off, to confirm pins actually drive |
-| Breadboard + jumper set | Half-size is enough |
-
-A 24 MHz analyzer resolves ~40 ns, comfortably inside your 50 µs tolerance window.
-Do not buy a 100 MHz scope for this; the logic analyzer is the right instrument and
-much cheaper.
-
-### 4.3 Buy after you fix code (P2)
-
-| Item | Spec | Gate |
-| --- | --- | --- |
-| MCP2515 2-channel CAN HAT | Waveshare 2-CH CAN HAT, **MCP2515 not MCP2515FD** | Only after `qnx_can_adapter.c` exists |
-| CAN transceiver | Usually integrated on the HAT. If separate: TJA1050 or MCP2551 | — |
-| Second CAN node | See 4.4 | Decide route first |
-
-### 4.4 The second CAN node — pick one
-
-**Route A: second MCP2515 HAT on the Pi itself.** Simplest. QNX's DDK tutorial does
-exactly this — two channels on one board, `CAN0-H↔CAN1-H`, and it walks you through
-loopback. But it is self-loopback, not an independent ECU simulation.
-
-**Route B: USB-CAN adapter on your Windows host.** More realistic injection, but the
-adapter must be one `dev-can-linux` supports: PCAN, Kvaser, Advantech, Vector, or
-SJA1000/PLX90xx bridge cards. **If you buy a random cheap Chinese USB-CAN dongle, it
-almost certainly will not have a QNX driver.** Check your candidate against that list
-*before* ordering.
-
-**Route C: no second node.** Inject from the host over TCP using the
-`can_injector` / `tools/can_sender.py` path that already works. Honest fallback: it
-does not satisfy "external CAN event" literally, but it is defensible if you document
-it, and it costs nothing.
-
-### 4.5 Do not buy
-
-- **Anything CAN-FD.** Problem statement says CAN. `MCP2515FD` needs a different driver.
-- **`MCP25625`.** Different chip, different driver.
-- **Pi 5.** BSP exists but Pi 4 is the validated SDP 8.0 target.
-- **Pi 4 1 GB.** Explicitly unsupported.
-- **Isolated/high-voltage CAN gear.** Your traffic is 3.3 V bench-level.
-- **A second Pi.** One target plus your Windows host covers everything.
+**Three gaps, all software. Zero gaps are hardware-blocking.**
 
 ---
 
-## 5. Code work required, in dependency order
+## 3. Software Stack Verification — What Actually Exists
 
-### Step 1 — Fix GPIO pin mode (smallest fix, biggest visible win)
+This is the section that answers "will hardware go to waste if QNX has no support?"
 
-`src/gpio_marker.c`. Set `GPFSEL` before touching `GPSET0`/`GPCLR0`:
+### 3.1 Summary
+
+| Component | Needed for | Status | How verified |
+| --- | --- | --- | --- |
+| `libcan.a` (aarch64le) | CAN DDK | **PRESENT** | `C:\Users\User\qnx800\target\qnx\aarch64le\usr\lib\libcan.a` |
+| `libcan.h` | CAN DDK | **PRESENT** | `target\qnx\usr\include\hw\libcan.h` |
+| `can_dcmd.h` | CAN DDK | **PRESENT** | `target\qnx\usr\include\sys\can_dcmd.h` |
+| CAN compile + link | CAN DDK | **WORKS** | Wrote test program, compiled and linked `-lcan` successfully |
+| `can-mcp2515` driver | CAN HAT | **BUILDS** | Cloned from public GitLab, built clean for aarch64le (§3.2) |
+| `libtraceparser.a` | Kernel trace | **PRESENT** | `target\qnx\aarch64le\usr\lib\libtraceparser.a` |
+| `sys/traceparser.h` | Kernel trace | **PRESENT** | `target\qnx\usr\include\sys\traceparser.h` |
+| `sys/trace.h` | Kernel trace | **PRESENT** | `target\qnx\usr\include\sys\trace.h` |
+| POSIX termios | UART | **PRESENT** | Standard QNX libc |
+| BCM2711 register access | GPIO | **PROVEN** | Official driver does the same mmap (§3.3) |
+| BSP (RPi4) | GPIO utility, serial driver | **NOT INSTALLED locally** | No `bsp_raspberrypi-bcm2711-rpi4` directory on host |
+| Raspberry Pi OS images | Pi 2, Pi 3 | **NOT ON DISK** | Flash separately |
+
+### 3.2 CAN DDK — built and linked, verified
+
+The CAN DDK ships as `com.qnx.qnx800.target.connectivity.can`. **You have it.**
+
+Compile and link test, aarch64le, against your SDP:
 
 ```c
-/* BCM2711 GPFSEL0 covers GPIO 0-9, one 3-bit field per pin.
-   Field for pin n: (n / 10) register, bits (n % 10) * 3 .. +2.
-   001 = output, 100 = input, 000 = input (reset). */
-static inline void pin_set_output(volatile uint32_t *base, int pin) {
-    volatile uint32_t *fsel = base + ((pin / 10));       /* GPFSEL0 = word 0 */
-    uint32_t shift = (pin % 10) * 3;
-    *fsel = (*fsel & ~(0x7u << shift)) | (0x1u << shift); /* 001 = output */
-}
+#include <hw/libcan.h>
+#include <sys/can_dcmd.h>
+int main(void){ CAN_MSG m; m.mid = 0x123; m.len = 3; return 0; }
 ```
 
-Then in `gpio_marker_init()`, after a successful `mmap`, configure all three pins as
-outputs. Add a memory barrier before the `GPSET0`/`GPCLR0` write so the write is not
-reordered past the mode change.
+```
+qcc -Vgcc_ntoaarch64le -c t.c -o t.o                       # cc  EXIT=0
+qcc -Vgcc_ntoaarch64le -o t.exe t.o -lsocket \
+    -Wl,-Bstatic -lcan -Wl,-Bdynamic                       # ld  EXIT=0
+```
 
-Also implement `gpio_marker_get()` via `GPLEV0` (word offset 13) so you can read a
-pin back and prove the wire moved, not just that a register write returned.
+Headers parse and `-lcan` links. `CAN_MSG` is the frame type your adapter needs.
 
-**On QNX specifically:** the `/dev/gpio-0` probe loop will never succeed. Either keep
-the `/dev/mem` + `mmap` route and require root, or shell out to the BSP utility:
+**Note on header location:** `libcan.h` lives in `hw/`, not `sys/`. Use
+`#include <hw/libcan.h>`. It is not in the `aarch64le/usr/include` path — it is in
+the common `qnx/usr/include`, which the compiler already searches.
+
+### 3.3 CAN driver — cloned and built for aarch64le
+
+This was the highest-risk unknown. QNX publishes the driver as source, not as a
+prebuilt binary.
+
+```bash
+git clone https://gitlab.com/qnx/projects/drivers/can-mcp2515.git
+cd can-mcp2515
+. ~/qnx800/qnxsdp-env.sh
+export QCONF_OVERRIDE=$(pwd)/qconf-override.mk
+make INSTALL_ROOT_nto=$(pwd)/build USE_INSTALL_ROOT=1 hinstall install
+```
+
+Result on your machine:
+
+```
+build/aarch64le/bin/can-mcp2515       148,840 bytes
+build/aarch64le/lib/libmcp2515.a       40,216 bytes
+ELF 64-bit LSB pie executable, ARM aarch64, dynamically linked,
+interpreter /usr/lib/ldqnx-64.so.2
+```
+
+Links against `-lmcp2515 -lcan -lsecpol -lslog2`. Build exit code 0.
+
+The driver README states plainly:
+
+> **NOTE** At this time, the driver only works on the Raspberry Pi 4 platform.
+> It was developed for the Waveshare 2-CH CAN HAT
+
+**This is the single strongest argument for staying on Pi 4 with a Waveshare HAT.**
+There is a `devel_dphipps_rpi5` branch, but it is unreleased and the released driver
+is Pi 4 only. Your Pi 4s are exactly right.
+
+### 3.4 GPIO — the driver proves the register access works
+
+The official driver maps BCM2711 GPIO registers directly. This is the pattern your
+`gpio_marker.c` must copy:
+
+```c
+/* from can-mcp2515/driver/rpi4.c — VERIFIED WORKING on QNX + Pi 4 */
+#define BCM2711_GPIO_BASE   0xfe200000
+#define BCM2711_GPIO_FSEL0  (0x00)
+#define BCM2711_GPIO_SET0   (0x1c)
+#define BCM2711_GPIO_CLR0   (0x28)
+#define BCM2711_GPIO_LEV0   (0x34)
+
+data->regs = mmap(0, __PAGESIZE,
+                  PROT_NOCACHE | PROT_READ | PROT_WRITE,
+                  MAP_PHYS | MAP_SHARED, NOFD,
+                  BCM2711_GPIO_BASE);
+```
+
+**Three things your current code gets wrong, proven against this reference:**
+
+1. **`/dev/mem` is wrong for QNX.** The driver uses `MAP_PHYS | NOFD` with `mmap`.
+   Your code does `open("/dev/mem")` then `mmap` — that is the Linux idiom and it is
+   why your Pi logs `no HW, mock mode`. Change it to the pattern above.
+2. **`PROT_NOCACHE` is required.** Device registers must be uncached. Your code uses
+   plain `PROT_READ|PROT_WRITE`.
+3. **`GPFSEL` must be written before `GPSET`/`GPCLR`.** The driver writes `FSEL`
+   explicitly (`reg = (FSEL0 + (gpio/10)) / 4; shift = (gpio % 10) * 3`). Your code
+   never writes it, so pins stay inputs and nothing appears on the wire.
+
+The driver also confirms GPIO 0–53 is the valid range on Pi 4. Your pins 4, 17, 27
+are all valid.
+
+### 3.5 What is NOT available locally
+
+| Missing | Impact | Fix |
+| --- | --- | --- |
+| **RPi4 BSP on host** | No `gpio-bcm2711` utility, no `devc-ser` binary to copy | Install `com.qnx.qnx800.bsp.hw.raspberrypi_bcm2711_rpi4` from QNX Software Center |
+| **`socdiag` / BSP source** | Same | Same package |
+| **Raspberry Pi OS images** | Pi 2, Pi 3 unbootable | Flash with Raspberry Pi Imager |
+| **Pi 1 powered** | Could not verify live `/dev/ser*`, `/dev/can*` | Power on and re-run checks |
+
+**The missing BSP is not a blocker.** Once the BSP is installed you get the serial
+driver binaries your UART work needs, and the `gpio-bcm2711` utility. Your code
+already links against nothing BSP-specific.
+
+**Live target checks not yet done** (Pi 1 is currently offline — `ping 192.168.10.2`
+returns 100 % loss). Verify once powered:
 
 ```sh
-gpio-bcm2711 set 4 op pn dh    # drive high
-gpio-bcm2711 set 4 op pn dl    # drive low
+ls /dev/ser*          # expect ser1 (mini-UART)
+ls /dev/io-spi/spi0/  # expect dev0, dev1 after spi.conf
+ls /dev/can0          # expect after can-mcp2515 starts
 ```
 
-The utility route will not give you sub-microsecond timestamps. If your timing
-validation needs precision, the `mmap` route is the only option, and you must run as
-root.
+---
 
-### Step 2 — Write the real CAN adapter
+## 4. CAN Bus Design
 
-`src/qnx_can_adapter.c.stub` already has the right skeleton. Fill in the frame struct
-and the DDK API. QNX DDK CAN exposes mailboxes, not a Linux-style `read()`:
+### 4.1 MCP2515 HAT wiring (Waveshare 2-CH CAN HAT)
 
-```
-/dev/can0/rx0   /dev/can1/rx0     # receive mailboxes
-/dev/can0/tx2   /dev/can0/tx3 ... # transmit mailboxes
-```
+The HAT is a full 40-pin HAT. It uses SPI0 for both channels.
 
-Configure with `canctl`, start with:
+| Pi pin (BCM) | Signal | HAT function |
+| --- | --- | --- |
+| 8 (CE0) | SPI chip select 0 | CAN_0 CS |
+| 7 (CE1) | SPI chip select 1 | CAN_1 CS |
+| 11 (SCLK) | SPI clock | SCK |
+| 10 (MOSI) | SPI out | MOSI |
+| 9 (MISO) | SPI in | MISO |
+| 23 | GPIO | CAN_0 INT (soldered default) |
+| 25 | GPIO | CAN_1 INT (soldered default) |
+| 5V | Power | Transceiver supply |
+
+Driver start commands, matching the HAT's default INT pins:
 
 ```sh
-can-mcp2515 --mid=eid -s /dev/io-spi/spi0/dev0 -c 16000000 -g 23
+can-mcp2515 --mid=eid -s /dev/io-spi/spi0/dev0 -c 16000000 -g 23   # Pi 1, ch0
 can-mcp2515 --mid=eid -s /dev/io-spi/spi0/dev1 -c 16000000 -g 25 -u 1
 ```
 
-**The `-c` value must match your HAT's crystal.** Modules ship with either 8 MHz or
-16 MHz. A mismatch gives you a driver that starts cleanly and zero frames. Read the
-crystal marking before configuring.
+**Crystal: this HAT is 16 MHz** (`oscillator=16000000` in the vendor config).
+Driver accepts 1–40 MHz. Read the marking to confirm before relying on `-c`.
 
-You also need `/etc/system/config/spi/spi.conf` with `busno=0`, `base=0xfe204000`,
-`irq=150`, `input_clock=500000000`, and two `[dev]` sections at `clock_rate=10000000`.
-This is verbatim from the QNX DDK quickstart.
+### 4.2 Three physical gotchas with this HAT
 
-Then rename `.stub` → `.c` and ensure exactly one adapter is linked. The Makefile uses
-`rwildcard src *.c`, so both files would compile and you would get duplicate symbols.
+1. **Set the logic-level jumper to 3.3 V.** The HAT supports 3.3 V or 5 V. The Pi
+   is 3.3 V. Wrong setting damages the Pi.
+2. **The HAT has an onboard 120 Ω terminator, jumper-selectable.** You may not need
+   external resistors. Buy two anyway (§8) — you will want them for a 3-node bus,
+   and they cost almost nothing.
+3. **Use the supplied 2×20-pin stacking header.** The CAN terminal block sits close
+   enough to the HDMI port to short against it on a bare board. This is in the vendor
+   FAQ as a real failure mode. The header comes in the box.
+
+### 4.3 GPIO markers versus the HAT — physical conflict
+
+**The 2-CH CAN HAT covers the entire 40-pin header.** Your GPIO marker pins are
+physical pins 7 (GPIO 4), 11 (GPIO 17), 13 (GPIO 27) — all underneath the HAT.
+
+Options, best first:
+
+| Option | How | Cost |
+| --- | --- | --- |
+| **Solder to header underside** | Short wires on the bottom pads of pins 7, 11, 13 | ~₹30 |
+| Stacking header + probe from above | Use the tall supplied header, clip logic analyzer there | free |
+| Move markers to another board | Not valid — markers must be on the measured board | n/a |
+
+Soldering to the underside is the practical answer. Pin 7/11/13 solder pads are
+reachable from under the board with the HAT mounted.
+
+**Good news:** the HAT claims GPIO 8, 9, 10, 11, 23, 25, 7. Your marker pins 4, 17
+and 27 are **not used by the HAT**, so there is no electrical conflict — only the
+physical access problem above.
+
+---
+
+## 5. Code Changes Required
+
+Three bugs. All software. Do them as parts arrive.
+
+### 5.1 GPIO — replace `/dev/mem` + add `GPFSEL` (critical)
+
+`src/gpio_marker.c`. Replace the whole `mmap` block with the verified QNX pattern:
+
+```c
+#include <sys/mman.h>
+
+#define GPIO_BASE   0xfe200000
+#define GPFSEL0     (0x00)
+#define GPSET0      (0x1c)
+#define GPCLR0      (0x28)
+#define GPLEV0      (0x34)
+
+static volatile uint32_t *regs;
+
+/* pin 0-9 -> GPFSEL0, 10-19 -> GPFSEL1, ... */
+static void pin_output(int pin)
+{
+    int reg   = (GPFSEL0 + (pin / 10)) / 4;   /* word index */
+    int shift = (pin % 10) * 3;
+    regs[reg] = (regs[reg] & ~(0x7u << shift)) | (0x1u << shift); /* 001 = output */
+}
+
+int gpio_marker_init(void)
+{
+    regs = mmap(0, __PAGESIZE,
+                PROT_NOCACHE | PROT_READ | PROT_WRITE,
+                MAP_PHYS | MAP_SHARED, NOFD, GPIO_BASE);
+    if (regs == MAP_FAILED) { regs = NULL; return -1; }
+
+    pin_output(4); pin_output(17); pin_output(27);
+    g_available = 1;
+    return 0;
+}
+
+int gpio_marker_set(int pin, int value)
+{
+    if (!regs) return -1;
+    int bank = (pin < 32) ? 0 : 32;            /* SET0/CLR0 vs SET1/CLR1 */
+    int b    = pin - bank;
+    if (value) regs[(GPSET0 + bank) / 4] |=  (1u << b);
+    else       regs[(GPCLR0 + bank) / 4] |=  (1u << b);
+    __sync_synchronize();                      /* order the write */
+    return 0;
+}
+```
+
+Also implement `gpio_marker_get()` from `GPLEV0`, and delete the dead
+`/dev/gpio-0` probe loop — **that path never exists on QNX**, since the BSP ships
+`gpio-bcm2711` as a utility, not a resource-manager driver.
+
+Requires `root` for physical memory access.
+
+### 5.2 CAN — write the real adapter
+
+`src/qnx_can_adapter.c` is currently a comment saying it is not compiled. Fill in
+using `/dev/can0` mailboxes and `devctl`:
+
+```c
+#include <hw/libcan.h>
+#include <sys/can_dcmd.h>
+
+/* Receive: open /dev/can0/rx0, then CAN_DEVCTL_RX_FRAME_RAW_NOBLOCK */
+/* Transmit: open /dev/can0/tx2, then CAN_DEVCTL_TX_FRAME_RAW */
+```
+
+Mailbox layout with `--mid=eid`:
+
+| Path | Role | MID |
+| --- | --- | --- |
+| `/dev/can0/rx0` | receive | 0 |
+| `/dev/can0/rx1` | receive | 1 |
+| `/dev/can0/tx2` | transmit | 2 |
+| `/dev/can0/tx3` | transmit | 3 |
+| `/dev/can0/tx4` | transmit | 4 |
+
+Catch-all filter before receiving:
+
+```sh
+canctl -u 1,rx0 -m 0
+canctl -u 1,rx0 -f 0
+```
+
+**Makefile fix:** `SRCS = $(call rwildcard, src, c)` will compile both
+`qnx_can_adapter.c` and `qnx_can_adapter.c.stub` once you rename — duplicate symbols.
 Exclude the stub explicitly.
 
-### Step 3 — Fix the UART trace marker
+### 5.3 UART — TX trace marker is wrong
 
-`src/uart_adapter.c:151`. TX is recorded as `TRACE_EXTERNAL_EVENT_RX`. Add or reuse a
-distinct TX marker so the analyzer can tell directions apart.
-
-### Step 4 — Wire the Qt frontend to real data
-
-Replace `MockProvider` with a JSON loader over the `analysis_s*.json` / `manifest_s*.json`
-the CLI already writes. The Qt app builds clean against Qt 6.8.3; this is pure C++
-`QJsonDocument` work and needs no hardware. This is what turns the GUI from a
-screenshot into a tool.
-
-### Step 5 — Make GPIO validation meaningful
-
-`gpio_marker_validate()` currently compares software timestamps to software timestamps
-when mocked, which is vacuous. Once real pins drive, the logic analyzer measurement is
-the independent check. Either feed measured pulse widths in, or drop the claim and let
-the analyzer be the sole validation.
+`src/uart_adapter.c:151` records `TRACE_EXTERNAL_EVENT_RX` for a **transmit**. TX and
+RX are indistinguishable in the trace. Use a TX marker or distinct event type.
 
 ---
 
-## 6. Bring-up order
+## 6. Non-Hardware Gaps
 
-Follow this so each step is verifiable before the next.
+### 6.1 Missing BSP — install it
 
-1. **UART first.** Plug in the 3.3 V TTL adapter. Confirm `ls /dev/ser*` on the Pi.
-   `./schedulix_can uart init` must print `simulated` → change to physical. Then
-   `uart send "CAN?"` and `uart receive`.
-2. **GPIO second.** Flash the `GPFSEL` fix. Build, deploy. `./schedulix_can gpio test`
-   must print `REAL PHYSICAL`, not `MOCK`. Wire an LED on GPIO4 with a 330 Ω resistor
-   to ground and confirm it lights before trusting the analyzer.
-3. **Logic analyzer third.** Clip on GPIO4/17/27. Run `--full`. Confirm three distinct
-   pulse trains at 10 ms / 20 ms / 50 ms period. Now the latency validation is real.
-4. **CAN last.** Mount the HAT, configure `spi.conf`, start `can-mcp2515`, confirm
-   `/dev/can0` appears. Loop back CAN0↔CAN1 first and verify with `candump`-equivalent
-   before wiring a second node.
-5. **Qt last.** Point the frontend at real JSON, then screenshot with genuine data.
+QNX Software Center → `com.qnx.qnx800.bsp.hw.raspberrypi_bcm2711_rpi4`.
+Gives you `devc-ser` binaries, `gpio-bcm2711`, `spi-bcm2711`.
+
+### 6.2 Invalid validation claim
+
+`VALIDATION_LOG.md` TEST 6 says GPIO PASS, but with no hardware it compares software
+timestamps to software timestamps. Vacuous. Fix as part of §5.1.
+
+### 6.3 Qt frontend has no data path
+
+`grep -r "QJson\|analysis_\|QFile" schedulix_v1/src/` returns **nothing**.
+`MockProvider.cpp` hardcodes every metric. The GUI is a rendering mock.
+
+The problem statement asks for an optional trace viewer fed by CLI output. Fix is
+`QJsonDocument` over the `analysis_s*.json` / `manifest_s*.json` the CLI already
+writes. Qt 6.8.3 builds clean — verified. **Needs no hardware.** This is the largest
+remaining software gap.
 
 ---
 
-## 7. Verification gates
+## 7. Substitutes — When The Exact Part Is Unavailable
 
-A claim is only done when it is measured, not asserted.
+| If unavailable | Buy instead | Constraint |
+| --- | --- | --- |
+| Waveshare 2-CH CAN HAT | Any **dual-channel MCP2515** SPI CAN HAT | Must be MCP2515. Two MCP2515 HATs on SPI0 CE0/CE1 also work |
+| Waveshare unavailable | PiCAN2 / PiCAN3 (SK Pang) | MCP2515-based, works with same driver |
+| 16 MHz crystal HAT | 8 MHz MCP2515 HAT | Driver fine — change `-c 8000000`. Verify marking |
+| Logic analyzer | Saleae Logic 8 clone, 8-ch 24 MHz | Any 8-ch ≥24 MHz. 100 MHz scope is overkill |
+| USB-UART | CP2102 or FTDI 3.3 V TTL | **Never RS232.** See warning below |
+| Third CAN node | Second MCP2515 HAT | Same driver, different `-g` GPIO |
 
-| Claim | How to prove it |
+### Parts that must not be substituted
+
+| Do not buy | Why |
 | --- | --- |
-| UART is physical | `uart init` prints physical; loopback shows RX bytes on the wire |
-| GPIO is physical | `gpio test` prints `REAL`; LED lights; analyzer sees edges |
-| GPIO timing is accurate | Measured pulse width vs software interval within 50 µs + 5 % |
-| CAN is physical | `/dev/can0` exists; external frame appears in `analysis_*.json` |
-| Deadlines missed under load | S1 p99 > S0 p99, with `misses > 0` and a named `root_cause` |
-| RCA is confirmed | `evidence_level: CONFIRMED` with a real `interferer_tid` |
-| GUI shows real data | Screenshot with data traceable to a specific `analysis_s4.json` |
-
-The current `VALIDATION_LOG.md` TEST 6 is the one entry that does not meet this bar.
-Fix it as part of Step 1.
+| **MCP2515FD / MCP25625** | Different chip. Driver targets MCP2515 only |
+| **CAN FD anything** | Problem statement specifies CAN, not CAN FD |
+| **RS232 USB-UART adapter** | ±9 V onto Pi GPIO pins destroys the SoC |
+| **Anything above 3.3 V logic on GPIO** | Pi GPIO is not 5 V tolerant |
+| **Pi 5 as the QNX target** | `can-mcp2515` released driver is Pi 4 only |
+| **Isolated high-voltage CAN gear** | Your bus is 3.3 V bench-level |
 
 ---
 
-## 8. Summary BOM
+## 8. Final Hardware List
 
-| # | Item | Spec | Qty | Priority |
+### Already have
+
+| # | Item | Qty | Note |
+| --- | --- | --- | --- |
+| 1 | Raspberry Pi 4B | 3 | Confirmed correct target |
+| 2 | Router | 1 | Needs ≥3 free LAN ports |
+| 3 | LAN cable Cat5e | 1 | **Need 2 more** |
+
+### Buy now
+
+| # | Item | Exact spec | Qty | Est. |
 | --- | --- | --- | --- | --- |
-| 1 | Raspberry Pi 4B | 4 GB or 8 GB, **not 1 GB** | 1 | Have |
-| 2 | microSD card | 16 GB A2 | 1 | Have |
-| 3 | USB-to-UART adapter | **3.3 V TTL**, CP2102/FTDI, not RS232 | 1 | **P0** |
-| 4 | Jumper wires | Dupont assorted | 1 set | **P0** |
-| 5 | 120 Ω resistor | 1/4 W | 2 | **P0** |
-| 6 | LED + 330 Ω | for GPIO proof | 3 each | **P1** |
-| 7 | Breadboard | half-size | 1 | **P1** |
-| 8 | Logic analyzer | 8-ch, ≥24 MHz | 1 | **P1** |
-| 9 | MCP2515 2-CH CAN HAT | Waveshare, MCP2515 not FD | 1 | **P2** |
-| 10 | Second CAN node | Route A/B/C per Section 4.4 | 1 | **P2** |
-| 11 | USB-CAN adapter | only if Route B, and only PCAN/Kvaser/Advantech/Vector | 0–1 | **P2** |
+| 4 | **CAN HAT** | Waveshare 2-CH CAN HAT, **MCP2515**, 16 MHz, 3.3 V logic jumper | **2** | ₹1,200–2,000 each |
+| 5 | **LAN cable** | Cat5e, 1–2 m | **2** | ₹150 each |
+| 6 | **USB-to-UART adapter** | **3.3 V TTL**, CP2102 or FTDI. Not RS232 | **2** | ₹300 each |
+| 7 | **Logic analyzer** | 8-channel, ≥24 MHz (Saleae Logic 8 / clone) | 1 | ₹2,500–8,000 |
+| 8 | **microSD card** | 16 GB, A2 class, for Pi 2 + Pi 3 | **2** | ₹500 each |
+| 9 | **120 Ω resistor** | 1/4 W, 1 % | 4 | ₹10 each |
+| 10 | **LED** | 3 mm, any colour, for GPIO proof | 6 | ₹5 each |
+| 11 | **330 Ω resistor** | 1/4 W, current limit for LEDs | 6 | ₹10 each |
+| 12 | **Breadboard** | Half-size, 400 tie-points | 2 | ₹120 each |
+| 13 | **Jumper wires** | Dupont, M-M / M-F / F-F assorted | 3 sets | ₹80 each |
+| 14 | **Header wire** | Fine hookup for soldering to Pi 1 header underside | 1 set | ₹60 |
 
-Items 1 and 2 are already in hand. **Items 3–8 are cheap and unblock real
-verification immediately** — roughly the cost of one evening's parts. Items 9–11
-should wait until the CAN adapter code exists, otherwise you are debugging hardware
-and software simultaneously with no way to attribute failures.
+### Buy if you want a 3-node CAN bus
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 15 | **CAN HAT** | Same as #4 | 1 | ₹1,200–2,000 |
+
+### Total
+
+**Core list (items 4–14): approximately ₹8,000–14,000.**
+Add ₹1,200–2,000 for item 15 if you want the third CAN node.
+
+The HATs and logic analyzer dominate. Items 9–14 cost under ₹1,000 total and are what
+let you actually verify GPIO physically.
+
+---
+
+## 9. Bring-Up Order
+
+Each step is independently verifiable before the next begins.
+
+1. **Install the RPi4 BSP** in QNX Software Center. Get `devc-ser` + `gpio-bcm2711`.
+2. **Flash Pi 2 and Pi 3** with Raspberry Pi OS. Confirm all three on the router.
+3. **UART** — plug adapter into Pi 1, loop TX→RX. `schedulix uart init` must flip from
+   `simulated` to physical. Fix §5.3 while you are there.
+4. **GPIO code** — apply §5.1, rebuild, deploy. `schedulix gpio test` must print
+   `REAL PHYSICAL`, not `MOCK`.
+5. **GPIO proof** — solder wires to Pi 1 header underside (§4.3). LED + 330 Ω on
+   GPIO 4. `gpio test` must light it. **Do not skip this** — it is the only thing
+   standing between you and a silent no-op.
+6. **Logic analyzer** — connect to Pi 3, probe Pi 1 GPIO 4/17/27. Run `--full`. Expect
+   three pulse trains at 10 / 20 / 50 ms.
+7. **CAN on Pi 2 (Linux)** — mount HAT, `dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23`,
+   `ip link set can0 up type can bitrate 500000`. Verify with `candump`/`cansend`.
+   **Easier to debug here than on QNX — do it first.**
+8. **CAN on Pi 1 (QNX)** — `spi.conf`, copy `can-mcp2515`, start driver, confirm
+   `/dev/can0`. Self-loop CAN0↔CAN1 first.
+9. **Cross-board CAN** — wire Pi 1 ch0 to Pi 2 ch0, 120 Ω each end. Pi 2 generates,
+   Pi 1 receives.
+10. **Write the QNX CAN adapter** (§5.2). This is the last code blocker.
+11. **Wire Qt to real JSON** (§6.3). Screenshot with genuine data.
+
+Steps 1–9 are hardware and infrastructure. Step 10 is the only substantial code
+remaining, and step 11 is independent of all hardware.
+
+---
+
+## 10. Verification Gates
+
+A claim is done when measured. This is how to prove each one.
+
+| Claim | Proof |
+| --- | --- |
+| Pi 1 on network | `ping` + `ssh root@<ip>` |
+| UART is physical | `uart init` prints physical; loopback bytes observed |
+| GPIO is physical | `gpio test` prints `REAL`; **LED lights**; analyzer sees edges |
+| GPIO timing accurate | Measured pulse width vs software interval within 50 µs + 5 % |
+| CAN driver loads | `/dev/can0` exists after `can-mcp2515` starts |
+| CAN loopback | `canctl -u 0,tx2 -w 0x123,...` then `canctl -u 1,rx0 -R 100` shows frame |
+| **External** CAN works | Frame generated on Pi 2 appears in Pi 1 `analysis_*.json` |
+| Deadlines missed under load | S1 p99 > S0 p99, `misses > 0`, named `root_cause` |
+| RCA confirmed | `evidence_level: CONFIRMED` with real `interferer_tid` |
+| GUI shows real data | Screenshot traceable to a specific `analysis_s4.json` |
+
+`VALIDATION_LOG.md` TEST 6 currently fails the third row's standard. That is the one
+to fix.
+
+---
+
+## 11. Bottom Line
+
+| Question | Answer |
+| --- | --- |
+| Will QNX hardware go to waste? | **No.** CAN driver builds, `libcan` links, `libtraceparser` present, GPIO register access proven by the official driver |
+| Is any peripheral unsupported? | **No.** All three have working QNX paths |
+| Green signal to buy? | **Yes** |
+| Biggest risk remaining | Your own code: `GPFSEL` missing, CAN adapter unwritten, Qt reading mock data |
+| Cheapest insurance | Solder wires to Pi 1's header underside before the HAT goes on — ₹60, five minutes |
+
+The hardware is the solved part. Three code gaps stand between you and a complete
+system, and all three are yours to write.

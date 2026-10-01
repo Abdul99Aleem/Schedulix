@@ -45,10 +45,10 @@ three. Here is how the extra two extend it rather than just duplicating it.
         └──┬─────┬──┘ └────┬─────┘ └────┬─────┘
            │     │         │             │
       CAN   │  GPIO        │ CAN      Logic analyzer
-      HAT   │  markers     │ HAT      + UART injector
-      #1    │  (to logic   │          │
-           │   analyzer)   │          │
-           └──────┬────────┴──────────┘
+      HAT   │  markers     │ CANable  + UART injector
+      #1    │  (to logic   │  (USB)     │
+           │   analyzer)   │            │
+           └──────┬────────┴────────────┘
                   │  CAN bus
         120Ω ├────┤  CAN_H   CAN_H ────┤
              │     │    │          │    │
@@ -62,7 +62,7 @@ three. Here is how the extra two extend it rather than just duplicating it.
 | Board | OS | Role | Why this board |
 | --- | --- | --- | --- |
 | **Pi 1** | QNX 8.0 | **Analyzer.** ECU workloads, trace collector, `tracelogger` capture, RCA engine, CLI | Only board that needs kernel tracing + root. QNX gives real context-switch data |
-| **Pi 2** | Raspberry Pi OS | **CAN ECU simulator.** Generates ECU traffic over a real CAN bus | Linux + SocketCAN makes `python-can` work unmodified. No driver work |
+| **Pi 2** | Raspberry Pi OS | **CAN ECU simulator.** Generates ECU traffic over a real CAN bus | Linux + SocketCAN drives a USB CANable directly. No driver work, no 3.3 V risk |
 | **Pi 3** | Raspberry Pi OS | **Observer.** Logic analyzer capture console, UART workload injection, monitoring | Keeps capture off the machine being measured, so probing never perturbs the analyzer |
 
 ### 1.3 What the three-board split buys you over one board
@@ -85,7 +85,7 @@ costs you the run, not the data.
 | Link | From | To | Medium |
 | --- | --- | --- | --- |
 | Management | Router | Pi 1, 2, 3 | 3 × Cat5e (router LAN ports) |
-| CAN bus | Pi 1 CAN_HAT ch0 | Pi 2 CAN_HAT ch0 | Twisted pair, 120 Ω at both ends |
+| CAN bus | Pi 1 CAN_HAT ch0 | Pi 2 CANable (USB) | Twisted pair, 120 Ω at both ends |
 | CAN bus GND | Pi 1 GND | Pi 2 GND | Single reference ground |
 | Logic analyzer | Pi 3 USB | Pi 1 GPIO 4 / 17 / 27 | Jumper wires from Pi 1 header |
 | UART injection | Pi 3 USB-UART | Pi 1 USB-UART | Crossed TX→RX, shared GND |
@@ -440,27 +440,114 @@ remaining software gap.
 
 ---
 
-## 7. Substitutes — When The Exact Part Is Unavailable
+## 7. CAN Board Selection — Waveshare vs Generic Modules
 
-| If unavailable | Buy instead | Constraint |
+### 7.1 The distinction that matters is the transceiver
+
+Both boards contain an MCP2515. The QNX driver only cares about that. What differs
+is the CAN transceiver, and that is a **safety** issue, not a convenience one.
+
+| | Waveshare 2-CH CAN HAT | Generic "MCP2515 CAN Bus Module" |
 | --- | --- | --- |
-| Waveshare 2-CH CAN HAT | Any **dual-channel MCP2515** SPI CAN HAT | Must be MCP2515. Two MCP2515 HATs on SPI0 CE0/CE1 also work |
-| Waveshare unavailable | PiCAN2 / PiCAN3 (SK Pang) | MCP2515-based, works with same driver |
-| 16 MHz crystal HAT | 8 MHz MCP2515 HAT | Driver fine — change `-c 8000000`. Verify marking |
-| Logic analyzer | Saleae Logic 8 clone, 8-ch 24 MHz | Any 8-ch ≥24 MHz. 100 MHz scope is overkill |
-| USB-UART | CP2102 or FTDI 3.3 V TTL | **Never RS232.** See warning below |
-| Third CAN node | Second MCP2515 HAT | Same driver, different `-g` GPIO |
+| Controller | 2× MCP2515 | 1× MCP2515 |
+| Transceiver | **SN65HVD230 / SI65HVD230** | **TJA1050** (sometimes MCP2551) |
+| Safe on Pi 3.3 V GPIO | **Yes** | **TJA1050 — NO** |
+| Channels | 2 | 1 |
+| Crystal | 16 MHz | usually **8 MHz** |
+| Form factor | 40-pin HAT, covers header | ~40×28 mm breadboard breakout |
+| 120 Ω terminator | onboard, jumper-selectable | usually onboard, jumper |
+| ESD / transient protection | TVS + isolation | none |
+| Logic-level jumper | 3.3 V / 5 V | none |
+| Price | ₹1,860–1,949 | ₹200–500 |
 
-### Parts that must not be substituted
+### 7.2 Why TJA1050 damages a Raspberry Pi
 
-| Do not buy | Why |
+The TJA1050 is a **5 V-only** transceiver (4.75–5.25 V) and it has **no separate VIO
+pin** — its RXD output swings to VCC. Power the module from the Pi's 5 V pin and
+**5 V appears on MISO**, which is a Pi GPIO input. The Pi is not 5 V tolerant and that
+pin is destroyed. The CS and INT lines are affected the same way.
+
+The transceivers that avoid this:
+
+| Transceiver | Why it is safe |
 | --- | --- |
-| **MCP2515FD / MCP25625** | Different chip. Driver targets MCP2515 only |
-| **CAN FD anything** | Problem statement specifies CAN, not CAN FD |
-| **RS232 USB-UART adapter** | ±9 V onto Pi GPIO pins destroys the SoC |
-| **Anything above 3.3 V logic on GPIO** | Pi GPIO is not 5 V tolerant |
-| **Pi 5 as the QNX target** | `can-mcp2515` released driver is Pi 4 only |
-| **Isolated high-voltage CAN gear** | Your bus is 3.3 V bench-level |
+| **SN65HVD230** | Runs entirely at 3.3 V. Full 3.3 V supply. No VIO pin needed |
+| **MCP2551** | Has a **separate VIO pin**. Logic side can be 3.3 V while VCC is 5 V. This is why PiCAN2 works on a Pi |
+| **TJA1050** | No VIO pin. Logic output follows VCC. **Unsafe on Pi** |
+
+To use a TJA1050 module on a Pi you must either:
+
+1. **Cut the PCB trace** feeding the transceiver, then feed it 5 V separately while the
+   MCP2515 runs from 3.3 V. Requires a soldering iron and care with fine tracks.
+2. **Desolder the TJA1050 and fit an SN65HVD230** — pin-compatible, works at 3.3 V.
+   Requires SMD rework.
+
+Both are well-documented community modifications. Both add risk and time.
+
+### 7.3 Waveshare availability in India
+
+The part exists in India — it is a vendor-availability problem, not a market one.
+
+| Vendor | Part | Price | Status |
+| --- | --- | --- | --- |
+| rarecomponents.com | 2-CH CAN HAT, SKU 17912 | ₹1,860.86 | In stock |
+| hubtronics.in | 2-CH CAN HAT | ₹1,949 | Listed |
+| hubtronics.in | 2-CH CAN HAT **+** | ₹1,949 | Listed, different SKU |
+
+**2-CH CAN HAT** and **2-CH CAN HAT+** are different products. The HAT+ adds an
+onboard EEPROM and 7–36 V input handling. If one is unavailable, ask for the other
+**by name**.
+
+### 7.4 Recommended purchase — only Pi 1 needs MCP2515
+
+**Key architectural point:** Pi 2 and Pi 3 run Raspberry Pi OS. Linux SocketCAN
+supports any CAN device including USB dongles. Only **Pi 1 on QNX** requires the
+SPI MCP2515, because `can-mcp2515` is the only CAN driver that exists for that target.
+
+Pi 1 genuinely needs **two** channels: the QNX DDK quickstart validates the driver by
+looping CAN0 back to CAN1 on a single board.
+
+| Board | Buy | Cost | Rationale |
+| --- | --- | --- | --- |
+| **Pi 1 (QNX)** | 1× Waveshare 2-CH CAN HAT | ₹1,860 | Only board needing MCP2515. 2 ch for loopback |
+| **Pi 2 (Linux)** | 1× MKS CANable V2.0 (USB) | ₹3,899 | USB — zero 3.3 V risk. `python-can` via `candlelight`/`slcan`. Doubles as a debug analyzer |
+
+**Total ≈ ₹5,760.**
+
+### 7.5 Cheaper alternative
+
+| Board | Buy | Cost | Caveat |
+| --- | --- | --- | --- |
+| Pi 1 (QNX) | Waveshare 2-CH CAN HAT | ₹1,860 | As above |
+| Pi 2 (Linux) | Generic MCP2515 module | ~₹400 | Requires the §7.2 trace-cut mod. Pi 2 is expendable, so a bad mod costs a board, not the QNX target |
+
+Verify the crystal before configuring. Generic modules are commonly **8 MHz**, so the
+driver needs `-c 8000000`, not `-c 16000000`.
+
+### 7.6 Rejected options
+
+| Option | Why rejected |
+| --- | --- |
+| **"SmartElex 2 Channel CAN HAT"** (~₹938, Robocraze) | Listed with **TJA1050** transceivers — same 5 V problem. Ask the seller for written confirmation of level shifting before considering |
+| **PiCAN2** (SK Pang) | Marked *Discontinued* in India; SK Pang states it is **not suitable for Pi 4** (use PiCAN3). ₹6,000–9,250 plus import |
+| **Waveshare 2-CH CAN FD HAT** | Uses **MCP2517FD + MCP2562FD**. Different chips, different driver. Will not work with `can-mcp2515` |
+| **PiCAN3** | Correct part, but ₹6,000+ import when Waveshare is ₹1,860 |
+| Cheap USB-CAN dongle for Pi 1 | USB host CAN needs a vendor driver. `can-mcp2515` is SPI-only. Fine on Pi 2, useless on Pi 1 |
+
+### 7.7 The driver is not Waveshare-specific
+
+The driver README states it *"was developed for the Waveshare 2-CH CAN HAT but in
+theory should work for any other HW connected to the RPI4 that uses the MCP2515."*
+
+That is accurate — the driver talks to the MCP2515 over SPI, and you specify the SPI
+device, interrupt GPIO, and clock on the command line:
+
+```sh
+can-mcp2515 --mid=eid -s /dev/io-spi/spi0/dev0 -c 16000000 -g 23
+```
+
+So the actual requirement is: **any MCP2515 on SPI0 with 3.3 V-safe signalling.**
+That gives you room to substitute if Waveshare stays unavailable.
 
 ---
 
@@ -478,31 +565,49 @@ remaining software gap.
 
 | # | Item | Exact spec | Qty | Est. |
 | --- | --- | --- | --- | --- |
-| 4 | **CAN HAT** | Waveshare 2-CH CAN HAT, **MCP2515**, 16 MHz, 3.3 V logic jumper | **2** | ₹1,200–2,000 each |
-| 5 | **LAN cable** | Cat5e, 1–2 m | **2** | ₹150 each |
-| 6 | **USB-to-UART adapter** | **3.3 V TTL**, CP2102 or FTDI. Not RS232 | **2** | ₹300 each |
-| 7 | **Logic analyzer** | 8-channel, ≥24 MHz (Saleae Logic 8 / clone) | 1 | ₹2,500–8,000 |
-| 8 | **microSD card** | 16 GB, A2 class, for Pi 2 + Pi 3 | **2** | ₹500 each |
-| 9 | **120 Ω resistor** | 1/4 W, 1 % | 4 | ₹10 each |
-| 10 | **LED** | 3 mm, any colour, for GPIO proof | 6 | ₹5 each |
-| 11 | **330 Ω resistor** | 1/4 W, current limit for LEDs | 6 | ₹10 each |
-| 12 | **Breadboard** | Half-size, 400 tie-points | 2 | ₹120 each |
-| 13 | **Jumper wires** | Dupont, M-M / M-F / F-F assorted | 3 sets | ₹80 each |
-| 14 | **Header wire** | Fine hookup for soldering to Pi 1 header underside | 1 set | ₹60 |
+| 4 | **CAN HAT for Pi 1** | Waveshare 2-CH CAN HAT, **MCP2515**, SN65HVD230, 16 MHz. Set logic jumper to **3.3 V** | **1** | ₹1,860 |
+| 5 | **USB-CAN for Pi 2** | MKS CANable V2.0 (USB, candlelight/slcan). Probot.co.in, in stock | **1** | ₹3,899 |
+| 6 | **LAN cable** | Cat5e, 1–2 m | **2** | ₹150 each |
+| 7 | **USB-to-UART adapter** | **3.3 V TTL**, CP2102 or FTDI. Not RS232 | **2** | ₹300 each |
+| 8 | **Logic analyzer** | 8-channel, ≥24 MHz (Saleae Logic 8 / clone) | 1 | ₹2,500–8,000 |
+| 9 | **microSD card** | 16 GB, A2 class, for Pi 2 + Pi 3 | **2** | ₹500 each |
+| 10 | **120 Ω resistor** | 1/4 W, 1 % | 4 | ₹10 each |
+| 11 | **LED** | 3 mm, any colour, for GPIO proof | 6 | ₹5 each |
+| 12 | **330 Ω resistor** | 1/4 W, current limit for LEDs | 6 | ₹10 each |
+| 13 | **Breadboard** | Half-size, 400 tie-points | 2 | ₹120 each |
+| 14 | **Jumper wires** | Dupont, M-M / M-F / F-F assorted | 3 sets | ₹80 each |
+| 15 | **Header wire** | Fine hookup for soldering to Pi 1 header underside | 1 set | ₹60 |
 
-### Buy if you want a 3-node CAN bus
+### Budget variant — swap item 5
 
 | # | Item | Exact spec | Qty | Est. |
 | --- | --- | --- | --- | --- |
-| 15 | **CAN HAT** | Same as #4 | 1 | ₹1,200–2,000 |
+| 5-alt | **CAN HAT/module for Pi 2** | Generic MCP2515 + TJA1050 module. Requires PCB trace-cut mod (§7.2). Verify crystal — likely **8 MHz** | 1 | ₹400 |
 
-### Total
+### Optional — 3-node CAN bus
 
-**Core list (items 4–14): approximately ₹8,000–14,000.**
-Add ₹1,200–2,000 for item 15 if you want the third CAN node.
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 16 | **CAN HAT** | Same as item 4 | 1 | ₹1,860 |
 
-The HATs and logic analyzer dominate. Items 9–14 cost under ₹1,000 total and are what
-let you actually verify GPIO physically.
+### Totals
+
+| Variant | Cost |
+| --- | --- |
+| **Recommended** (items 4–15) | **≈ ₹9,000–13,500** |
+| **Budget** (item 5-alt) | **≈ ₹5,500–9,500** |
+| Add 3rd CAN node (item 16) | +₹1,860 |
+
+The CAN hardware and logic analyzer dominate. Items 10–15 cost under ₹1,500 total and
+are what let you actually verify GPIO physically.
+
+**Where to buy the CAN HAT:** rarecomponents.com (₹1,860, SKU 17912) or
+hubtronics.in (₹1,949). Ask for **2-CH CAN HAT** or **2-CH CAN HAT+** by name — they
+are separate SKUs. See §7.3.
+
+**Solder the header wires (item 15) before mounting the HAT on Pi 1.** The HAT covers
+physical pins 7, 11 and 13, which is where GPIO 4, 17 and 27 live. Once it is mounted
+you cannot reach them.
 
 ---
 
@@ -516,18 +621,21 @@ Each step is independently verifiable before the next begins.
    `simulated` to physical. Fix §5.3 while you are there.
 4. **GPIO code** — apply §5.1, rebuild, deploy. `schedulix gpio test` must print
    `REAL PHYSICAL`, not `MOCK`.
-5. **GPIO proof** — solder wires to Pi 1 header underside (§4.3). LED + 330 Ω on
-   GPIO 4. `gpio test` must light it. **Do not skip this** — it is the only thing
-   standing between you and a silent no-op.
+5. **GPIO proof** — **solder wires to Pi 1 header underside now, before the HAT is
+   mounted** (§4.3). Then LED + 330 Ω on GPIO 4. `gpio test` must light it.
+   **Do not skip this** — it is the only thing standing between you and a silent no-op.
 6. **Logic analyzer** — connect to Pi 3, probe Pi 1 GPIO 4/17/27. Run `--full`. Expect
    three pulse trains at 10 / 20 / 50 ms.
-7. **CAN on Pi 2 (Linux)** — mount HAT, `dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=23`,
-   `ip link set can0 up type can bitrate 500000`. Verify with `candump`/`cansend`.
-   **Easier to debug here than on QNX — do it first.**
-8. **CAN on Pi 1 (QNX)** — `spi.conf`, copy `can-mcp2515`, start driver, confirm
-   `/dev/can0`. Self-loop CAN0↔CAN1 first.
-9. **Cross-board CAN** — wire Pi 1 ch0 to Pi 2 ch0, 120 Ω each end. Pi 2 generates,
-   Pi 1 receives.
+7. **CAN on Pi 2 (Linux, CANable)** — plug into USB. With `candlelight` firmware it
+   enumerates natively as `can0`. Set `ip link set can0 up type can bitrate 500000`,
+   verify with `candump`/`cansend`. **Do this first** — it isolates bus and cabling
+   problems from QNX driver problems.
+8. **CAN on Pi 1 (QNX)** — **before mounting the HAT**, solder the GPIO marker wires
+   (step 5). Set the HAT logic jumper to **3.3 V**. Configure `spi.conf`, copy
+   `can-mcp2515` to `/system/bin`, start the driver, confirm `/dev/can0` and
+   `/dev/can1`. Self-loop CAN0↔CAN1 first.
+9. **Cross-board CAN** — Pi 1 CAN_HAT ch0 → Pi 2 CANable. 120 Ω at each end, shared
+   GND. Pi 2 generates, Pi 1 receives.
 10. **Write the QNX CAN adapter** (§5.2). This is the last code blocker.
 11. **Wire Qt to real JSON** (§6.3). Screenshot with genuine data.
 

@@ -17,8 +17,12 @@ unknown and it is now closed.
 
 **The Waveshare 2-CH CAN HAT is unavailable, and it is not needed.** QNX's driver
 targets the **MCP2515 chip**, not that particular board. The selected route uses
-breadboard MCP2515 modules at **≈ ₹6,500 total**, with the added benefit that no HAT
-covers the header, so GPIO marker pins stay directly accessible (§7.4).
+breadboard MCP2515 modules, with the added benefit that no HAT covers the header, so
+GPIO marker pins stay directly accessible (§7.4).
+
+**Total cost: ≈ ₹8,050** for the complete verified inventory (§8.12), including power
+supplies and cooling. One gap was found in the original BOM: it listed **one** power
+supply, but three boards require three (§8.2).
 
 There are three code bugs to fix (Sections 5–6). All three are software. **Buy the
 hardware.**
@@ -575,7 +579,14 @@ SN65HVD230 chips and breakout modules are in stock in India at ₹40–320
 | 10 | LED | 3 mm, for GPIO proof | 6 | ₹30 |
 | 11 | 330 Ω resistor | 1/4 W, LED current limit | 6 | ₹60 |
 
-**Total ≈ ₹6,500.** No HAT, no header soldering.
+> **This table is CAN-specific.** It omits power supplies, LAN cable count, jumper
+> set size, and cooling — all of which are required.
+> **See §8 for the complete authoritative inventory. Total ≈ ₹8,050.**
+>
+> Two corrections against this table:
+> - **Buy 3 LAN cables, not 2** — the spare's twisted pair becomes the CAN_H/CAN_L link
+> - **Buy a 120-piece jumper set, not 4 assorted 40-piece sets** — §8.6 needs 25 × F-F,
+>   which small sets do not contain
 
 #### Module wiring (identical on both boards)
 
@@ -650,74 +661,258 @@ That gives you room to substitute if Waveshare stays unavailable.
 
 ---
 
-## 8. Final Hardware List
+## 8. Final Hardware List — Complete Verified Inventory
 
-### Already have
+### 8.1 Already owned
 
 | # | Item | Qty | Note |
 | --- | --- | --- | --- |
 | 1 | Raspberry Pi 4B | 3 | Confirmed correct target |
-| 2 | Router | 1 | Needs ≥3 free LAN ports |
-| 3 | LAN cable Cat5e | 1 | **Need 2 more** |
+| 2 | Router | 1 | **Verify ≥3 free LAN ports** |
+| 3 | LAN cable Cat5e | 1 | |
 
-### Buy now — SELECTED ROUTE: MCP2515 modules
+---
 
-Waveshare 2-CH CAN HAT is unavailable from the user's vendors. The selected route uses
-breadboard MCP2515 modules, which need **no HAT and no header soldering** (§7.4).
+### 8.2 CRITICAL GAP — power supplies
+
+**The user's original BOM lists 1 power supply. Three boards need three.**
+
+Pi 4B peaks near 3 A under load. Running CAN plus the workload plus the stress
+generator, a 2 A supply will cause brownouts — and brownouts show up as latency
+spikes that look like scheduler defects. This would corrupt the measurement.
 
 | # | Item | Exact spec | Qty | Est. |
 | --- | --- | --- | --- | --- |
-| 4 | **MCP2515 CAN bus module** | MCP2515 + TJA1050, onboard 120 Ω w/ jumper. **Read the crystal — likely 8 MHz** | **2** | ₹400 ea |
-| 5 | **SN65HVD230 transceiver** | DIP-8 / SOIC-8, pin-compatible with TJA1050. Optional if using trace-cut method | 2 | ₹40 ea |
-| 6 | **LAN cable** | Cat5e, 1–2 m | **2** | ₹150 ea |
-| 7 | **USB-to-UART adapter** | **3.3 V TTL**, CP2102 or FTDI. **Not RS232** | **2** | ₹300 ea |
-| 8 | **Logic analyzer** | 8-channel, ≥24 MHz (Saleae Logic 8 / clone) | 1 | ₹2,500–4,000 |
-| 9 | **microSD card** | 16 GB, A2 class, for Pi 2 + Pi 3 | **2** | ₹500 ea |
-| 10 | **120 Ω resistor** | 1/4 W, 1 % | 4 | ₹10 ea |
-| 11 | **LED** | 3 mm, any colour, for GPIO proof | 6 | ₹5 ea |
-| 12 | **330 Ω resistor** | 1/4 W, current limit for LEDs | 6 | ₹10 ea |
-| 13 | **Breadboard** | Half-size, 400 tie-points | 2 | ₹120 ea |
-| 14 | **Jumper wires** | Dupont, M-M / M-F / F-F assorted | 4 sets | ₹80 ea |
+| 4 | **USB-C power supply** | **5.1 V / 3 A**, official Pi 4 PSU or equivalent | **3** | ₹350 ea |
 
-**Total ≈ ₹6,500.** No HAT, no soldering to the Pi header.
+**Verify you have an SD card reader** on your PC (or a USB one) — required to flash
+Pi 2 and Pi 3.
 
-### Where to buy
+---
 
-| Item | Vendors (India) |
+### 8.3 Selected route — CAN hardware
+
+Waveshare 2-CH CAN HAT is unavailable. Breadboard MCP2515 modules are used instead,
+which need **no HAT and no header soldering** (§7.4).
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 5 | **MCP2515 CAN bus module** | MCP2515 + TJA1050, onboard 120 Ω w/ jumper, screw terminal for CAN_H/L. **Read the crystal — likely 8 MHz** | **2** | ₹400 ea |
+| 6 | **SN65HVD230 transceiver** | DIP-8 / SOIC-8, pin-compatible with TJA1050 | 2 | ₹40 ea |
+| 7 | **120 Ω resistor** | 1/4 W, 1 % — spares, in case onboard jumpers are unclear | 4 | ₹10 ea |
+
+*Item 6 is optional if using the trace-cut method instead. If unsure which method,
+buy 2 chips — ₹80 total is cheaper than a second module.*
+
+---
+
+### 8.4 Connectivity
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 8 | **LAN cable Cat5e** | 1–2 m | **3** | ₹150 ea |
+
+**Buy 3, not 2.** Three complete the network (1 owned + 2 new = 3 for the router), and
+the **third new cable's twisted pair becomes the CAN_H/CAN_L link** (§8.5). This gives
+a properly twisted pair at correct gauge for free.
+
+---
+
+### 8.5 Wiring — exact signal list per board
+
+**Pi 1 (QNX) — MCP2515 module to header — 8 jumpers**
+
+| Signal | Pi physical pin | BCM | Module pin |
+| --- | --- | --- | --- |
+| VCC | 1 | — | VCC (powers MCP2515) |
+| 5 V feed | 2 | — | TJA1050 VCC pad *(after trace cut)* |
+| GND | 6 | — | GND |
+| MOSI | 19 | 10 | SI |
+| MISO | 21 | 9 | SO |
+| INT | 22 | 25 | INT |
+| SCLK | 23 | 11 | SCK |
+| CS | 24 | 8 | CS |
+
+**Pi 1 — GPIO markers to breadboard — 4 jumpers**
+
+Shared by both the LED proof test and the logic analyzer.
+
+| Signal | Pi physical pin | BCM | Purpose |
+| --- | --- | --- | --- |
+| BRAKE marker | 7 | 4 | 10 ms pulse train |
+| ADAS marker | 11 | 17 | 20 ms pulse train |
+| DIAG marker | 13 | 27 | 50 ms pulse train |
+| GND reference | 9 | — | logic analyzer ground clip |
+
+**Pi 1 — UART loopback test — 3 jumpers**
+
+| Signal | From | To |
+| --- | --- | --- |
+| Adapter TXD | USB-UART TX | Pi pin 10 (GPIO 15, RXD) |
+| Adapter RXD | USB-UART RX | Pi pin 8 (GPIO 14, TXD) |
+| GND | USB-UART GND | Pi pin 6 |
+
+**Pi 2 (Linux) — MCP2515 module to header — 8 jumpers**
+Identical to Pi 1.
+
+**Inter-board CAN link — NOT dupont jumpers**
+
+| Signal | From | To |
+| --- | --- | --- |
+| CAN_H | Pi 1 screw terminal | Pi 2 screw terminal |
+| CAN_L | Pi 1 screw terminal | Pi 2 screw terminal |
+| GND | Pi 1 GND | Pi 2 GND |
+
+Cut one end off the spare LAN cable and use **one twisted pair** (blue/white) for
+CAN_H/CAN_L, plus a second pair for GND. Strip and terminate into the screw
+terminals. **Do not use dupont jumpers for the CAN bus** — they are too short for
+board-to-board across a desk and are not twisted.
+
+### 8.6 Jumper wire inventory — precise count
+
+| Purpose | F-F | F-M | Total |
+| --- | ---: | ---: | ---: |
+| Pi 1 — MCP2515 module | 8 | 0 | 8 |
+| Pi 1 — GPIO markers + GND | 1 | 3 | 4 |
+| Pi 1 — UART loopback | 3 | 0 | 3 |
+| Pi 2 — MCP2515 module | 8 | 0 | 8 |
+| **Subtotal required** | **20** | **3** | **23** |
+| Spares (wrong wires, re-runs) | 5 | 3 | 8 |
+| **TOTAL** | **25** | **6** | **31** |
+
+**Why F-F dominates:** both the Pi header pins and the MCP2515 module pins are male,
+so F-F is the only type that connects them. F-M is used where a male end must plug
+into a breadboard hole (GPIO marker rows).
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 9 | **Jumper wire set** | Dupont **120-piece assorted** (≈40 each of M-M / M-F / F-F), 20 cm | **1** | ₹200 |
+
+A 40-piece set contains only ~10–20 F-F and will **not** cover the 25 required.
+The 120-piece set is the minimum safe choice.
+
+---
+
+### 8.7 Measurement and prototyping
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 10 | **Logic analyzer** | 8-channel, ≥24 MHz (Saleae Logic 8 / clone) | 1 | ₹2,500–4,000 |
+| 11 | **Breadboard** | Half-size, 400 tie-points | 2 | ₹120 ea |
+| 12 | **LED** | 3 mm — 2 red (GPIO 4, 17), 1 green (GPIO 27), plus 3 spares | **6** | ₹5 ea |
+| 13 | **330 Ω resistor** | 1/4 W — LED current limit | 6 | ₹10 ea |
+
+24 MHz sampling gives ~40 ns resolution, comfortably inside the 50 µs tolerance
+window. A 100 MHz oscilloscope is unnecessary and more expensive.
+
+---
+
+### 8.8 UART and storage
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 14 | **USB-to-UART adapter** | **3.3 V TTL**, CP2102 or FTDI chip | **2** | ₹300 ea |
+| 15 | **microSD card** | 16 GB, A2 class or better — Pi 2 and Pi 3 | **2** | ₹500 ea |
+
+**The UART adapters must be 3.3 V TTL.** An RS232-level adapter puts ±9 V on the Pi's
+UART pins and destroys them. Verify the listing says "3.3 V TTL", not just
+"USB to serial".
+
+---
+
+### 8.9 Strongly recommended — thermal integrity
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 16 | **Pi 4 case with fan** | Official case, or equivalent with active cooling | **1 minimum** | ₹700 ea |
+
+**This is not cosmetic.** A thermal-throttled Pi 4B changes its own scheduling
+behaviour, which is exactly the signal being measured. Without cooling, latency
+percentiles will drift as the die heats and then distort again on cooldown. For a
+tool whose entire purpose is latency measurement, that is a systematic error source,
+not a nuisance.
+
+Minimum: cool **Pi 1** (the board doing the measuring). Ideally cool all three.
+
+---
+
+### 8.10 Tools
+
+| # | Item | Note | Est. |
+| --- | --- | --- | --- |
+| 17 | **Soldering iron** | Only for the TJA1050 trace cut / chip swap | ₹300, or ₹50–100 at a local repair shop |
+
+The trace cut is a one-minute job. If you do not own an iron, paying a local repair
+shop is cheaper than buying one.
+
+---
+
+### 8.11 Optional
+
+| # | Item | Exact spec | Qty | Est. |
+| --- | --- | --- | --- | --- |
+| 18 | Waveshare 2-CH CAN HAT | Replaces items 5 + 6 on both boards. rarecomponents.com ₹1,860 (SKU 17912) or hubtronics.in ₹1,949 | 2 | ₹1,860 ea |
+| 19 | MCP2515 CAN bus module | Third CAN node for a 3-node bus | 1 | ₹400 |
+| 20 | Ethernet switch | Only if the router has fewer than 3 free LAN ports | 1 | ₹600 |
+
+If you take item 18, **solder GPIO marker wires to Pi 1's header underside first** —
+the HAT covers physical pins 7, 11 and 13. See §7.5.
+
+---
+
+### 8.12 Total
+
+| Category | Items | Cost |
+| --- | --- | --- |
+| **Critical gap — power supplies** | 4 | ₹1,050 |
+| CAN hardware | 5–7 | ₹920 |
+| Connectivity (LAN cables) | 8 | ₹450 |
+| Jumper wires | 9 | ₹200 |
+| Measurement + prototyping | 10–13 | ₹3,130 |
+| UART + storage | 14–15 | ₹1,600 |
+| Cooling (Pi 1 minimum) | 16 | ₹700 |
+| Tools (if needed) | 17 | ₹0–300 |
+| **TOTAL** | | **≈ ₹8,050** |
+| Optional extras | 18–20 | +₹2,260 to +₹4,720 |
+
+*Logic analyzer price dominates. Everything else totals under ₹4,500.*
+
+---
+
+### 8.13 Checks on arrival
+
+| Check | Action |
 | --- | --- |
-| MCP2515 module | Probots, Robocraze, generic Amazon/Flipkart sellers. ~₹350–450 |
-| SN65HVD230 | Probots (₹209 module), Zbotic (₹320), DNAtech (₹234), ElectroPi |
-| Logic analyzer | Robocraze, Amazon India |
+| **Crystal frequency** | Read the marking on each MCP2515 module. Almost certainly 8 MHz → driver needs `-c 8000000`. Wrong value = clean start, zero frames |
+| **TJA1050 modification** | Cut the trace or fit an SN65HVD230 (§7.2). **Do Pi 2 first** |
+| **Router ports** | Confirm ≥3 free LAN ports before buying switches |
+| **Power supply rating** | Confirm 5.1 V / 3 A on all three supplies |
+| **UART logic level** | Confirm "3.3 V TTL" on both adapters, not RS232 |
+| **Header pin map** | Re-verify physical pin numbers before wiring: UART is **pin 8 TX / pin 10 RX**, not 11 |
 
-### Optional — if the Waveshare becomes available
+---
 
-| # | Item | Exact spec | Qty | Est. |
-| --- | --- | --- | --- | --- |
-| 15 | **Waveshare 2-CH CAN HAT** | Replaces items 4 + 5 on both boards. Rarecomponents.com ₹1,860 (SKU 17912, in stock) or hubtronics.in ₹1,949 | 2 | ₹1,860 ea |
+### 8.14 Pin allocation — verified conflict-free
 
-If you take this option, **solder GPIO marker wires to Pi 1's header underside first**
-— the HAT covers physical pins 7, 11 and 13. See §7.5.
+| Pi pin | BCM | Used by |
+| ---: | ---: | --- |
+| 1 | — | CAN module VCC |
+| 2 | — | CAN module 5 V feed |
+| 6 | — | CAN module GND, UART loopback GND *(shared, intended)* |
+| 7 | 4 | BRAKE marker |
+| 8 | 14 | UART TXD |
+| 9 | — | Logic analyzer GND |
+| 10 | 15 | UART RXD |
+| 11 | 17 | ADAS marker |
+| 13 | 27 | DIAG marker |
+| 19 | 10 | CAN module MOSI |
+| 21 | 9 | CAN module MISO |
+| 22 | 25 | CAN module INT |
+| 23 | 11 | CAN module SCLK |
+| 24 | 8 | CAN module CS |
 
-### Optional — 3-node CAN bus
-
-| # | Item | Exact spec | Qty | Est. |
-| --- | --- | --- | --- | --- |
-| 16 | **MCP2515 CAN bus module** | Same as item 4 | 1 | ₹400 |
-
-### Totals
-
-| Variant | Cost |
-| --- | --- |
-| **Selected — MCP2515 modules** (items 4–14) | **≈ ₹6,500** |
-| Waveshare HAT upgrade (items 4,5 → 15 × 2) | ≈ ₹10,900 |
-| Add 3rd CAN node (item 16) | +₹400 |
-
-Items 10–14 cost under ₹1,000 total and are what let you verify GPIO physically.
-
-**Two things to check on arrival:**
-1. **Crystal frequency** on each MCP2515 module — almost certainly 8 MHz, so `-c 8000000`.
-2. **TJA1050 modification** — cut the trace, or fit an SN65HVD230 (§7.2). Do this on
-   **Pi 2 first**.
+**No conflicts.** The only shared pin is 6 (GND), which is intentional. The MCP2515
+module claims GPIO 8, 9, 10, 11 and 25; the markers claim 4, 17, 27. Disjoint.
 
 ---
 
@@ -791,8 +986,10 @@ to fix.
 | Will QNX hardware go to waste? | **No.** CAN driver builds, `libcan` links, `libtraceparser` present, GPIO register access proven by the official driver |
 | Is any peripheral unsupported? | **No.** All three have working QNX paths |
 | Is Waveshare required? | **No.** The driver targets the MCP2515 *chip*. Any MCP2515 on SPI0 with 3.3 V-safe signalling works (§7.7) |
+| Any pin conflicts? | **No.** Verified allocation in §8.14 |
 | Green signal to buy? | **Yes** |
-| Total cost, selected route | **≈ ₹6,500** for 2× MCP2515 modules and all supporting hardware (§8) |
+| Total cost, selected route | **≈ ₹8,050** including power supplies and cooling (§8.12) |
+| Biggest gap found in the original BOM | **Power supplies** — original BOM listed 1, three boards need three (§8.2) |
 | Biggest risk remaining | CAN wiring + crystal frequency. Prove it on Pi 2 before Pi 1 |
 | Biggest code gap remaining | `GPFSEL` missing, CAN adapter unwritten, Qt reading mock data |
 

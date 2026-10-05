@@ -1,0 +1,32 @@
+# spi.conf — QNX SPI driver configuration for MCP2515 CAN
+#
+# For a SINGLE MCP2515 module on SPI0 chip-select 0.
+# Install to: /system/etc/config/spi/spi.conf on the Pi 4 target
+#
+# Values are verbatim from the QNX CAN DDK quickstart, minus the second [dev]
+# section (the module route uses one MCP2515 per board).
+#
+# base=0xfe204000 is SPI0 on BCM2711. Do not change.
+# clock_rate=10000000 is 10 MHz, the MCP2515 maximum per datasheet. If you use
+# flying jumper wires instead of a PCB, drop to 2000000 for signal integrity.
+
+[bus]
+busno=0
+name=spi0
+base=0xfe204000
+irq=150
+input_clock=500000000
+bs=rpanic=48,tpanic=16
+dma_attach_opts=num_cbs=256,range_min=0,range_max=14,typed_mem=sysram&below1G
+dma_thld=4
+
+[dev]
+parent_busno=0
+devno=0
+name=dev0
+clock_rate=10000000
+cpha=0
+cpol=0
+bit_order=msb
+word_width=8
+idle_insert=1

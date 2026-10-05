@@ -1,38 +1,5 @@
-﻿# QNX / C Build Artifacts
 build/
-build-*/
 build-host/
 *.o
 *.d
-*.a
-*.so
-*.so.*
-schedulix_can
-
-# Runtime traces and data dumps
-*.kev
-trace*.bin
-analysis*.json
-manifest*.json
-
-# Qt / CMake Build Artifacts
-gui/build/
-gui/.qtcreator/
-gui/*.user
-*.user.*
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-
-# IDE & Editor files
-.settings/
-.vscode/
-.idea/
-*.swp
-*.bak
-*~
-
-# Python cache
 __pycache__/
-*.py[cod]
-*.class

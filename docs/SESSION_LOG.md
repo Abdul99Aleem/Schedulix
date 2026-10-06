@@ -39,6 +39,8 @@ Neither repository had any git history at session start. Both were initialised.
 | 6 | Inventory audit | Found power supply gap; precise jumper counts; pin conflict check |
 | 7 | Board bring-up | Connected to QNX Pi 4 at 192.168.10.5; full audit captured |
 | 8 | CAN installer | Written for the real board; SPI mode bug identified |
+| 9 | Serial console | **Passwordless root shell obtained over 115200 8N1** — clears the long-standing root blocker |
+| 10 | UART hardware proof | `uart_adapter` verified on the board: opens `/dev/ser1` as `physical`, TX proven (21 bytes on host COM6) |
 
 ---
 
@@ -584,6 +586,11 @@ sudo: command not found
 is no `sudo`. Also: `/dev/shmem` is 0 bytes, so shared-memory ring buffers cannot go
 there — they must use `/tmp` or an allocated region.
 
+> **Resolved later in the session.** A passwordless root shell is now obtained over the
+> serial console, so the privilege half of this blocker is gone. The read-only `/` no
+> longer matters because `/tmp` → `/data/var/tmp` on `/dev/hd0t179` is writable with
+> ~53M blocks free.
+
 **Blocker D — no default gateway.**
 
 ```
@@ -729,8 +736,9 @@ suggests variants differ. Installer defaults to `-c 8000000`.
 - Qt 6.8.3 frontend builds 56/56
 - `can-mcp2515` compiled for aarch64le and committed
 - SSH to the board via paramiko (`qnxuser`/`qnxuser`)
+- **Passwordless root shell over the serial console** (`root@console:/#`), 115200 8N1 on a CH340
 - Board confirmed: QNX 8.0.0, Pi 4B, 8 GB, 4 cores
-- `/dev/ser1` present — UART code will find its device
+- `/dev/ser1` present **and used** — the UART adapter opens it in physical mode and TX is proven on the host
 - SPI driver running with `dev0`/`dev1` nodes
 - `gpio-bcm2711`, `mbox-bcm2711`, `canctl`, `tracelogger` all present
 
@@ -738,15 +746,34 @@ suggests variants differ. Installer defaults to `-c 8000000`.
 
 | Item | Blocker |
 | --- | --- |
-| CAN driver install | Needs root; no `sudo`, root fs read-only |
-| `spi.conf` SPI-mode fix | Needs root |
+| CAN driver install | **Root now available** over the serial console (no password). Remaining: `qnx_can_install.sh` / `spi.conf` were never uploaded to `/tmp` — `tools/qnx_can_install.py` was root-blocked before completing |
+| `spi.conf` SPI-mode fix | **Root now available** over the serial console. Remaining: `spi.conf.mcp2515` still has to be uploaded to `/tmp` |
 | GPIO physical proof | Needs the `GPFSEL` code fix and an LED wired |
-| UART loopback test | Adapter not yet wired |
+| UART loopback test | Adapter **is** now wired and TX is proven (21 bytes seen on host COM6). RX remains unverified — see the `/dev/ser1`-is-the-console confound below |
 | CAN hardware test | HAT not yet mounted |
 | `gpio_marker.c` rewrite | Code work |
 | `qnx_can_adapter.c` | Code work — does not exist |
-| UART TX marker fix | Code work |
+| UART TX marker fix | Code work — `src/uart_adapter.c:151` records TX as `TRACE_EXTERNAL_EVENT_RX` |
 | Qt JSON loader | Code work |
+
+**Blocker C is cleared.** The recorded "no `sudo`, root fs read-only" obstacle no longer
+applies: a passwordless root shell is obtained over the serial console (`root@console:/#`).
+The read-only `/` is irrelevant for the CAN install, which writes into `/tmp`
+(`/data/var/tmp` on `/dev/hd0t179`, ~53M blocks free).
+
+### UART — verified on hardware
+
+`src/uart_adapter.c` is complete and now proven against real hardware, not just compiled:
+
+| Finding | Evidence |
+| --- | --- |
+| Opens the real port, not a stub | `schedulix uart status` prints `UART Adapter Backend: physical` and `physical device /dev/ser1 configured at 115200 baud` |
+| QNX permits a second open of the console port | `open()`, `tcgetattr()` and `tcsetattr()` all succeed while the login shell owns `/dev/ser1` |
+| TX works end-to-end | `schedulix uart send SCHEDULIX_TX_PROOF_42` produced **21 bytes** on the host COM6 **before** the program's own `printf` output — the signature of genuinely transmitted bytes |
+| RX is **confounded, not broken** | Because `/dev/ser1` **is** the console, bytes sent from the host are consumed by the login shell. `uart receive` returned the console's own newline |
+
+Outstanding UART defect: `src/uart_adapter.c:151` records a transmit as
+`TRACE_EXTERNAL_EVENT_RX`, so TX and RX are indistinguishable in the trace.
 
 ### Note on the selected CAN hardware
 
@@ -771,20 +798,47 @@ MCP2515 controller, 3.3 V SN65HVD230 transceiver, CS on CE0 (pin 24), INT on GPI
 
 ## 12. Next steps, in order
 
-1. **Wire the serial console.** USB-TTL TX→pin 8, RX→pin 10, GND→pin 6, **VCC not
-   connected**, 115200 8N1. Serial gives a root shell with no password. This unblocks
-   everything else.
+1. **Wire the serial console.** Pin 8 is GPIO14 = the Pi's **TXD0 (transmit)** and pin 10
+   is GPIO15 = the Pi's **RXD0 (receive)**, so the wires cross: **pin 8 (Pi TX) → adapter
+   RX**, and **adapter TX → pin 10 (Pi RX)**. GND→pin 6. **Leave VCC unconnected.** 115200
+   8N1. This gives a root shell with no password (`root@console:/#`) and unblocks everything
+   else.
+
+   A CH340 normally drives TX at 5 V, and the BCM2711 GPIO is **not 5 V tolerant**, so a
+   resistor divider is required between adapter TX and pin 10. As built: a single 330 Ω in
+   series, then two 330 Ω in series to ground, giving 3.33 V. With no multimeter on hand
+   this divider is both damage-safe and self-diagnosing: clean text ⇒ the TX source is 5 V
+   and the divider is required; garbage or silence ⇒ the source is already 3.3 V, so remove
+   the divider. Clean output was obtained, confirming the adapter's TX is 5 V and the
+   divider is correct as built.
 2. **Solder GPIO marker wires to the header underside** on the board that will run
    QNX, *before* mounting the RS485 CAN HAT. Pins 7, 11, 13.
-3. **Run `sh /tmp/qnx_can_install.sh` from the serial root shell.** Files are already
-   in `/tmp`. This rewrites `spi.conf`, installs the driver binary, and reports
-   whether `/dev/can0` appears. Expect failure at `/dev/can0` until the HAT is mounted.
+3. **Run `sh /tmp/qnx_can_install.sh` from the serial root shell.** The installer files are
+   **not** on the board yet — `tools/qnx_can_install.py` never completed its upload because
+   it was root-blocked. Upload `qnx_can_install.sh` (and `spi.conf.mcp2515`) to `/tmp`
+   first. Actual current `/tmp` listing:
+
+   ```
+   -rwxr-xr-x  1 root    root      8880  T3
+   -rw-------  1 root    root     98304  elvis1.ses
+   -rw-r--r--  1 root    root        36  keep_files
+   -rwxr-xr-x  1 qnxuser qnxuser  4474  qnx_bringup_check.sh
+   ```
+
+   `/tmp` maps to `/data/var/tmp` on `/dev/hd0t179` with ~53M blocks free, so it is writable
+   and large enough. Once uploaded, the script rewrites `spi.conf`, installs the driver
+   binary, and reports whether `/dev/can0` appears. Expect failure at `/dev/can0` until the
+   HAT is mounted.
 4. **LED proof.** 330 Ω + LED from GPIO 4 (pin 7) to ground. `schedulix gpio test`
-   must print `REAL`, not `MOCK`.
+   must print `REAL PHYSICAL`, not `MOCK` (those are the exact strings at
+   `src/main.c:515`; there is no bare `REAL`).
 5. **UART loopback.** Adapter TX→pin 10, RX→pin 8, GND→pin 6.
 6. **Read the crystal marking** on the RS485 CAN HAT and set `CLOCK_HZ` accordingly.
 7. **Mount the HAT**, wire CAN_H/CAN_L between two boards with 120 Ω at each end.
-8. **Rewrite `gpio_marker.c`** using `gpio-bcm2711` instead of `/dev/mem` mmap.
+8. **Rewrite `gpio_marker.c`.** Two options: shell out to the BSP utility
+   `gpio-bcm2711 set <n> op pn dh|dl`, or map the registers directly — the pattern in §5.4,
+   `mmap` with `MAP_PHYS | MAP_SHARED`, `NOFD` and `PROT_NOCACHE` on `0xfe200000`, **no
+   `/dev/mem`**. Either way it must write `GPFSELn` first.
 9. **Write `qnx_can_adapter.c`** using `/dev/can0` mailboxes and `CAN_DEVCTL_*`.
 10. **Fix the UART TX marker** at `src/uart_adapter.c:151`.
 11. **Write the Qt JSON loader** replacing `MockProvider`.
@@ -796,9 +850,9 @@ MCP2515 controller, 3.3 V SN65HVD230 transceiver, CS on CE0 (pin 24), INT on GPI
 | Question | Impact |
 | --- | --- |
 | RS485 CAN HAT crystal: 8 MHz or 16 MHz? | Wrong value = driver starts cleanly, zero frames |
-| Does `root` accept an empty password over SSH? | If yes, no serial console needed |
-| Does `gpio-bcm2711` work as `qnxuser`? | gpio group membership suggests yes |
-| Is `/tmp` writable and large enough for trace files? | Audit showed `/system` has 2.4 G free |
+| ~~Does `root` accept an empty password over SSH?~~ | **Moot.** Root was obtained without a password over the serial console instead, so SSH escalation is no longer on the critical path |
+| Does `gpio-bcm2711` work as `qnxuser`? | gpio group membership suggests yes. A root shell is now available regardless |
+| ~~Is `/tmp` writable and large enough for trace files?~~ | **Resolved.** `/tmp` → `/data/var/tmp` on `/dev/hd0t179`, ~53M blocks free |
 | Can shared memory work given `/dev/shmem` is 0 bytes? | May need `shm_open` with explicit allocation |
 
 ---
@@ -833,15 +887,42 @@ canctl -u 0,tx2 -w 0x123,3,ABCDEF   # transmit frame
 cat /dev/can0/rx0              # raw receive
 ```
 
+### Schedulix CLI (noun/verb; verified on the board)
+
+```bash
+./schedulix help               # list subcommands
+./schedulix status             # overall system status
+./schedulix uart status        # -> "UART Adapter Backend: physical"
+./schedulix uart send <data>   # transmit; [--port <path>] [--baud <rate>]
+./schedulix uart receive       # read (confounded: /dev/ser1 is the console)
+./schedulix gpio test          # -> "REAL PHYSICAL" or "MOCK"
+./schedulix can status
+./schedulix workload start
+./schedulix stress start --cpu 80
+```
+
+Deploy the binary from `build/aarch64le-debug/schedulix_can` (331,152 bytes) — **not** from
+`deploy/`, where every artefact predates the noun/verb CLI and lacks these subcommands.
+
 ### Serial console
 
 ```
-USB-TTL TX  → Pi pin 8   (GPIO 14)
-USB-TTL RX  → Pi pin 10  (GPIO 15)
+Pi pin 8  (GPIO 14, Pi TXD0) → USB-TTL RX
+USB-TTL TX → divider → Pi pin 10 (GPIO 15, Pi RXD0)
 USB-TTL GND → Pi pin 6 or 14
 USB-TTL VCC → DO NOT CONNECT
-115200 8N1, no login prompt, root shell
+115200 8N1 → root shell with no password (root@console:/#)
 ```
+
+Direction matters: pin 8 is the Pi's **transmit**, pin 10 is the Pi's **receive**. This
+matches step 5 of §12 (the UART loopback instruction), which already had it right; step 1
+was written backwards and is corrected above.
+
+Because a CH340 drives TX at 5 V and the BCM2711 GPIO is not 5 V tolerant, adapter TX
+goes through a divider: 330 Ω in series, two 330 Ω in series to ground → 3.33 V. No
+multimeter is available, so this arrangement doubles as a probe — clean text means the TX
+source is 5 V (keep the divider); garbage or silence means it is already 3.3 V (remove the
+divider). Clean output was obtained, so the divider is correct as built.
 
 ### MCP2515 driver
 

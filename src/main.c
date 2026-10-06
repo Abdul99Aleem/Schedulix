@@ -514,11 +514,18 @@ int handle_subcommands(int argc, char *argv[]) {
         gpio_marker_init();
         printf("GPIO Availability: %s\n", gpio_marker_is_available() ? "REAL PHYSICAL" : "MOCK");
         printf("Toggling pin 4 (BRAKE), 17 (ADAS), 27 (DIAG)...\n");
+        printf("Pin function select (fsel): 4=%d 17=%d 27=%d  (1=output)\n",
+               gpio_marker_fsel(4), gpio_marker_fsel(17), gpio_marker_fsel(27));
+
         gpio_marker_for_task_high(TASK_ID_BRAKE);
         usleep(2000);
         gpio_marker_for_task_low(TASK_ID_BRAKE);
         gpio_validation_t v = gpio_marker_validate(TASK_ID_BRAKE, 0, 2000000ULL);
         printf("Validation: delta %lld ns, valid: %s\n", (long long)v.delta_ns, v.valid ? "YES" : "NO");
+        /* Report the readback separately: this is what distinguishes a real
+         * edge on the wire from a write that silently did nothing. */
+        printf("Hardware readback: level after high=%d, after low=%d, confirmed=%s\n",
+               v.hw_level_high, v.hw_level_low, v.hw_confirmed ? "YES" : "NO");
         gpio_marker_shutdown();
         return 0;
     }

@@ -31,11 +31,30 @@ typedef struct {
     uint64_t gpio_high_ns;
     uint64_t gpio_low_ns;
     int64_t  delta_ns; /* (gpio - sw) */
-    bool     valid;    /* within tolerance */
+
+    /* Hardware confirmation. Previously validation compared one software
+     * timestamp against another, which is vacuous -- it could never fail.
+     * These come from reading GPLEV back after each drive, so they report
+     * what the pin actually did rather than what we asked for.
+     */
+    int  hw_level_high;  /* GPLEV sampled immediately after driving high */
+    int  hw_level_low;   /* GPLEV sampled immediately after driving low   */
+    bool hw_confirmed;   /* both readbacks matched the driven level       */
+
+    bool valid;          /* within tolerance AND confirmed on hardware  */
 } gpio_validation_t;
 
 gpio_validation_t gpio_marker_validate(uint32_t task_id, uint64_t sw_start, uint64_t sw_end);
 bool gpio_marker_is_available(void); /* true if real HW mapped */
+
+/* Last GPLEV value sampled on a marker pin, or -1 if unknown. */
+int  gpio_marker_last_observed(uint32_t task_id);
+
+/* Force a pin to output mode now (writes GPFSELn). Returns 0 on success. */
+int  gpio_marker_configure_output(int bcm_pin);
+
+/* Current GPFSEL field value for a pin: 0=input 1=output 4-7=alt0-3. */
+int  gpio_marker_fsel(int bcm_pin);
 
 /* For analyzer: record GPIO events into trace as well */
 int gpio_marker_trace_high(uint32_t task_id, uint32_t act, uint32_t corr);

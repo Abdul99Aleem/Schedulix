@@ -25,7 +25,11 @@ typedef enum {
     TRACE_WORKLOAD_BLOCK_BEGIN = 10, /* mutex/IPC block */
     TRACE_WORKLOAD_BLOCK_END   = 11,
     TRACE_PREEMPTION           = 12,
-    TRACE_CPU_MIGRATION        = 13
+    TRACE_CPU_MIGRATION        = 13,
+    /* Appended, never inserted: trace records are binary and the Qt
+     * frontend may already map 0..13. */
+    TRACE_GPIO_MARKER_HIGH     = 14, /* marker pin driven high */
+    TRACE_GPIO_MARKER_LOW      = 15  /* marker pin driven low  */
 } trace_event_type_t;
 
 const char* trace_event_to_string(uint32_t type);

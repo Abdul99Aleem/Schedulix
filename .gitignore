@@ -3,3 +3,6 @@ build-host/
 *.o
 *.d
 __pycache__/
+
+# Bring-up audit output from tools/qnx_audit.py - regenerated per run.
+bringup_report.txt

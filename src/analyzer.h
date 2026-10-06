@@ -40,7 +40,12 @@ typedef struct {
     uint32_t task_id;
     uint32_t activation_id;
     uint32_t correlation_id;
-    uint64_t external_event_time;
+    uint64_t external_event_time; /* only from TRACE_EXTERNAL_EVENT_RX */
+    /* GPIO marker edges from TRACE_GPIO_MARKER_{HIGH,LOW}. Kept separate from
+     * external_event_time because a marker is self-generated, not an
+     * incoming trigger. */
+    uint64_t gpio_marker_high_ns;
+    uint64_t gpio_marker_low_ns;
     uint64_t release_time;
     uint64_t ready_time;
     uint64_t first_run_time;

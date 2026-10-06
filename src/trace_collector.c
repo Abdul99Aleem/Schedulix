@@ -29,10 +29,14 @@ static int need_drop(trace_mode_t mode, uint32_t n, const sched_trace_record_t *
     (void)n;
     if (mode == TRACE_MODE_FULL) return 0;
     if (mode == TRACE_MODE_EVENT_ONLY) {
+        /* GPIO markers are kept: they are the instrument-validation signal,
+         * so dropping them in EVENT_ONLY mode would defeat their purpose. */
         return !(rec->event_type == TRACE_EXTERNAL_EVENT_RX ||
                  rec->event_type == TRACE_EVENT_DECODED ||
                  rec->event_type == TRACE_WORKLOAD_DEADLINE_MISS ||
-                 rec->event_type == TRACE_WORKLOAD_DEADLINE);
+                 rec->event_type == TRACE_WORKLOAD_DEADLINE ||
+                 rec->event_type == TRACE_GPIO_MARKER_HIGH ||
+                 rec->event_type == TRACE_GPIO_MARKER_LOW);
     }
     if (mode == TRACE_MODE_SAMPLED) {
         if (n==0) return 0;

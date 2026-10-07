@@ -18,15 +18,18 @@
 * **Monotonic Timing (`trace_instrumentation.c`)**: High-res timing calculations (release, ready, start, finish, preemption, CPU migration).
 * **QNX Kernel Tracer (`qnx_tracer.c`)**: Spawns and configures the native QNX `tracelogger` to generate context switch records in `/tmp/schedulix.kev`.
 * **Stress Generator (`stress_generator.c`, `stress_scenarios.c`)**: Generates custom CPU load contention (20% to 95% via load sweep) and priority inversion scenarios (S0–S6).
-* **GPIO Timing Markers (`gpio_marker.c`)**: Pulsing logic for physical pins (GPIO 4, 17, 27) with software fallback verification. **Not yet functional on hardware — pending rewrite.** It still opens `/dev/mem` (absent on QNX), never writes `GPFSELn` so `GPSET0`/`GPCLR0` produce no electrical output, has a stub `gpio_marker_get()` that always returns `-1`, and covers only GPIO 0–31. See [`docs/gpio.md`](docs/gpio.md).
+* **GPIO Timing Markers (`gpio_marker.c`)**: **Rewritten and verified on real hardware 2026-10-07.** Maps the BCM2711 register block with `mmap(MAP_PHYS|MAP_SHARED, NOFD, PROT_NOCACHE, 0xFE200000)` (there is no `/dev/mem` in this QNX image), writes `GPFSELn = 001` to switch each pin to output **before** driving `GPSET0`/`GPCLR0`, and reads levels back from `GPLEV`. Covers GPIO 0–53 including bank 1 at `+32`. Markers on pins 4 / 17 / 27 (header 7 / 11 / 13) were toggled 200 ms apart; all three moved fsel 0 → 1, all three read back `high=1 low=0 confirmed=YES`, and an **LED on header pin 11 was physically observed blinking**. See [`docs/SERIAL_CONSOLE_RUNBOOK.md`](docs/SERIAL_CONSOLE_RUNBOOK.md) and `VALIDATION_LOG.md` §4.4.
+  * Markers now carry dedicated event types `TRACE_GPIO_MARKER_HIGH = 14` / `TRACE_GPIO_MARKER_LOW = 15`, **appended** so existing values 0–13 keep their meaning. They are **no longer discarded by the analyzer** — `analyzer.c` captures the edges into `gpio_marker_high_ns` / `gpio_marker_low_ns`, kept deliberately separate from `external_event_time` because a marker is self-generated, not an incoming trigger. They also survive `TRACE_MODE_EVENT_ONLY`.
+  * **Open question:** GPIO 4 is the **TXD3** pin on this SoC. An earlier `gpio-bcm2711 get 4` reported it as `fsel=3 alt=4 func=TXD3`, while the verification run read `fsel=0` — different boots or BSP driver state. Forcing it to output could disturb a driver that claims it; confirm nothing on the image uses TXD3.
 * **Analyzer (`analyzer.c`)**: Correlates binary trace records with raw QNX kernel events and attributes root cause triggers for misses.
 
 ## 3. Build System
-* **QNX Backend**: Built via GNU Make with QNX SDP 8.0 compiler toolchain (`qcc` targeting `aarch64le` for Raspberry Pi 4/5).
+* **QNX Backend**: Built via GNU Make with QNX SDP 8.0 compiler toolchain (`qcc` targeting `aarch64le` for Raspberry Pi 4/5). The SDP is installed at `C:\Users\User\qnx800` (`qcc` = gcc 12.2.0); `C:\QNX` contains only the IDE (`QNX Software Center`, `qnxmomenticside`), not the SDP. `ntoaarch64-strip` is available for shrinking binaries before board upload.
 * **Qt Frontend**: CMake based with Qt 6.8.3.
 
 ## 4. Targets
 * **QNX Target**: Raspberry Pi 4 QNX RTOS 8.0 (`aarch64le`) at IP address `192.168.10.5`. The board actually in hand is **not** the `192.168.10.2` board referenced by earlier reports. Confirmed identity: `QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le`, 4× Cortex-A72 @1500 MHz, 8128 MB, 38 processes / 258 threads. A **passwordless root shell** is available over the serial console (`root@console:/#`, 115200 8N1).
+  * **Two proven access paths.** (1) Serial console via CH340 on COM6 — root, no password. (2) **Momentics IDE** — proven 2026-10-07; compiles, deploys, runs, and streams target `stdout` to the IDE console, but provides no root shell. Default SSH credentials are `qnxuser`/`qnxuser`; root login over SSH is disabled by default.
 * **Qt Target**: Windows host system running the desktop UI client.
 
 ## 5. Known Working Pieces
@@ -37,6 +40,9 @@
 * All Python host verification and regression unit tests pass (13/13 Phase 6 tests, 3/3 analyzer tests).
 * **UART adapter, verified on hardware 2026-10-06**: `src/uart_adapter.c` opens `/dev/ser1` in physical mode and transmits for real — 21 bytes were observed on the host COM6 from `schedulix uart send`, ahead of the program's own `printf`.
 * **Noun/verb CLI, verified on hardware 2026-10-06**: `schedulix uart status` and `schedulix uart send <data>` execute correctly on the board.
+* **GPIO marker, verified on real hardware 2026-10-07**: `schedulix gpio test` prints `GPIO Availability: REAL PHYSICAL`, drives all three marker pins (4 / 17 / 27), and reports `confirmed=YES` and `valid=YES` for each against a 200 ms nominal. An LED on header pin 11 was **physically observed blinking**. See `VALIDATION_LOG.md` §4.4.
+* **Momentics IDE as a deployment and log channel, verified 2026-10-07**: the IDE compiles, deploys to the board, runs the binary, and streams target `stdout` live to the IDE console. This is the deployment path that does not depend on the fragile serial upload.
+* Host toolchain: QNX SDP 8.0 at `C:\Users\User\qnx800` (`qcc` gcc 12.2.0, `ntoaarch64-strip`). `C:\QNX` holds **only the IDE**. Full `aarch64le` rebuild is clean — zero errors, zero warnings.
 
 ## 6. Known Missing / Gap Items (Phases 2.11 - 2.15)
 * **UART Device Integration (Phase 2.12)**: **Done.** `src/uart_adapter.c` is a complete QNX event reader/writer, not a stub: termios setup, 115200 8N1, `O_NONBLOCK`, and a simulated loopback fallback when the physical port cannot be opened. `uart_adapter_init()` defaults to `/dev/ser1`. Verified on live hardware on 2026-10-06 — `schedulix uart status` reports `UART Adapter Backend: physical` and `physical device /dev/ser1 configured at 115200 baud`; `open()`, `tcgetattr()` and `tcsetattr()` all succeed, and QNX permits a second open of `/dev/ser1` while the console owns it. TX is proven end-to-end: `schedulix uart send SCHEDULIX_TX_PROOF_42` produced 21 bytes on the host COM6 *before* the program's own `printf` output.
@@ -47,8 +53,8 @@
 * **Qt Integration**: The Qt app relies solely on `MockProvider` and does not yet parse the QNX backend's JSON reports.
 
 ## 7. Proposed Implementation Sequence
-1. **Rewrite `gpio_marker.c`**: replace the `/dev/mem` mmap with `MAP_PHYS | MAP_SHARED` + `NOFD` + `PROT_NOCACHE` on `0xfe200000`, write `GPFSELn` before any `GPSET0`/`GPCLR0`, implement real `gpio_marker_get()`, and cover the full GPIO 0–53 range (bank 1 at `+32`).
-2. **Fix the UART TX trace marker** at `src/uart_adapter.c:151`: add a dedicated `TRACE_EXTERNAL_EVENT_TX` type so TX and RX are distinguishable.
+1. ~~**Rewrite `gpio_marker.c`**: replace the `/dev/mem` mmap with `MAP_PHYS | MAP_SHARED` + `NOFD` + `PROT_NOCACHE` on `0xfe200000`, write `GPFSELn` before any `GPSET0`/`GPCLR0`, implement real `gpio_marker_get()`, and cover the full GPIO 0–53 range (bank 1 at `+32`).~~ **Done, 2026-10-07, verified on hardware.**
+2. **Fix the UART TX trace marker** at `src/uart_adapter.c:151`: add a dedicated `TRACE_EXTERNAL_EVENT_TX` type so TX and RX are distinguishable. **This is now the next item.** Append it at the **end** of `trace_event_type_t` for the same reason `TRACE_GPIO_MARKER_HIGH = 14` / `_LOW = 15` were appended — trace records are binary, and inserting mid-enum would renumber 0–13.
 3. **Write `qnx_can_adapter.c`**: real `/dev/can0` mailboxes and `CAN_DEVCTL_*` calls to replace the simulated adapter and the TCP injector.
 4. **Verify UART RX against an external peer**: `/dev/ser1` doubles as the console, so RX must be proven on a second board or with the console detached.
 5. **Add JSON output reporting and clean exit codes** to the noun/verb CLI.
@@ -56,5 +62,6 @@
 
 ## 8. Risks
 * **Blocking UART operations**: *Mitigated.* `uart_adapter_init()` opens the port with `O_NONBLOCK` and sets `VMIN = 0` / `VTIME = 5` (a 0.5 s read timeout), so `read()` cannot starve real-time tasks. If throughput ever requires it, move I/O to a dedicated low-priority helper thread.
-* **Physical Hardware Dependencies**: GPIO requires physical connections on the Pi for end-to-end verification, and `gpio_marker.c` is still pending rewrite. Keep the software stubs/mocks enabled automatically when physical drivers/ports are missing — and treat any `MOCK` result as unproven rather than as a pass.
+* **Physical Hardware Dependencies**: GPIO markers now have a **verified physical path** (LED observed blinking, `GPLEV` readback confirmed). Remaining caveats: marker wires on header pins 7/11/13 must be soldered **before** the RS485 CAN HAT is mounted, since the HAT covers them; and GPIO 4 is the **TXD3** pin, so confirm nothing on the image claims it before relying on it as a marker. Keep the software mocks enabled automatically when the physical mapping is missing — and treat any `MOCK` result as unproven rather than as a pass.
+* **Marker timing under load**: the 2026-10-07 verification measured a deliberate 200 ms pulse in a test harness. Marker jitter while `BRAKE_CTL` / `ADAS_FUSION` / `DIAG_POLL` are actually running is **not yet characterised**.
 * **Stale deploy artefacts**: shipping a binary from `deploy/` rather than `build/` will silently produce a program with no UART or CLI subcommands.

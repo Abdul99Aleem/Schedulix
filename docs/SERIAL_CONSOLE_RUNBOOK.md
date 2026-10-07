@@ -365,9 +365,15 @@ interactive `serial_console.ps1` still running.
    SSH-only. PuTTY's raw serial mode is a terminal, not a transport.
 2. **Ethernet is not connected**, so `tools/qnx_ssh.py` is unavailable.
 3. **The artefacts are large** — 148–331 KB. They cannot be typed by hand.
-4. **No host QNX SDP** on this machine (`C:\QNX` has only the IDE; no `qcc`, no `strip`),
-   so binaries cannot be re-derived or trimmed locally.
-5. **Hardware flow control is not wired** (RTS/CTS absent). A single large `Write()`
+4. **A QNX SDP 8.0 toolchain *is* present** at `C:\Users\User\qnx800`
+   (`host\win64\x86_64\usr\bin\qcc.exe`, gcc 12.2.0, plus `make` and `ntoaarch64-strip`).
+   `C:\QNX` holds **only the IDE** — QNX Software Center and qnxmomenticside — and is a
+   common source of the wrong conclusion that no toolchain exists. Binaries can therefore be
+   rebuilt and stripped locally; see §4.4.1.
+5. **The Momentics IDE is a working alternative deployment channel** (§4.4.2) and has proved
+   more reliable than serial for larger binaries, because it does not depend on the console
+   line discipline described in §4.4.
+6. **Hardware flow control is not wired** (RTS/CTS absent). A single large `Write()`
    overruns the Pi's UART receive FIFO and bytes are dropped **silently** — no error, no
    short-write indication. Chunking with an inter-chunk delay is mandatory, not cosmetic.
 
@@ -504,6 +510,106 @@ Sustained rate ≈ **2.5 KB/s**.
 | 331,152 B (`build/aarch64le-debug/schedulix_can`) | ok | 81.6 s |
 
 Budget roughly **1 minute per 160 KB** when planning a session.
+
+> **Above roughly 330 KB, prefer the IDE.** A 332 KB transfer failed with `staging 1 B`
+> (see §4.4.4 — `head -c N` truncates when its budget runs out early). Strip the binary, or
+> use the Momentics IDE channel in §4.4.2.
+
+### 4.4.2 Alternative channel: the Momentics IDE
+
+Since 2026-10-07 the **Momentics IDE is a proven deployment and log channel**, and for
+anything larger than ~330 KB it is the recommended route.
+
+What it does: compiles the project, deploys the binary to the board over the network, runs
+it, and streams the process's `stdout` live into the IDE console pane. Verified by running
+`schedulix gpio test`, whose output appeared in the IDE console and drove a real LED on
+header pin 11.
+
+**It does not use SSH.** Deployment goes through `qconn`, so none of the SSH algorithm
+problems in §4.8.2 apply to it. That is precisely why it is more robust than the serial
+path for large binaries.
+
+Practical split:
+
+| Task | Channel |
+| --- | --- |
+| Build, deploy, run, watch logs | **Momentics IDE** — set program arguments, press Run |
+| Interactive root shell, `passwd`, `slay`, privileged commands | **Serial console** (§§2–3) or `ssh` (§4.8.2) |
+
+The IDE runs the binary as a normal user. That was sufficient for the GPIO test — the
+`mmap(MAP_PHYS)` call succeeded and reported `REAL PHYSICAL` — but it should not be assumed
+for every privileged operation.
+
+### 4.4.3 Host networking gotcha
+
+The workstation had **two active Ethernet adapters** (`192.168.56.1` on `Ethernet 2`, and
+`192.168.10.1` on `Ethernet` alongside the board at `192.168.10.5`). This made SSH behave
+erratically: one attempt failed with `No route to host` while a later one reached the
+password prompt on the same address. Traffic was being arbitrated between two NICs.
+
+If both a failed and a successful attempt to the same address are observed, check for a
+second active adapter:
+
+```powershell
+Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike '127.*' }
+Disable-NetAdapter -Name "Ethernet 2" -Confirm:$false
+```
+
+### 4.4.4 Why `head -c N` is fragile above ~330 KB
+
+Measured on this console: `head -c 200` does **not** block waiting for 200 bytes. It
+returns after the first line, having written **1 byte**; sending data afterwards found the
+shell already back at a prompt. `head` therefore consumes input **line by line** and stops
+once its byte budget is spent, rather than blocking for the full count.
+
+Consequence: if the budget is close to the payload length, the tail is truncated. A
+332,624-byte transfer failed three times with `staging 1 B`, while 331,152 bytes had
+succeeded. The tool now uses roughly a 3× margin plus 8 KB, but **strip the binary or use
+the IDE rather than relying on this**.
+
+### 4.4.5 Recorded console-wedging incidents
+
+Three power cycles were needed during this work. All three were caused by an approach that
+parks the shell in a foreground reader:
+
+| Incident | Cause |
+| --- | --- |
+| 1 | `cat > file` + `Ctrl+D` — `Ctrl+D` is not delivered as EOF on this console |
+| 2 | Echo never drained while streaming — ~81 KB of echo overran the receive buffer |
+| 3 | `dd bs=N count=M` — tested as a "more deterministic" reader; never returned the prompt |
+
+Recovery is always the same: power-cycle the board, then reconnect. The USB-TTL should be
+plugged in **before** powering the board, otherwise the console can end up bound to nothing.
+
+### 4.4.6 SSH to the board
+
+Per the official [QNX QSTI for Raspberry Pi guide, "Interacting with the system"](https://www.qnx.com/developers/docs/qnxeverywhere/com.qnx.doc.target_images/topic/qsti/interacting-with-the-system.html):
+
+- Default credentials are **`qnxuser` / `qnxuser`** and **`root` / `root`**.
+- **Root login over SSH is disabled by default.** To enable it, on the board:
+  ```sh
+  su
+  sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /usr/etc/ssh/sshd_config
+  slay -f sshd
+  /usr/bin/sshd -f /usr/etc/ssh/sshd_config
+  ```
+- **Windows clients must request `hmac-sha2-256`**, because QNX sshd does not offer the
+  default MAC algorithms. One-off:
+  ```powershell
+  ssh -m hmac-sha2-256 root@192.168.10.5
+  scp -o "MACs=hmac-sha2-256" build/aarch64le-debug/schedulix_can qnxpi:~/bin
+  ```
+  Persistent, via `C:\Users\User\.ssh\config`:
+  ```
+  Host qnxpi 192.168.10.5
+     User root
+       MACs hmac-sha2-256
+  ```
+  After that, `ssh qnxpi` and `scp <file> qnxpi:/tmp/` need no flags.
+
+That same page documents the serial wiring independently: **TX is pin 8, RX is pin 10**,
+ground pin 6 or 14, and the power pins must never be connected — corroborating the corrected
+crossover in §2.
 
 ---
 
@@ -745,7 +851,7 @@ uncontested read of the looped-back bytes.
 | InstanceId | `USB\VID_1A86&PID_7523\5&5114092&0&3` |
 | Shell | Windows, PowerShell 5.1 |
 | PuTTY | `C:\Program Files\PuTTY\putty.exe` |
-| QNX SDP toolchain | **none** — `C:\QNX` has only the IDE. No `qcc`, no `strip` |
+| QNX SDP toolchain | **`C:\Users\User\qnx800`** — gcc 12.2.0 `qcc`, `make`, `ntoaarch64-strip`. `C:\QNX` is only the IDE |
 | paramiko | 5.0.0 (SSH only, only if Ethernet returns) |
 | Multimeter | **none** — hence the self-diagnosing divider |
 

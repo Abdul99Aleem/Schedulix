@@ -31,8 +31,14 @@ Where the two disagree and no correction is listed here, `SESSION_LOG.md` stands
 | 12 | [Roadmap, phases 2–6](#12-roadmap-phases-26) |
 | 13 | [Open questions](#13-open-questions) |
 | 14 | [Current board state](#14-current-board-state) |
+| 15 | [Phase 2 result — GPIO marker](#15-phase-2-result--gpio-marker-verified-2026-10-07) |
 | A | [Appendix A — verified command reference](#appendix-a--verified-command-reference) |
 | B | [Appendix B — file inventory](#appendix-b--file-inventory) |
+
+> **Continued on 2026-10-07.** [§15](#15-phase-2-result--gpio-marker-verified-2026-10-07)
+> records the completion and hardware verification of Phase 2 (the GPIO marker rewrite), the
+> two new access paths proven that day (Momentics IDE deployment, SSH), and the host-networking
+> gotcha. Read it alongside §14, which is the board state at the end of 2026-10-06.
 
 ---
 
@@ -1329,22 +1335,27 @@ impact is invisibility, not corruption.
 ```
 Phase 1  UART adapter proven on hardware   ✓ DONE — see §8
                                                │
-Phase 2  gpio_marker.c rewritten + LED proof ─┘  compile locally (§2.2),
-                                               │  ship via §7 upload path
-Phase 3  UART TX trace marker + GPIO event ───┤  host-only, no board needed
-                                               │  can run in parallel
-Phase 4  CAN driver install  ←───────────────┘  uses the §7 upload path
-                                               │
+Phase 2  gpio_marker.c rewritten + LED proof ✓ DONE — verified on hardware
+                                               │  2026-10-07, see §15
+Phase 3  UART TX trace marker  ←─────────────┤  NEXT. Host-only, no board needed.
+                                               │  src/uart_adapter.c:151
+Phase 4  CAN driver install ─────────────────┘  uses the §7 upload path
+                                               │  (or the §15.3 IDE channel)
 Phase 5  Write real CAN adapter ───────────────┘  depends on Phase 4
                                                │
 Phase 6  Qt JSON loader ────────────────────────  depends on Phase 5 output shape
 ```
 
 Phases 1, 2 and 4 all shared one dependency — a working way to get 148–331 KB binaries
-onto the board. That dependency is now discharged. Phase 3 is unblocked and
+onto the board. That dependency is now discharged **twice over**: the serial upload path
+(§7) and the Momentics IDE channel ([§15.3](#153-momentics-ide--deployment-and-log-channel)),
+the latter proven to be the more reliable of the two. Phase 3 is next: it is unblocked and
 independent of all hardware.
 
-### 12.1 Phase 2 — rewrite `src/gpio_marker.c` (next)
+### 12.1 Phase 2 — rewrite `src/gpio_marker.c` — **DONE, verified on hardware 2026-10-07**
+
+> **This subsection is the original plan, retained for context. The result, the verified
+> output, and three bugs the test run exposed are in [§15](#15-phase-2-result--gpio-marker-verified-2026-10-07).**
 
 **Target:** `src/gpio_marker.c`
 
@@ -1379,6 +1390,11 @@ Validation: delta ... ns, valid: ...
 **Pass criterion: `REAL PHYSICAL`**, not `MOCK`, and not bare `REAL`
 ([§11.4](#114-correction-4--the-gpio-pass-criterion-string)).
 
+> **Outcome, 2026-10-07: criterion met.** `REAL PHYSICAL` on all three pins, all three moved
+> fsel 0 → 1, all three confirmed by `GPLEV` readback, and an LED on pin 11 physically
+> observed blinking. The `mmap` prediction below was right — that call was the hinge.
+> See [§15](#15-phase-2-result--gpio-marker-verified-2026-10-07).
+
 **Expect this to hinge entirely on the `mmap` call.** And expect the two defects to
 fail independently:
 
@@ -1402,44 +1418,57 @@ Not in the original phase list, but it should not be left undone:
    target that copies, rather than leaving two unreconciled directories).
 4. Stop `deploy/` from being `.gitignore`d and shipped by accident.
 
-### 12.3 Phase 3 — fix the UART TX trace marker
+### 12.3 Phase 3 — fix the UART TX trace marker — **NEXT**
 
 **Target:** `src/trace_schema.h`, `src/trace_schema.c`, `src/trace_collector.c`,
-`src/analyzer.c`, `src/uart_adapter.c`, and optionally `src/gpio_marker.c`
+`src/analyzer.c`, `src/uart_adapter.c`
+
+> **The GPIO half of this phase landed early, with the Phase 2 rewrite.** `TRACE_GPIO_MARKER_HIGH
+> = 14` and `TRACE_GPIO_MARKER_LOW = 15` are now appended to the enum, named in
+> `trace_schema.c:18-19`, kept in `need_drop()` (`trace_collector.c:38-39`), and handled in
+> `analyzer.c:152-157`. **What remains is the UART TX half:** `TRACE_EXTERNAL_EVENT_TX` and
+> `src/uart_adapter.c:151`. See [§15.5](#155-what-phase-3-still-needs).
 
 **Enum placement is the critical detail.** Append at the **END** of
 `trace_event_type_t`:
 
 ```c
-TRACE_EXTERNAL_EVENT_TX = 14
+TRACE_EXTERNAL_EVENT_TX = 16
 ```
+
+**16, not 14** — 14 and 15 were taken by the GPIO marker types in the Phase 2 rewrite.
 
 **Do NOT insert mid-enum.** Trace records are binary and the Qt frontend may already
 map values 0–13. Inserting anywhere but the end silently renumbers existing types and
 corrupts every archived trace and any frontend that hardcoded the mapping.
 
-Current enum (`src/trace_schema.h:14-29`), for reference:
+Current enum (`src/trace_schema.h:14-33`), for reference — 14 and 15 were appended by the
+Phase 2 rewrite and are now occupied:
 
 | Value | Name | Value | Name |
 | ---: | --- | ---: | --- |
-| 0 | `TRACE_INVALID` | 7 | `TRACE_WORKLOAD_DEADLINE` |
-| 1 | `TRACE_EXTERNAL_EVENT_RX` | 8 | `TRACE_WORKLOAD_DEADLINE_MISS` |
-| 2 | `TRACE_EVENT_DECODED` | 9 | `TRACE_WORKLOAD_ABORT` |
-| 3 | `TRACE_WORKLOAD_RELEASE` | 10 | `TRACE_WORKLOAD_BLOCK_BEGIN` |
-| 4 | `TRACE_WORKLOAD_READY` | 11 | `TRACE_WORKLOAD_BLOCK_END` |
-| 5 | `TRACE_WORKLOAD_START` | 12 | `TRACE_PREEMPTION` |
-| 6 | `TRACE_WORKLOAD_END` | 13 | `TRACE_CPU_MIGRATION` |
+| 0 | `TRACE_INVALID` | 8 | `TRACE_WORKLOAD_DEADLINE_MISS` |
+| 1 | `TRACE_EXTERNAL_EVENT_RX` | 9 | `TRACE_WORKLOAD_ABORT` |
+| 2 | `TRACE_EVENT_DECODED` | 10 | `TRACE_WORKLOAD_BLOCK_BEGIN` |
+| 3 | `TRACE_WORKLOAD_RELEASE` | 11 | `TRACE_WORKLOAD_BLOCK_END` |
+| 4 | `TRACE_WORKLOAD_READY` | 12 | `TRACE_PREEMPTION` |
+| 5 | `TRACE_WORKLOAD_START` | 13 | `TRACE_CPU_MIGRATION` |
+| 6 | `TRACE_WORKLOAD_END` | **14** | **`TRACE_GPIO_MARKER_HIGH`** |
+| 7 | `TRACE_WORKLOAD_DEADLINE` | **15** | **`TRACE_GPIO_MARKER_LOW`** |
+| **16** | **`TRACE_EXTERNAL_EVENT_TX`** ← *to be added, next* | | |
 
 **Touch points**
 
-| File:line | Change |
-| --- | --- |
-| `src/trace_schema.h:28` | Append `TRACE_EXTERNAL_EVENT_TX = 14` after `TRACE_CPU_MIGRATION` (drop the trailing comma on `:28`) |
-| `src/trace_schema.c:17-18` | Add the name string in `trace_event_to_string`, before `default:` |
-| `src/trace_collector.c:31-36` | Add to the `need_drop()` keep-list so TX survives `TRACE_MODE_EVENT_ONLY` |
-| `src/analyzer.c:148-150` | Decide whether TX sets `external_event_time`. **It should probably NOT** — TX is not an external arrival trigger, and setting it would let a self-inflicted transmit masquerade as a stimulus. `src/analyzer.c:149` is the `case TRACE_EXTERNAL_EVENT_RX:` line |
-| `src/uart_adapter.c:151` | Use the new type in `uart_adapter_trace_tx()` |
-| `src/gpio_marker.c:102,106` | Separately, use a dedicated GPIO marker type ([§9.1(e)](#e-gpio-markers-masquerade-as-cpu-migrations)) |
+| File:line | Change | State |
+| --- | --- | --- |
+| `src/trace_schema.h:32` | Append `TRACE_EXTERNAL_EVENT_TX = 16` after `TRACE_GPIO_MARKER_LOW` (drop the trailing comma on `:32`) | **todo** |
+| `src/trace_schema.c:20` | Add the name string in `trace_event_to_string`, before `default:` | **todo** |
+| `src/trace_collector.c:31-39` | Add to the `need_drop()` keep-list so TX survives `TRACE_MODE_EVENT_ONLY` | **todo** |
+| `src/analyzer.c:148-150` | Decide whether TX sets `external_event_time`. **It should probably NOT** — TX is not an external arrival trigger, and setting it would let a self-inflicted transmit masquerade as a stimulus. `src/analyzer.c:149` is the `case TRACE_EXTERNAL_EVENT_RX:` line | **todo** |
+| `src/uart_adapter.c:151` | Use the new type in `uart_adapter_trace_tx()` | **todo — this is defect (f), the Phase 3 deliverable** |
+| `src/gpio_marker.c:292,297` | Use a dedicated GPIO marker type | **done 2026-10-07** |
+| `src/analyzer.c:152-157` | Consume the marker edges | **done 2026-10-07** |
+| `src/trace_collector.c:38-39` | Keep markers in `EVENT_ONLY` mode | **done 2026-10-07** |
 
 **Verification** — host suites via `Makefile.host`:
 

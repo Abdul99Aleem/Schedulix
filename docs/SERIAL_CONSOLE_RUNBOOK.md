@@ -599,11 +599,14 @@ Per the official [QNX QSTI for Raspberry Pi guide, "Interacting with the system"
   ssh -m hmac-sha2-256 root@192.168.10.5
   scp -o "MACs=hmac-sha2-256" build/aarch64le-debug/schedulix_can qnxpi:~/bin
   ```
-  Persistent, via `C:\Users\User\.ssh\config`:
+  Persistent, via `C:\Users\User\.ssh\config`. **One directive per line** —
+  `Host qnxpi 192.168.10.5` on a single line is parsed as two host patterns,
+  so SSH silently falls back to the local Windows username instead:
   ```
-  Host qnxpi 192.168.10.5
+  Host qnxpi
+     HostName 192.168.10.5
      User root
-       MACs hmac-sha2-256
+     MACs hmac-sha2-256
   ```
   After that, `ssh qnxpi` and `scp <file> qnxpi:/tmp/` need no flags.
 

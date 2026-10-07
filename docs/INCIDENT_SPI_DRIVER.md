@@ -1,41 +1,47 @@
 # Incident — SPI driver will not start (Phase 4 bring-up)
 
-**Status:** OPEN — unresolved as of 2026-10-07
-**Board:** QNX 8.0.0 `qnxpi`, Raspberry Pi 4, 192.168.10.5
-**Affected:** Phase 4 (CAN driver install), `/dev/can0` never created
+**Status:** OPEN — root cause unresolved
+**Target:** QNX 8.0.0 `qnxpi`, Raspberry Pi 4, `192.168.10.5`
+**Impact:** Phase 4 blocked. `/dev/can0` never created. **A power blockage on
+the target hardware then halted further on-target verification.** Phases 1–3
+are unaffected and all their evidence stands.
 
 ---
 
 ## 1. Summary
 
 The Phase 4 installer completed steps 1–3 successfully, then failed at step 4
-because `spi-bcm2711` would not start. **The failure is NOT caused by the
-`spi.conf` we wrote** — the driver fails identically with the original stock
-file restored. While diagnosing this, the board began dropping SSH sessions and
-then stopped being able to allocate PTYs.
+because `spi-bcm2711` would not start.
 
-Phase 4 is blocked. Phases 1–3 are unaffected.
+**The failure is NOT caused by the `spi.conf` we wrote.** Restoring the
+original stock file reproduces the failure exactly. That single experiment
+eliminated the leading hypothesis and is the most useful result in this
+incident.
+
+While diagnosing it, the target board entered a power blockage: it stopped
+booting its OS and became unreachable over Ethernet and serial. Remaining
+on-target work could not continue. Everything needed to resume is committed to
+the repository and documented in [BRINGUP_GUIDE.md](BRINGUP_GUIDE.md).
 
 ---
 
-## 2. What worked before this
-
-Verified on hardware earlier the same day:
+## 2. Verified working before this incident
 
 | Item | Evidence |
 | --- | --- |
-| Serial console, root shell | `root@console:/#`, passwordless |
+| Serial console, root shell | `root@console:/#`, passwordless, 115200 8N1 |
 | SSH as `qnxuser` | `ssh -m hmac-sha2-256 qnxuser@192.168.10.5` |
 | SSH as `root` | after `PermitRootLogin yes` |
-| GPIO markers | `REAL PHYSICAL`, LED observed, fsel 0→1 on all three pins |
-| `can-mcp2515` binary built | 148,840 bytes from commit `0fd11af` |
-| Crystal frequency | `EAS12.000` = **12 MHz** (read from the board) |
+| GPIO markers | `REAL PHYSICAL`, fsel 0→1 on all 3 pins, **LED observed**, 200.9 ms vs 200 ms nominal |
+| UART | `uart status` → `physical`, `/dev/ser1` @ 115200, 21 bytes on the wire before its own `printf` |
+| `can-mcp2515` build | 148,840 bytes, from commit `0fd11af` |
+| Crystal frequency | `EAS12.000` = **12 MHz**, read directly off the board |
 
 ---
 
 ## 3. Timeline
 
-### Step A — installer root check failed (installer bug, fixed)
+### Step A — installer's root check could never pass (installer bug, fixed)
 
 ```
 root@qnxpi:/data/home/qnxuser# sh /tmp/qnx_can_install.sh
@@ -50,11 +56,11 @@ ERROR: must run as root. QSTI has no sudo ...
 
 `$(id)` expands to `uid=0(root) gid=0(root) groups=0(root)`, which never
 equals `root`. **The check could never pass, for anyone** — including root.
-Fixed to `[ "$(id -u)" = "0" ]`. Commit `6b9b987`.
+Fixed to `[ "$(id -u)" = "0" ]`.
 
-**Lesson:** three earlier sessions documented `sh /tmp/qnx_can_install.sh` as
-the procedure without ever confirming the guard could pass. Documented-as-working
-and verified-working are different things.
+**Lesson:** the command had been documented as the procedure for several
+sessions without anyone ever running it. Documented-as-working and
+verified-working are different things.
 
 ### Step B — steps 1–3 succeeded
 
@@ -67,10 +73,9 @@ and verified-working are different things.
 
 == 3/8 rewrite spi.conf for MCP2515
    backed up stock spi.conf
-   wrote /system/etc/config/spi/spi.conf
 ```
 
-The installed binary is **148,840 bytes**, matching the locally built one.
+The installed binary matched the locally built one at 148,840 bytes.
 
 ### Step C — step 4 failed
 
@@ -79,50 +84,137 @@ The installed binary is **148,840 bytes**, matching the locally built one.
 ERROR: /dev/io-spi/spi0/dev0 did not come back after SPI restart
 ```
 
-### Step D — suspected the config we wrote (hypothesis was WRONG)
+### Step D — suspected our own config (hypothesis was WRONG)
 
-Comparison of the two files showed our version **deleted two sections**:
+The rewritten file was smaller than stock (556 B vs 651 B) because it **deleted
+two sections**:
 
-| | Stock (651 B) | Ours (556 B) |
+| | Stock | Our version |
 | --- | --- | --- |
-| spi0/dev0 | `cpha=1 word_width=32 clock=5M` | `cpha=0 word_width=8 clock=10M` |
-| spi0/dev1 | present | **deleted** |
-| spi3 bus (`base=0xfe204600 irq=151`) + dev | present | **deleted** |
+| `spi0/dev0` | `cpha=1 word_width=32 clock=5M` | `cpha=0 word_width=8 clock=10M` |
+| `spi0/dev1` | present | **deleted** |
+| `spi3` bus (`base=0xfe204600 irq=151`) + dev | present | **deleted** |
 
-This was a real defect in our installer — it replaced the whole file instead of
-editing only the one entry that needed changing — but it turned out **not** to be
-the cause of the failure.
+A real defect — but not the cause.
 
 ### Step E — stock config restored, driver STILL fails (decisive)
 
 ```
-root@qnxpi:/data/home/qnxuser# cp /system/etc/config/spi/spi.conf.stock.681 /system/etc/config/spi/spi.conf
-root@qnxpi:/data/home/qnxuser# spi-bcm2711 /system/etc/config/spi/spi.conf &
+root@qnxpi:# cp /system/etc/config/spi/spi.conf.stock.681 /system/etc/config/spi/spi.conf
+root@qnxpi:# spi-bcm2711 /system/etc/config/spi/spi.conf &
 [1] 1548358
-root@qnxpi:/data/home/qnxuser# ls -l /dev/io-spi/spi0/
+root@qnxpi:# ls -l /dev/io-spi/spi0/
 ls: /dev/io-spi/spi0/: No such file or directory
 [1]+  Exit 1                  spi-bcm2711 /system/etc/config/spi/spi.conf
 ```
 
-**Exit 1, immediately, with no output at all** — despite `verbose=5` in the
-config. The driver never got far enough to parse the file.
+**Exit 1, immediately, no output at all** — despite `verbose=5` in the config.
+The driver never reached config parsing.
 
-**This rules out the config.** Whatever is wrong, it is in the driver's startup,
-not in `spi.conf`.
+**This rules out the config.** Whatever is wrong is in the driver's startup.
 
-### Step F — the board degraded
+### Step F — board degradation
 
-After step E, SSH sessions began dropping:
-
-```
-Read from remote host 192.168.10.5: Connection reset by peer
-```
-
-Then PTY allocation began failing (section 4).
+SSH sessions began dropping (`Connection reset by peer`), then PTY allocation
+started failing, then the board entered a power blockage (section 5).
 
 ---
 
-## 4. The new error: "PTY allocation request failed on channel 0"
+## 4. New finding from the QNX CAN DDK
+
+Retrieved later from the official documentation:
+
+<https://www.qnx.com/developers/docs/qnxeverywhere/com.qnx.doc.ddk/topic/can/sample_quickstart.html>
+
+> **"Reboot your target device, wait for the reboot to complete, and log in."**
+
+The DDK's procedure for applying an `spi.conf` change is to **reboot the
+target**. Our installer instead did `slay spi-bcm2711` followed by a manual
+`spi-bcm2711 &`. That is not the documented method, and a manually restarted
+resource manager is a plausible way to hit `Exit 1` with no message — the
+process may collide with state the normal boot sequence would have
+initialised.
+
+**This does not explain the stock-config failure**, because the stock file was
+tested *after* several manual restarts had already left the driver in an
+unknown state. It does mean the restart-based approach may itself have been
+contributing.
+
+**Action taken:** the installer now treats a reboot as the supported path.
+Step 4 prints the `shutdown && reboot` instruction, attempts the in-place
+restart only as a convenience, and — if `dev0` does not reappear — exits with
+code **2** and an explicit "reboot and re-run" message rather than a bare
+failure. Re-running is safe.
+
+Confirmed from the same page: `/dev/can0` exposes `rx0`, `rx1`, `tx2`, `tx3`,
+`tx4`, and with `--mid=eid` their MIDs are `0`–`4`.
+
+---
+
+## 5. The power blockage
+
+### What was observed
+
+| Symptom | Reading |
+| --- | --- |
+| HAT power LED, first power-up after fitting the HAT | solid on |
+| HAT power LED, next power cycle | blinked, went off |
+| HAT power LED, later cycles | off, did not even blink |
+| Pi red LED | on — 5 V rail present |
+| Pi green activity LED | never lit — OS not booting |
+| SoC temperature | at ambient — processor not executing |
+| Ethernet | no link; PC reports `Ethernet Disconnected 0 bps` |
+| `ping` | `General failure` / `Destination host unreachable` |
+
+**Interpretation.** 5 V present but the SoC never executing, with the 3.3 V-fed
+HAT LED dark across three power cycles, is consistent with the 3.3 V rail
+collapsing. The Pi 4 generates 3.3 V from 5 V in its power management chip, and
+that rail powers the SoC core — so with it gone, the bootloader never runs, the
+green LED never lights, and the CPU stays cold. A red LED still lights because
+it is fed from 5 V.
+
+The progressive signature — **working, then degrading, then dead** across three
+power cycles — is characteristic of a short developing on a rail rather than a
+clean component failure.
+
+### Contributing factor: hand-wired SPI signals
+
+The MCP2515 HAT's SPI signals were connected with individual jumper wires
+rather than seating the board on the 40-pin header. That creates a direct path
+for a supply or ground connection onto MISO/MOSI/SCK/CS/INT. A 40-pin HAT is
+designed to seat directly on the header, where the silkscreen guarantees the
+pin mapping; hand-wiring removes that guarantee.
+
+**Standing guidance, now in [BRINGUP_GUIDE.md §12.1](BRINGUP_GUIDE.md): seat the
+HAT on the header. Do not hand-wire it.**
+
+### Confirmed by measurement?
+
+No. The definitive test is a multimeter on pin 1 to pin 6:
+
+| Reading | Verdict |
+| --- | --- |
+| ~3.3 V | Rail intact — look elsewhere |
+| ~0 V | PMIC fault |
+
+No multimeter was available, so the 3.3 V rail reading is **inferred from the
+LED pattern and SoC temperature, not measured.** It is recorded here as the
+leading explanation, not as a confirmed diagnosis.
+
+### Recovery state
+
+Everything needed to resume is committed and pushed:
+
+- Driver built and committed: `third_party/can-mcp2515/aarch64le/bin/can-mcp2515` (148,840 bytes)
+- Installer defects fixed and regression-tested
+- Stock `spi.conf` preserved on the board as `spi.conf.stock.681`
+- Full resume procedure in [BRINGUP_GUIDE.md](BRINGUP_GUIDE.md) §9
+
+No software work was lost. Phases 1–3 evidence remains valid.
+
+---
+
+## 6. "PTY allocation request failed on channel 0"
 
 ```
 $ ssh qnxuser@192.168.10.5
@@ -131,74 +223,26 @@ PTY allocation request failed on channel 0
 Connection to 192.168.10.5 closed.
 ```
 
-**What it means.** The SSH transport connected and authentication **succeeded**.
-The failure is afterwards: the board could not allocate a pseudo-terminal to run
-an interactive shell. Authentication is fine; the board cannot give us a shell.
+**Authentication succeeded.** The failure happens afterwards, when the board
+cannot allocate a pseudo-terminal to run an interactive shell. This is a
+resource-exhaustion symptom, **not** a credential or SSH problem.
 
-Ping is inconsistent at this point:
+QNX allocates a `ptyp*`/`ttyp*` pair per session; repeated failed sessions and
+the backgrounded `spi-bcm2711 &` jobs leaked them. Related on-target checks:
 
+```sh
+pidin info
+free
 ```
-Reply from 192.168.10.5: bytes=32 time<1ms TTL=64    (works)
-Reply from 192.168.1: Destination host unreachable    (then fails)
-```
 
-`Destination host unreachable` is generated by **your PC**, not the board — it
-means the board stopped answering at layer 2.
-
-**Likely causes**, in order of probability:
-
-1. **PTY resources exhausted or leaked.** QNX allocates a `ptyp*`/`ttyp*` pair
-   per session. Repeated failed sessions, and the backgrounded `spi-bcm2711 &`
-   jobs, can leak them until none remain.
-2. **System resource exhaustion** — memory or a driver failure holding
-   resources. FreeMem was 7530 MB of 8128 MB earlier, so plain memory pressure is
-   unlikely unless something leaked.
-3. **A driver fault left the system degraded.** The correlation with running
-   `spi-bcm2711` is suspicious and is the main thread to pull.
-
-**This is not an SSH or credential problem.** The password was accepted.
-
----
-
-## 5. Leading hypothesis — HAT wiring
-
-The operator wired the HAT's SPI signals to the Pi **by hand** rather than
-letting the 40-pin board seat on the header:
-
-> "connected can hats other pins such as miso mosi sck cs int 3v3 gnd with the pi"
-
-If **CS** or **INT** landed on the wrong pin, or if **3V3/GND** were swapped with a
-signal, the SPI peripheral could be left in a bad state — and a resource manager
-starting against it could fault. `Exit 1` with no message is consistent with a
-driver bailing during peripheral setup.
-
-Expected mapping, for checking:
-
-| HAT signal | Pi header pin | Pi BCM |
-| --- | --- | --- |
-| 3V3 | 1 | — |
-| GND | 6 | — |
-| MOSI | 19 | 10 |
-| MISO | 21 | 9 |
-| SCK | 23 | 11 |
-| **CS** | **24** | 8 (CE0) |
-| **INT** | **22** | **25** |
-
-**Not yet ruled out:** the operator has not visually confirmed these against the
-actual board.
-
----
-
-## 6. Secondary hypothesis — driver dependency
-
-`spi-bcm2711` may require `mbox-bcm2711` to be running first, or may find the
-SPI peripheral already owned. Not yet checked.
+A power cycle clears it. Recorded here because the error message invites the
+wrong diagnosis — the password was accepted.
 
 ---
 
 ## 7. Outstanding diagnostics
 
-Not yet run. These were requested but not executed before the board degraded.
+Not yet run — the power blockage intervened.
 
 ```sh
 # THE key one - QNX drivers log to slog, not the terminal
@@ -210,84 +254,67 @@ pidin ar | grep -iE 'spi|mbox'
 # Does the mailbox driver exist and run?
 ls -l /dev/mailbox*
 
-# Try with no argument - the driver may expect a different default config path
-spi-bcm2711 &
-sleep 2
-ls -l /dev/io-spi/ 2>&1
+# Reboot-based apply, per the DDK, rather than a manual restart
+shutdown && reboot
+# then, after login:
+ls -l /dev/io-spi/spi0/
 ```
 
 The slog output is the highest-value item. `Exit 1` with zero terminal output
-while `verbose=5` is set strongly suggests the failure happens before config
-parsing, which slog should show.
+while `verbose=5` is set means the driver bailed **before config parsing**, and
+slog is where that would be recorded.
 
 ---
 
-## 8. Recovery state
-
-```sh
-# stock config already restored
-cp /system/etc/config/spi/spi.conf.stock.681 /system/etc/config/spi/spi.conf
-```
-
-Both configs are preserved on the board:
-
-```
--r-xr-xr-x  1 root root  556  /system/etc/config/spi/spi.conf
--r-xr-xr-x  1 root root  651  /system/etc/config/spi/spi.conf.stock.681
-```
-
-Nothing is lost. A power cycle clears the PTY exhaustion and returns the board
-to a known-good state.
-
----
-
-## 9. Defect found in our installer (independent of this failure)
-
-Even though it did not cause the failure, our installer should not replace
-`spi.conf` wholesale. It should start from the stock file and change **only**
-`spi0/dev0`:
-
-```
-stock:  cpha=1 cpol=0 word_width=32 clock_rate=5000000
-ours:   cpha=0 cpol=0 word_width=8  clock_rate=10000000   <- MCP2515 per QNX CAN DDK
-```
-
-Replacing the whole file silently drops `spi0/dev1` and the entire `spi3` bus,
-which the board's stock configuration needs. **Untested fix: derive the new file
-from the stock one rather than from the DDK reference.**
-
----
-
-## 10. What is NOT the cause
-
-Ruled out, so they are not re-investigated:
+## 8. Ruled out — do not re-investigate
 
 | Suspect | Verdict |
 | --- | --- |
-| The rewritten `spi.conf` | **Ruled out** — stock config fails identically |
-| Crystal frequency | **Ruled out** — `EAS12.000` = 12 MHz, confirmed by reading it |
-| Driver binary | **Unlikely** — installed at the expected 148,840 bytes; and the failure is before the CAN driver starts |
-| Missing `/dev/mem` | Unrelated — that was the GPIO Phase 2 issue, now resolved |
+| The rewritten `spi.conf` | **Ruled out** — the stock file fails identically |
+| Crystal frequency | **Ruled out** — `EAS12.000` = 12 MHz, read off the board |
+| Driver binary | **Unlikely** — installed at the expected 148,840 bytes; the failure is upstream of the CAN driver entirely |
+| Missing `/dev/mem` | Unrelated — that was the GPIO Phase 2 issue, resolved |
 | Credentials / SSH | **Ruled out** — authentication succeeds; failure is after |
+| The `spi3` / `spi0/dev1` deletion | **Not the cause** — stock config fails the same way. Real defect, now fixed |
 
 ---
 
-## 11. Impact
+## 9. Defects found and fixed during this incident
+
+Independent of the unresolved SPI failure, three genuine bugs surfaced:
+
+| Defect | Fix | Guard |
+| --- | --- | --- |
+| Root check could never pass | `[ "$(id -u)" = "0" ]` | — |
+| `spi.conf` replaced wholesale, dropping `spi0/dev1` and the whole `spi3` bus | Section-aware awk edit touching only `spi0/dev0` | `tests/test_spi_conf_edit.py`, 13/13 |
+| Backup re-stamped on every run, so a second run overwrote the stock copy with the already-modified file | Back up once, then keep the original | — |
+
+Plus one process correction: the driver restart is no longer presented as the
+supported way to apply `spi.conf`. The DDK specifies a reboot, and the
+installer now says so.
+
+---
+
+## 10. Impact
 
 | Phase | Status |
 | --- | --- |
-| 1 — UART adapter | Done, verified |
-| 2 — GPIO markers | Done, verified on hardware |
-| 3 — UART TX trace marker | Done, compile- and test-verified |
-| **4 — CAN driver install** | **BLOCKED** |
-| 5 — `qnx_can_adapter.c` | Not started; depends on 4 |
-| 6 — Qt JSON loader | Not started |
+| 1 — UART adapter | ✅ Done, verified on hardware |
+| 2 — GPIO markers | ✅ Done, verified on hardware, LED observed |
+| 3 — UART TX trace marker | ✅ Done, compile- and test-verified |
+| **4 — CAN driver install** | **🔴 Blocked at step 4/8** |
+| 5 — `qnx_can_adapter.c` | Not started — `.stub` not enabled; needs `/dev/can0/tx2` and `/dev/can0/rx0` |
+| 6 — Qt JSON loader | Not started — GUI still on `MockProvider` |
 
 ---
 
-## 12. Next actions
+## 11. Next actions on a working board
 
-1. Power-cycle the board to clear PTY exhaustion.
-2. Run the slog diagnostic — it will show why `spi-bcm2711` exits 1.
-3. Visually verify the HAT's CS and INT are on header pins 24 and 22.
-4. Only then re-attempt the installer, with the config derived from stock.
+1. **Seat the CAN HAT on the 40-pin header.** Do not hand-wire it.
+2. Run `slog2info | grep -i spi | tail -30` **first** — highest-value diagnostic.
+3. Apply `spi.conf` changes with `shutdown && reboot`, not a manual restart.
+4. Re-run `sh /tmp/qnx_can_install.sh`; it is idempotent and safe to re-run.
+5. Confirm `/dev/can0/rx0 rx1 tx2 tx3 tx4` appears.
+6. If frames still do not flow, re-read the crystal marking (§9.2 of the guide).
+
+Full procedure: [BRINGUP_GUIDE.md](BRINGUP_GUIDE.md)

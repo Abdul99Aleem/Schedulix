@@ -10,9 +10,11 @@
 # ssh, or from a root serial console. Example:
 #   ssh root@192.168.10.5 'sh /tmp/qnx_can_install.sh'
 #
-# IMPORTANT: this script REWRITES /system/etc/config/spi/spi.conf.
-# The stock QSTI config uses cpha=1/cpol=0/word_width=32, which is wrong for
-# the MCP2515 (needs cpha=0/cpol=0/word_width=8). A backup is kept.
+# IMPORTANT: this script EDITS /system/etc/config/spi/spi.conf IN PLACE.
+# It changes only the spi0/dev0 settings and leaves every other section
+# untouched. An earlier version replaced the whole file, which silently
+# dropped the spi0/dev1 device and the entire spi3 bus - do not do that.
+# See docs/BRINGUP_GUIDE.md section 7.
 
 SPI_CONF=/system/etc/config/spi/spi.conf
 DRV_SRC=/tmp/can-mcp2515
@@ -44,8 +46,6 @@ INT_GPIO=25
 # SPI node. dev0 = physical pin 24 (CE0).
 SPI_DEV=/dev/io-spi/spi0/dev0
 
-# 0 = leave spi3 alone. 1 = also fix spi3's word_width (not needed for CAN).
-FIX_SPI3=0
 # -----------------------------------------------------------------------------
 
 die() { echo "ERROR: $*"; exit 1; }
@@ -55,6 +55,10 @@ die() { echo "ERROR: $*"; exit 1; }
 # the literal string "root", so it could NEVER succeed, even for uid 0.
 # QSTI has no sudo, so this is the only privilege gate.
 [ "$(id -u)" = "0" ] || die "must run as root (uid 0). QSTI has no sudo - use: su, or ssh root@192.168.10.5 'sh $0'"
+
+command -v awk >/dev/null 2>&1 || die "awk not found on this target - cannot edit spi.conf safely.
+       Edit it by hand instead; docs/BRINGUP_GUIDE.md section 7.3 shows the
+       exact three lines to change in the spi0/dev0 block."
 
 echo "== 1/8 verify prerequisites"
 [ -f "$DRV_SRC" ] || die "$DRV_SRC not found - upload can-mcp2515 first"
@@ -70,51 +74,123 @@ chmod 755 "$DRV_DST"
 ls -l "$DRV_DST"
 
 echo
-echo "== 3/8 rewrite spi.conf for MCP2515"
-[ -f "$SPI_CONF" ] && cp "$SPI_CONF" "$SPI_CONF.stock.$(date +%s 2>/dev/null || echo backup)" && echo "   backed up stock spi.conf"
+echo "== 3/8 retune spi0/dev0 in spi.conf for MCP2515"
+[ -f "$SPI_CONF" ] || die "$SPI_CONF not found"
 
-cat > "$SPI_CONF" <<EOF
-# Schedulix - MCP2515 CAN configuration
-# Rewritten from the stock QSTI config. The stock spi0/dev0 entry used
-# cpha=1 cpol=0 word_width=32; the MCP2515 requires cpha=0 cpol=0
-# word_width=8 per the QNX CAN DDK reference configuration.
+# Back up ONCE. The previous version stamped a new backup on every run, so a
+# second run saved the ALREADY-MODIFIED file and destroyed the stock copy.
+BACKUP=
+for f in "$SPI_CONF".stock.*; do
+    [ -f "$f" ] && BACKUP="$f"
+done
+if [ -z "$BACKUP" ]; then
+    cp "$SPI_CONF" "$SPI_CONF.stock.$(date +%s 2>/dev/null || echo backup)"
+    for f in "$SPI_CONF".stock.*; do
+        [ -f "$f" ] && BACKUP="$f"
+    done
+    echo "   backed up stock spi.conf -> $BACKUP"
+else
+    echo "   stock backup already exists, keeping it: $BACKUP"
+fi
 
-[globals]
-verbose=5
+# Targeted, section-aware edit. Writes every line through unchanged EXCEPT the
+# three keys inside the block where busno=0 and devno=0:
+#
+#   cpha=1        -> cpha=0        (MCP2515 supports SPI mode 0 and mode 3 only;
+#   cpol=0        -> cpol=0            stock mode 1 is not supported by the part)
+#   word_width=32 -> word_width=8  (MCP2515 is an 8-bit SPI device)
+#
+# The clock is deliberately left at the stock value. MCP2515 tolerates up to
+# 10 MHz, and the stock 5 MHz is within spec, so changing it buys nothing and
+# risks a signal-integrity regression on flying wires.
+cat > /tmp/spi_edit.awk <<'AWKEOF'
+{
+    line = $0
 
-[bus]
-busno=0
-name=spi0
-base=0xfe204000
-irq=150
-input_clock=500000000
-bs=rpanic=48,tpanic=16
-dma_attach_opts=num_cbs=256,range_min=0,range_max=14,typed_mem=sysram&below1G
-dma_thld=4
+    if (line ~ /^[[:space:]]*\[/) {
+        s = line
+        gsub(/[[:space:]]/, "", s)
+        if (s == "[bus]")      { bus = "?"; dev = "?" }
+        else if (s == "[dev]") { dev = "?" }
+        print line
+        next
+    }
 
-[dev]
-parent_busno=0
-devno=0
-name=dev0
-clock_rate=10000000
-cpha=0
-cpol=0
-bit_order=msb
-word_width=8
-idle_insert=1
-EOF
-echo "   wrote $SPI_CONF"
-echo "   NOTE: dev0 keeps its original SPI settings (10 MHz, mode 0, 8-bit)."
-echo "         Restarting SPI now."
+    if (line ~ /^[[:space:]]*(#|$)/) { print line; next }
+
+    if (line ~ /^[[:space:]]*busno[[:space:]]*=/) {
+        split(line, a, "="); gsub(/[[:space:]]/, "", a[2]); bus = a[2]
+        print line; next
+    }
+    if (line ~ /^[[:space:]]*devno[[:space:]]*=/) {
+        split(line, a, "="); gsub(/[[:space:]]/, "", a[2]); dev = a[2]
+        print line; next
+    }
+
+    if (bus == "0" && dev == "0") {
+        if (line ~ /^[[:space:]]*cpha[[:space:]]*=/)       { print "cpha=0";       next }
+        if (line ~ /^[[:space:]]*cpol[[:space:]]*=/)       { print "cpol=0";       next }
+        if (line ~ /^[[:space:]]*word_width[[:space:]]*=/) { print "word_width=8"; next }
+    }
+
+    print line
+}
+AWKEOF
+
+awk -f /tmp/spi_edit.awk "$SPI_CONF" > /tmp/spi.new 2>/dev/null \
+    || die "awk edit failed - $SPI_CONF left untouched"
+[ -s /tmp/spi.new ] || die "awk produced an empty file - $SPI_CONF left untouched"
+
+cp /tmp/spi.new "$SPI_CONF"
+
+# Verify the edit actually landed. Without this check a malformed stock file
+# would silently produce an unmodified spi.conf and we would debug the wrong
+# thing for an hour.
+if grep -A6 '^devno=0' "$SPI_CONF" | grep -q 'cpha=0' \
+   && grep -A6 '^devno=0' "$SPI_CONF" | grep -q 'word_width=8'; then
+    echo "   spi0/dev0 now: cpha=0 cpol=0 word_width=8  (MCP2515 mode 0, 8-bit)"
+else
+    echo "   WARNING: could not confirm the dev0 edit landed. Check by hand:"
+    sed -n '/devno=0/,/^$/p' "$SPI_CONF" | sed 's/^/     /'
+fi
+
+echo "   Untouched: every other [bus] and [dev] section, including spi0/dev1"
+echo "              and the spi3 bus. Restore with: cp $BACKUP $SPI_CONF"
 
 echo
-echo "== 4/8 restart the SPI driver to pick up new settings"
+echo "== 4/8 apply the SPI config change"
+cat <<NOTE
+   The QNX CAN DDK says to REBOOT the target after editing spi.conf, so that
+   is the supported path:
+
+       shutdown && reboot
+
+   Then run this script again - it is safe to re-run. Step 3 will keep the
+   original stock backup, step 4 will find SPI already up, and it will
+   continue from step 5.
+
+   Attempting an in-place driver restart below instead. If the SPI devices do
+   not come back, that is expected: REBOOT and re-run.
+NOTE
+
 slay spi-bcm2711 2>/dev/null || true
 sleep 2
 spi-bcm2711 &
 sleep 3
 ls -l /dev/io-spi/spi0/ 2>/dev/null | sed 's/^/   /'
-[ -e "$SPI_DEV" ] || die "$SPI_DEV did not come back after SPI restart"
+
+if [ ! -e "$SPI_DEV" ]; then
+    echo
+    echo "   $SPI_DEV did not come back from an in-place restart."
+    echo "   This is not necessarily a fault - the DDK expects a reboot:"
+    echo
+    echo "       shutdown && reboot"
+    echo "       sh $0"
+    echo
+    echo "   Driver log (slog, if any):"
+    slog2info 2>/dev/null | grep -i spi | tail -15 | sed 's/^/     /'
+    exit 2
+fi
 
 echo
 echo "== 5/8 stop any running CAN driver"
@@ -141,16 +217,18 @@ if [ -e /dev/can0 ]; then
 else
     echo "   /dev/can0 MISSING"
     echo
-    echo "   --- diagnostic log ---"
+    echo "   --- diagnostic log (this is where the driver actually logs) ---"
     slog2info 2>/dev/null | tail -30
     echo
     echo "   Most likely causes:"
-    echo "     1. No MCP2515 connected yet - expected if hardware is not wired"
-    echo "     2. Wrong CLOCK_HZ - Waveshare RS485 CAN HAT (SKU 14882) ships with a"
+    echo "     1. Wrong CLOCK_HZ - Waveshare RS485 CAN HAT (SKU 14882) ships with a"
     echo "        12 MHz crystal on current boards; pre-Aug-2019 boards have 8 MHz."
     echo "        Read the marking on the silver can. Try the other value."
-    echo "     3. INT GPIO does not match your wiring"
-    echo "     4. SPI mode still wrong - check step 3 output"
+    echo "     2. INT GPIO does not match your wiring (expect BCM GPIO 25, pin 22)"
+    echo "     3. CS is not on CE0 (BCM GPIO 8, pin 24)"
+    echo "     4. SPI mode still wrong - re-check the step 3 output"
+    echo "     5. The MCP2515 is not seated on the 40-pin header. Flying wires on"
+    echo "        this HAT are a known source of failure; seat it properly."
     echo
     echo "   Driver process alive? $(kill -0 $DRVPID 2>/dev/null && echo yes || echo no)"
     echo "   Start it in the foreground with -D to see live logging:"
@@ -174,7 +252,7 @@ echo " Self-test in two terminals:"
 echo "   T1 (receive):   canctl -u 0,rx0 -R 2000"
 echo "   T2 (transmit):  canctl -u 0,tx2 -w 0x123,3,ABCDEF"
 echo
-echo " Or verify against the external node on Pi 2 instead:"
+echo " Or verify against the external node on the second Pi instead:"
 echo "   Pi 2:  cansend can0 123#ABCDEF"
 echo "   Pi 1:  canctl -u 0,rx0 -R 2000"
 echo

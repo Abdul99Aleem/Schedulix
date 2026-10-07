@@ -148,7 +148,64 @@ Schedulix/
 
 ---
 
+## 📖 Documentation
+
+**Start here → [`docs/BRINGUP_GUIDE.md`](docs/BRINGUP_GUIDE.md)** — the complete
+reproducible procedure, from a clean clone to CAN frames on the wire: clone,
+host tests, cross-compile, deploy, verify UART and GPIO, build and install the
+MCP2515 CAN driver, and verify CAN.
+
+It also carries a [mistakes-to-avoid section](docs/BRINGUP_GUIDE.md#12-mistakes-to-avoid)
+worth reading *before* touching hardware.
+
+### Run the host test suite
+
+No board required:
+
+```bash
+python tools/run_all_tests.py     # expect 39/39 host tests PASS
+```
+
+### Document index
+
+| Document | Contents |
+| --- | --- |
+| [`docs/BRINGUP_GUIDE.md`](docs/BRINGUP_GUIDE.md) | **Master guide** — clone → build → deploy → UART → GPIO → CAN → verify |
+| [`docs/PROBLEM_STATEMENT_COMPLIANCE.md`](docs/PROBLEM_STATEMENT_COMPLIANCE.md) | Requirement-by-requirement scorecard, verified vs. unverified |
+| [`docs/INCIDENT_SPI_DRIVER.md`](docs/INCIDENT_SPI_DRIVER.md) | The SPI bring-up incident, what was ruled out, and the resume procedure |
+| [`docs/RUNBOOK.md`](docs/RUNBOOK.md) | Day-to-day operating commands |
+| [`docs/SERIAL_CONSOLE_RUNBOOK.md`](docs/SERIAL_CONSOLE_RUNBOOK.md) | Serial console setup and troubleshooting |
+| [`docs/architecture.md`](docs/architecture.md) | Component design |
+| [`docs/timing-model.md`](docs/timing-model.md) | Delay attribution mathematics |
+| [`docs/gpio.md`](docs/gpio.md) · [`docs/uart.md`](docs/uart.md) | Per-interface detail |
+| [`docs/HARDWARE_PROCUREMENT_PLAN.md`](docs/HARDWARE_PROCUREMENT_PLAN.md) | Bill of materials, wiring, CAN bus topology |
+| [`CURRENT_STATE.md`](CURRENT_STATE.md) | Live project state |
+| [`VALIDATION_LOG.md`](VALIDATION_LOG.md) | Chronological verification record |
+
+### Target requirements
+
+| | |
+| --- | --- |
+| OS | QNX Neutrino 8.0.0, Quick Start Target Image (QSTI) |
+| Hardware | Raspberry Pi 4 (BCM2711) |
+| Toolchain | QNX SDP 8.0 — the **SDP**, not just the IDE |
+| Serial console | 115200 8N1, passwordless root at `root@console:/#` |
+| SSH | `ssh -m hmac-sha2-256 qnxuser@<target-ip>` — the MAC override is **mandatory** |
+| CAN | MCP2515 on SPI0/CE0 (Waveshare RS485 CAN HAT, SKU 14882) — **seat on the 40-pin header** |
+
+> ⚠️ **Before wiring CAN:** read
+> [BRINGUP_GUIDE §12.1](docs/BRINGUP_GUIDE.md#121-seating-the-can-hat-on-the-40-pin-header).
+> The HAT must seat directly on the header. Hand-wiring the SPI signals with
+> jumper leads removed the pinout guarantee and caused a power fault on the
+> target that ended bring-up.
+
+---
+
 ## Build & Deployment Guide
+
+> The summary below covers building and deploying. For the full end-to-end
+> procedure — including CAN driver installation and every known gotcha — use
+> [`docs/BRINGUP_GUIDE.md`](docs/BRINGUP_GUIDE.md).
 
 ### Prerequisites
 - **QNX Software Development Platform (SDP) 8.0**

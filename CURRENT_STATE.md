@@ -1,5 +1,16 @@
 # Current State - Schedulix Backend (`schedulix_can`)
 
+> **Procedure to reproduce this project end to end — from a clean clone, through
+> the QNX cross-build, to CAN frames on the wire:
+> [`docs/BRINGUP_GUIDE.md`](docs/BRINGUP_GUIDE.md).**
+>
+> Requirement-by-requirement scorecard:
+> [`docs/PROBLEM_STATEMENT_COMPLIANCE.md`](docs/PROBLEM_STATEMENT_COMPLIANCE.md).
+> The Phase 4 SPI incident and the ruled-out hypotheses:
+> [`docs/INCIDENT_SPI_DRIVER.md`](docs/INCIDENT_SPI_DRIVER.md).
+>
+> Host test suite, no board needed: `python tools/run_all_tests.py` → **39/39**.
+
 ## 1. Repository Structure
 * **QNX Backend (`c:\Users\User\ide-8.0.3-workspace\schedulix_can`)**:
   * `src/`: Core implementation files in C (workloads, analyzer, trace collector, stress generator, GPIO markers, CAN simulation/TCP inject, QNX tracelogger integration).
@@ -34,9 +45,10 @@
        ```sh
        ssh -m hmac-sha2-256 qnxuser@192.168.10.5     # password: qnxuser
        ```
-       Credentials: `qnxuser`/`qnxuser`, `root`/`root`. Root SSH was disabled (`PermitRootLogin no`) by default and has since been enabled. Stop typing the flag — create `C:\Users\User\.ssh\config`:
+       Credentials: `qnxuser`/`qnxuser`, `root`/`root`. Root SSH was disabled (`PermitRootLogin no`) by default and has since been enabled. Stop typing the flag — create `C:\Users\<you>\.ssh\config`. **One directive per line:**
        ```
-       Host qnxpi 192.168.10.5
+       Host qnxpi
+          HostName 192.168.10.5
           User qnxuser
           MACs hmac-sha2-256
        ```
@@ -44,6 +56,10 @@
        broken `-etm` MAC algorithms first and the client picks the server's first preference by
        default (`Corrupted MAC on input`). It is **not** because the board lacks modern
        algorithms. For file transfer, `scp -o "MACs=hmac-sha2-256"` works for the same reason.
+       **Trap:** writing `Host qnxpi 192.168.10.5` on one line is parsed as *two host patterns*,
+       so SSH matches nothing useful and silently falls back to the local Windows username.
+       Until the config is right, always use the explicit
+       `ssh -m hmac-sha2-256 qnxuser@192.168.10.5`.
     2. **Serial console** via CH340 on COM6 — passwordless root at `root@console:/#`. No network
        involved. This is the **fallback whenever SSH is misconfigured**, and the only way in when
        Ethernet is absent.
@@ -85,8 +101,8 @@
 ## 7. Proposed Implementation Sequence
 1. ~~**Rewrite `gpio_marker.c`**: replace the `/dev/mem` mmap with `MAP_PHYS | MAP_SHARED` + `NOFD` + `PROT_NOCACHE` on `0xfe200000`, write `GPFSELn` before any `GPSET0`/`GPCLR0`, implement real `gpio_marker_get()`, and cover the full GPIO 0–53 range (bank 1 at `+32`).~~ **Done, 2026-10-07, verified on hardware.**
 2. **Fix the UART TX trace marker** at `src/uart_adapter.c:151`: add a dedicated `TRACE_EXTERNAL_EVENT_TX` type so TX and RX are distinguishable. **This is now the next item.** Append it at the **end** of `trace_event_type_t` for the same reason `TRACE_GPIO_MARKER_HIGH = 14` / `_LOW = 15` were appended — trace records are binary, and inserting mid-enum would renumber 0–13.
-3. **Install the CAN driver (Phase 4)** — **unblocked as of 2026-10-07.** `scp -o "MACs=hmac-sha2-256"` works, so `can-mcp2515` (148,840 B), `spi.conf.mcp2515` (826 B) and `qnx_can_install.sh` (5,391 B) go over by `scp` instead of the fragile serial upload. Two things are still genuinely blocking and are physical, not transport: the **RS485 CAN HAT is not mounted**, and its **crystal frequency is unconfirmed** (8 MHz vs 16 MHz — a wrong value yields a driver that starts cleanly and receives zero frames).
-4. **Write `qnx_can_adapter.c`**: real `/dev/can0` mailboxes and `CAN_DEVCTL_*` calls to replace the simulated adapter and the TCP injector. Depends on step 3.
+3. **Install the CAN driver (Phase 4)** — **BLOCKED at installer step 4/8 (2026-10-07).** Steps 1–3 are done and confirmed on the board: `can-mcp2515` (148,840 B) installed to `/system/bin/`, stock `spi.conf` backed up, `spi0/dev0` retuned for the MCP2515. Step 4 fails because **`spi-bcm2711` exits 1 immediately with no terminal output**. This is **not** a config problem — restoring the stock file reproduces the failure exactly, and the crystal is confirmed at 12 MHz (`EAS12.000`). Target-side investigation is on hold following a power blockage on the board; see [`docs/INCIDENT_SPI_DRIVER.md`](docs/INCIDENT_SPI_DRIVER.md). Three installer defects found and fixed in the process: a root check that could never pass, a wholesale `spi.conf` replacement that silently dropped `spi0/dev1` and the whole `spi3` bus (now a section-aware awk edit, regression-tested 13/13), and a backup that was re-stamped on every run. The QNX CAN DDK specifies a **target reboot** to apply `spi.conf`, not a driver restart; the installer now follows that.
+4. **Write `qnx_can_adapter.c`**: real `/dev/can0` mailboxes and `CAN_DEVCTL_*` calls to replace the simulated adapter and the TCP injector. Depends on step 3. Note the existing `.stub` opens `/dev/can1`, which is wrong for a single module — transmit on `/dev/can0/tx2`, receive on `/dev/can0/rx0`.
 5. **Verify UART RX against an external peer**: `/dev/ser1` doubles as the console, so RX must be proven on a second board or with the console detached.
 6. **Add JSON output reporting and clean exit codes** to the noun/verb CLI.
 7. **Write the Qt JSON loader** to replace `MockProvider`.

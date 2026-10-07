@@ -1,0 +1,52 @@
+# Schedulix test fixture - representative STOCK QNX 8.0 spi.conf as found on
+# the qnxpi QSTI image. Used by tests/test_spi_conf_edit.py to prove the
+# installer's awk edit touches spi0/dev0 ONLY and leaves every other section
+# byte-identical.
+#
+# Shape taken from the live board (651 bytes, backed up as spi.conf.stock.681)
+# and from the QNX DDK spi-bcm2711 configuration reference.
+
+[bus]
+busno=0
+name=spi0
+base=0xfe204000
+irq=150
+input_clock=500000000
+bs=rpanic=48,tpanic=16
+dma_attach_opts=num_cbs=256,range_min=0,range_max=14,typed_mem=sysram&below1G
+dma_thld=4
+
+[dev]
+parent_busno=0
+devno=0
+name=dev0
+clock_rate=5000000
+cpha=1
+cpol=0
+bit_order=msb
+word_width=32
+
+[dev]
+parent_busno=0
+devno=1
+name=dev1
+clock_rate=5000000
+cpha=0
+cpol=1
+bit_order=msb
+word_width=32
+
+[bus]
+busno=3
+name=spi3
+base=0xfe204600
+irq=151
+
+[dev]
+parent_busno=3
+devno=0
+name=dev0
+clock_rate=1000000
+cpha=1
+cpol=1
+word_width=8

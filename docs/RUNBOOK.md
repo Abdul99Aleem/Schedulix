@@ -31,15 +31,21 @@ Enter `qnxuser` at the prompt.
 **The `-m hmac-sha2-256` is mandatory.** The board's sshd lists broken `-etm` MAC
 algorithms first, so a default connection fails with `Corrupted MAC on input`.
 
-Stop typing it — create `C:\Users\User\.ssh\config` once:
+Stop typing it — create `C:\Users\User\.ssh\config` once. **One directive per line:**
 
 ```
-Host qnxpi 192.168.10.5
+Host qnxpi
+   HostName 192.168.10.5
    User qnxuser
-     MACs hmac-sha2-256
+   MACs hmac-sha2-256
 ```
 
 Then just `ssh qnxpi`.
+
+**Trap:** do **not** write `Host qnxpi 192.168.10.5` on a single line. That is
+parsed as *two host patterns*, so SSH matches nothing useful and silently falls
+back to your local Windows username. Until the config is right, use the
+explicit form `ssh -m hmac-sha2-256 qnxuser@192.168.10.5`.
 
 ### Option B — Serial console (no network needed)
 

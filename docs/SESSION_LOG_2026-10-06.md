@@ -32,6 +32,7 @@ Where the two disagree and no correction is listed here, `SESSION_LOG.md` stands
 | 13 | [Open questions](#13-open-questions) |
 | 14 | [Current board state](#14-current-board-state) |
 | 15 | [Phase 2 result — GPIO marker](#15-phase-2-result--gpio-marker-verified-2026-10-07) |
+| 16 | [The SSH troubleshooting saga](#16-the-ssh-troubleshooting-saga) |
 | A | [Appendix A — verified command reference](#appendix-a--verified-command-reference) |
 | B | [Appendix B — file inventory](#appendix-b--file-inventory) |
 
@@ -39,6 +40,10 @@ Where the two disagree and no correction is listed here, `SESSION_LOG.md` stands
 > records the completion and hardware verification of Phase 2 (the GPIO marker rewrite), the
 > two new access paths proven that day (Momentics IDE deployment, SSH), and the host-networking
 > gotcha. Read it alongside §14, which is the board state at the end of 2026-10-06.
+>
+> **[§16](#16-the-ssh-troubleshooting-saga) records the SSH bring-up in full** — three separate
+> failures with three separate causes, the `sshd_config` read off the board, and a
+> misdiagnosis worth not repeating.
 
 ---
 
@@ -57,7 +62,8 @@ timing markers.
 | Frontend state | Qt 6.8.3 / QML, builds 56/56, working tree clean |
 | Board | QNX 8.0.0, hostname `qnxpi`, RaspberryPi4B aarch64le |
 | Prior access path | SSH to 192.168.10.5 as `qnxuser`/`qnxuser` via `tools/qnx_ssh.py` |
-| **Access this session** | **Serial console, COM6, 115200 8N1, root shell** |
+| **Access 2026-10-06** | **Serial console, COM6, 115200 8N1, root shell** |
+| **Access 2026-10-07 (additions)** | **Momentics IDE** deploy/run ([§15](#15-phase-2-result--gpio-marker-verified-2026-10-07)); **SSH** `ssh -m hmac-sha2-256 qnxuser@192.168.10.5` ([§16](#16-the-ssh-troubleshooting-saga)) |
 
 Two facts shaped the whole session:
 
@@ -86,6 +92,11 @@ These are the constraints that generated every design decision in this session.
 | `tools/qnx_ssh.py` unusable | `SESSION_LOG.md` §8 root escalation could never run |
 | No `scp`, no `sftp`, no NFS | Binary distribution has one path only: serial |
 | The PuTTY suite's file transfer is dead | PSCP and plink are SSH-only; raw serial is a terminal, not a transport |
+
+> **Resolved 2026-10-07.** Ethernet was restored and SSH was brought up — after clearing three
+> separate faults, each with a different symptom. `scp` works. See
+> [§16](#16-the-ssh-troubleshooting-saga). The serial console remains the fallback when SSH is
+> misconfigured, and is the only route in when Ethernet is absent.
 
 ### 2.2 A QNX SDP toolchain **is** present on the Windows host — this corrects a mid-session error
 
@@ -242,7 +253,12 @@ still holds, but as a generic 3.3 V CMOS input threshold, not a PL011 datasheet 
 | `/tmp` target | `/data/var/tmp` on `/dev/hd0t179` |
 | Capacity | 55,517,144 blocks |
 | Free | ~53 M — ample for 331 KB binaries and multi-MB traces |
+| Persistence | **survives reboots** — it is a partition, not tmpfs. Confirmed 2026-10-07 after several power-cycles |
 | Root filesystem `/` | 100% full, read-only (unchanged from the prior audit) |
+
+The listing above is the state **at the end of 2026-10-06**. The post-reboot inventory taken
+over SSH on 2026-10-07 is in [§16.5](#165-board-tmp-inventory-post-reboot-as-root) — it
+contains two stale binaries and a pile of debris from the failed upload experiments.
 
 `/tmp` contents observed over the serial console — **the complete listing**:
 
@@ -1233,7 +1249,16 @@ Separately, `VALIDATION_LOG.md` §3 states verification ran on `root@qnxpi`, but
 `SESSION_LOG.md` §7 records access as `qnxuser`/`qnxuser` over SSH, which is a
 QSTI image where root is not reachable that way. One of the two is wrong.
 
-Flag only — `VALIDATION_LOG.md` is owned by another process.
+> **Partly resolved 2026-10-07.** The apparent contradiction dissolves once root access is
+> accounted for: on the QSTI image `PermitRootLogin no` by default, so over SSH you land as
+> `qnxuser` and reach root with `su` (password `root`) — or, once `PermitRootLogin yes` is set,
+> by SSHing as `root` directly. Both routes are now proven
+> ([§16.3](#163-credentials-and-root-ssh)). The §3 wording "verification runs executed on
+> `root@qnxpi`" is therefore *possible* but does not distinguish which route was used; §3's
+> provenance note already flags it as log-derived rather than session-observed.
+>
+> The TEST 6 GPIO part of this subsection is fully superseded — see
+> `VALIDATION_LOG.md` §4.4 and [§15](#15-phase-2-result--gpio-marker-verified-2026-10-07).
 
 ---
 
@@ -1339,18 +1364,26 @@ Phase 2  gpio_marker.c rewritten + LED proof ✓ DONE — verified on hardware
                                                │  2026-10-07, see §15
 Phase 3  UART TX trace marker  ←─────────────┤  NEXT. Host-only, no board needed.
                                                │  src/uart_adapter.c:151
-Phase 4  CAN driver install ─────────────────┘  uses the §7 upload path
-                                               │  (or the §15.3 IDE channel)
+Phase 4  CAN driver install ─────────────────┘  UNBLOCKED — scp over SSH (§16)
+                                               │  replaces the fragile serial upload
 Phase 5  Write real CAN adapter ───────────────┘  depends on Phase 4
                                                │
 Phase 6  Qt JSON loader ────────────────────────  depends on Phase 5 output shape
 ```
 
 Phases 1, 2 and 4 all shared one dependency — a working way to get 148–331 KB binaries
-onto the board. That dependency is now discharged **twice over**: the serial upload path
-(§7) and the Momentics IDE channel ([§15.3](#153-momentics-ide--deployment-and-log-channel)),
-the latter proven to be the more reliable of the two. Phase 3 is next: it is unblocked and
-independent of all hardware.
+onto the board. That dependency is now discharged **three times over**: the serial upload path
+([§7](#7-the-binary-upload-saga)), the Momentics IDE channel
+([§15.3](#153-momentics-ide--deployment-and-log-channel)), and **`scp` over SSH**
+([§16](#16-the-ssh-troubleshooting-saga)). Phase 3 is next: it is unblocked and independent of
+all hardware.
+
+**Phase 4 status change, 2026-10-07.** `scp -o "MACs=hmac-sha2-256"` works once the MAC issue
+in [§16](#16-the-ssh-troubleshooting-saga) is cleared. That replaces the base64 + foreground
+`head -c N` serial upload entirely: no chunking, no echo draining, no size-check workaround, and
+no board power-cycle risk. The §7 transport is now a last resort rather than the default. The
+remaining Phase 4 blockers are physical, not transport: the HAT is not mounted and the crystal
+frequency is unconfirmed ([§13](#13-open-questions)).
 
 ### 12.1 Phase 2 — rewrite `src/gpio_marker.c` — **DONE, verified on hardware 2026-10-07**
 
@@ -1488,24 +1521,42 @@ trace-change regression.
 
 | | |
 | --- | --- |
-| Blocked by | nothing — the upload path is proven ([§7](#7-the-binary-upload-saga)) |
+| Blocked by | nothing — **transport is solved three ways**: `scp` over SSH ([§16](#16-the-ssh-troubleshooting-saga)), the Momentics IDE channel, or the §7 serial path |
+
+**Use `scp`, not the serial uploader.** This subsection originally prescribed
+`tools/serial_console.ps1 -UploadFile`, written before SSH worked. That is now the *worst* of
+the three options:
+
+```powershell
+# preferred — root-capable, fast, no chunking, no echo draining
+scp -o "MACs=hmac-sha2-256" third_party\can-mcp2515\aarch64le\bin\can-mcp2515 root@192.168.10.5:/tmp/
+scp -o "MACs=hmac-sha2-256" tools\spi.conf.mcp2515                        root@192.168.10.5:/tmp/
+scp -o "MACs=hmac-sha2-256" tools\qnx_can_install.sh                      root@192.168.10.5:/tmp/
+```
+
+Root SSH was disabled by default and had to be enabled before `root@` works
+([§16.3](#163-credentials-and-root-ssh)); `qnxuser` also works if the installer only needs
+write access to `/tmp` and `/data`.
 
 **Artefacts required on the board**
 
-| File | Bytes | Upload time (derived at ~2.3 KB/s) |
+| File | Bytes | Serial upload time (derived at ~2.3 KB/s) |
 | --- | ---: | ---: |
 | `third_party/can-mcp2515/aarch64le/bin/can-mcp2515` | 148,840 | ~45 s |
 | `tools/spi.conf.mcp2515` | 826 | < 1 s |
 | `tools/qnx_can_install.sh` | 5,391 | ~2 s |
 
+The upload times are now irrelevant — `scp` moves all three in seconds. The serial form is kept
+below only as the fallback for when SSH is down:
+
 ```powershell
-# -UploadFile <local> -RemotePath <target>, one per artefact
+# fallback only — -UploadFile <local> -RemotePath <target>, one per artefact
 powershell -ExecutionPolicy Bypass -File tools\serial_console.ps1 `
     -UploadFile third_party\can-mcp2515\aarch64le\bin\can-mcp2515 -RemotePath /tmp/can-mcp2515
 ```
 
 The installer expects `/tmp/can-mcp2515` (`tools/qnx_can_install.sh:18`) and rewrites
-`/system/etc/config/spi/spi.conf` (`:17`). Then, from the serial root shell:
+`/system/etc/config/spi/spi.conf` (`:17`). Then, from a root shell (SSH or serial):
 
 ```sh
 sh /tmp/qnx_can_install.sh
@@ -1593,6 +1644,9 @@ frontend is being written.
 | **Which binary is authoritative, `deploy/` or `build/`?** | Should settle on one and document it | **Answered for now: `build/`** ([§8.1](#81-pre-test-finding--every-binary-in-deploy-is-stale)). Needs a permanent decision — Phase 2b |
 | Is `MAP_PHYS\|NOFD` + `PROT_NOCACHE` correct for this QNX 8.0 image? | **The entire Phase 2 pass criterion hinges on this one `mmap` call** | Pattern recorded from the working `can-mcp2515` driver on this exact board, but `driver/rpi4.c` is **not in the repo** ([§9.1](#91-srcgpio_markerc--the-rewrite-target)). Re-verify before relying on it |
 | Does `/dev/ser1`'s `tcsetattr` from `uart_adapter_init()` silence console echo? | Would affect any live console session after running `uart status` | **Unverified hypothesis** ([§8.5](#85-a-side-observation--ttyl_clflag--0-and-the-consoles-echo)) |
+| **Why are the board's `-etm` MACs broken?** | Determines whether `-m hmac-sha2-256` is a permanent workaround or a temporary one | **Observed and worked around** ([§16.4.1](#1641-the-etm-macs-are-listed-first-and-they-are-broken)). The client takes the server's first preference, `hmac-sha2-512-etm@openssh.com`, which is defective. Cause not diagnosed — likely a QNX `libcrypto`/sshd defect. Not fixed by us; do not remove `-m` from `~/.ssh/config` |
+| What is `/tmp/schedulix_can` (150,520 B)? | If it is something we built and forgot, its provenance matters | **Unexplained.** Matches no known build; the current build is ~332 KB. Flagged for deletion ([§16.6](#166-board-tmp-inventory-post-reboot-as-root)) |
+| Do key-based logins work? | Would remove the `-m` requirement and the password from every command | **Untested.** `AuthorizedKeysFile .ssh/authorized_keys` is configured, but no key has been installed ([§16.4](#164-the-authoritative-sshd_config-verbatim-from-the-board)) |
 
 ---
 
@@ -1607,8 +1661,8 @@ End of session:
 | `/dev/ser1` | **VERIFIED as the console device** — `devc-serminiuart` at `0xfe215000` |
 | Second `open()` of `/dev/ser1` | **PERMITTED** — did not block |
 | Ethernet | **not connected** (by choice — Wi-Fi only) |
-| `/tmp` | `T3`, `elvis1.ses`, `keep_files`, `qnx_bringup_check.sh` only |
-| Schedulix binary on board | **YES** — `/tmp/sx`, 331,152 B, byte-identical |
+| `/tmp` | `T3`, `elvis1.ses`, `keep_files`, `qnx_bringup_check.sh` only. **Superseded** by [§16.6](#166-board-tmp-inventory-post-reboot-as-root) |
+| Schedulix binary on board | **YES** — `/tmp/sx`, 331,152 B, byte-identical. **Gone** in the post-reboot inventory; the GPIO verification ran via the IDE, not `/tmp` |
 | `uart status` | **PASS** — `physical`, `/dev/ser1` at 115200 |
 | `uart send` | **PASS** — 21 bytes observed on COM6 before the program's own printf |
 | `uart receive` | **INCONCLUSIVE** — confounded by the console ([§8.4](#84-receive--confounded-and-the-reason-why)) |
@@ -1619,6 +1673,205 @@ End of session:
 | GPIO marker wires on pins 7/11/13 | **not soldered** |
 | HAT crystal frequency | **unknown** |
 | Power-cycles caused this session | **2**, both from console-wedging transport defects ([§7.3](#73-defect-3--cat--file--ctrld-wedged-the-console-power-cycle-1), [§7.4](#74-defect-4-echo-was-never-drained-during-streaming-power-cycle-2)) |
+
+---
+
+## 16. The SSH troubleshooting saga
+
+Recorded as a **worked case**, because the interesting part is not that SSH was fixed — it is
+that *three unrelated faults* produced three different-looking symptoms, and each had to be
+cleared before the next one could even become visible.
+
+**Nothing about the board or the network changed during this.** No reboot, no config edit, no
+cable move caused any of the three failures. All three are software-level, all three are
+recoverable, and all three were present the whole time.
+
+### 16.1 Symptom / cause table
+
+| Client | Symptom | Root cause |
+| --- | --- | --- |
+| Momentics IDE terminal | `Error connecting 192.168.10.5 : SSH client error: Algorithm negotiation fail` | The IDE's SSH client offers **no MAC algorithm the board accepts**, and provides no way to pass `-m`. Fails **before** authentication, so credentials are irrelevant. |
+| `ssh root@192.168.10.5` (no flag) | `Corrupted MAC on input.` / `message authentication code incorrect` | Client picks `hmac-sha2-512-etm@openssh.com` by default; the board's **`-etm` MAC implementations are broken**. |
+| `ssh root@192.168.10.5` (with `-m hmac-sha2-256`) | Password prompt 3×, then silent failure | `PermitRootLogin no` — **root login is disabled by default on QNX**. |
+
+Read that table as a sequence, because that is how it actually presented. The first row is a
+**pre-authentication** failure: the algorithm exchange never completes, so no amount of
+credential work can help. The second is a **transport-integrity** failure after negotiation
+succeeded. Only the third is an **authorization** failure, and the tell is that a password
+prompt appeared at all — reaching a password prompt proves both MAC and key exchange are fine.
+
+### 16.2 Resolution
+
+```sh
+ssh -m hmac-sha2-256 qnxuser@192.168.10.5     # password: qnxuser  -> login succeeds
+```
+
+Then `su`, password `root`, for a root shell. Root SSH was then enabled permanently:
+
+```sh
+sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /usr/etc/ssh/sshd_config
+slay -f sshd
+/usr/bin/sshd -f /usr/etc/ssh/sshd_config
+```
+
+`-m hmac-sha2-256` is not optional and there is no configuration of the client that removes
+the need to think about it — put it in `~/.ssh/config` once and forget it:
+
+```
+Host qnxpi 192.168.10.5
+   User qnxuser
+     MACs hmac-sha2-256
+```
+
+`scp` needs the same treatment: `scp -o "MACs=hmac-sha2-256" <src> root@192.168.10.5:/tmp/`.
+
+### 16.3 Credentials and root SSH
+
+| Account | Password | Notes |
+| --- | --- | --- |
+| `qnxuser` | `qnxuser` | Default; works over SSH with `-m hmac-sha2-256` |
+| `root` | `root` | Default. `su` from qnxuser works with this. Root SSH was disabled until `PermitRootLogin yes` was set. |
+| serial console | *(none)* | Passwordless root shell at `root@console:/#`, no SSH involved |
+
+These are the QSTI defaults, and they are the defaults documented by QNX in the
+[QSTI for Raspberry Pi guide, "Interacting with the system"](https://www.qnx.com/developers/docs/qnxeverywhere/com.qnx.doc.target_images/topic/qsti/interacting-with-the-system.html),
+which states the `qnxuser`/`qnxuser` and `root`/`root` defaults, that root login is disabled by
+default (and gives the `slay -f sshd` + `/usr/bin/sshd` restart), and that Windows clients should
+pass `-m hmac-sha2-256`. They were confirmed against the board.
+
+### 16.4 The authoritative `sshd_config`, verbatim from the board
+
+```
+PermitRootLogin yes
+Protocol 2
+HostKey /data/var/ssh/ssh_host_rsa_key
+HostKey /data/var/ssh/ssh_host_ed25519_key
+Ciphers aes128-ctr,aes192-ctr,aes256-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256
+AuthorizedKeysFile      .ssh/authorized_keys
+UsePAM yes
+PasswordAuthentication no
+PermitUserEnvironment yes
+PidFile none
+Subsystem sftp /system/bin/sftp-server
+SshdSessionPath /system/bin/sshd-session
+```
+
+Two conclusions are worth drawing out explicitly, because both correct a natural assumption.
+
+#### 16.4.1 The `-etm` MACs are listed first, and they are broken
+
+The client takes the **server's first preference** by default, which here is
+`hmac-sha2-512-etm@openssh.com`. That is one of the broken implementations, hence
+`Corrupted MAC on input`. Forcing the **non-ETM** `hmac-sha2-256` — which is *also in the same
+list* — works.
+
+> **So `-m` is required because the board's *preferred* MAC is defective, not because the board
+> lacks modern algorithms.** It has them. Some of them are broken.
+>
+> The documented advice (`-m hmac-sha2-256`) is **correct**, and the underlying reason is more
+> specific than the QNX docs phrase it ("Windows clients must request `hmac-sha2-256`"). A reader
+> who takes the docs' wording at face value will go looking for a missing-algorithm problem and
+> will not find one, because there isn't one.
+
+This also explains the IDE terminal's failure mode, which is otherwise baffling: the IDE client
+does not offer any MAC in this list that works, and gives no way to pass `-m`, so it fails at
+algorithm negotiation and never reaches authentication. Credentials were never the issue there.
+
+#### 16.4.2 `PasswordAuthentication no` + `UsePAM yes` — how `qnxuser` logged in at all
+
+This pair looks contradictory next to a successful password login. It is not: with
+`UsePAM yes` and `PasswordAuthentication no`, the password prompt is served by
+**keyboard-interactive → PAM**, not by SSH's own password authentication. `sshd` advertises
+`keyboard-interactive`; PAM verifies the password.
+
+Two consequences that only make sense once this is understood:
+
+* `qnxuser` logged in **despite** `PasswordAuthentication no`, because that directive does not
+  govern the keyboard-interactive path.
+* `root` failed for a **completely different reason** — `PermitRootLogin no`, an authorization
+  policy — not because its password was wrong. Retrying with different passwords would never
+  have worked. The three password prompts followed by silence were `PermitRootLogin`, not a bad
+  secret.
+
+### 16.5 The misdiagnosis — scripts run on the wrong machine
+
+Worth recording as a process failure, because the output looked entirely plausible.
+
+`tools/qnx_bringup_check.sh` and `tools/qnx_ssh_diag.sh` were run **from Git Bash on the Windows
+PC** instead of on the board. Every `[GAP]` in the output — "no IPv4 address", "no serial device
+nodes", "`/dev/mem` not readable", "NOT root" — was a **Windows artefact, not a board fault**.
+
+The giveaway was a single line in the middle of the output:
+
+```
+C:/Users/User/AppData/Local/Temp  238G  205G   33G  87% /tmp
+```
+
+That is **Git Bash's MSYS `/tmp` mapping**, not the board's `/data/var/tmp` on `/dev/hd0t179`.
+`qnx_ssh_diag.sh` printed nothing at all for the same reason — its output went to
+`C:\Users\User\AppData\Local\Temp\ssh_diag.txt`, so it looked like a silent failure rather than
+a redirected one.
+
+> **Rule: QNX shell scripts in `tools/` must be transferred to the board and run there**
+> (`sh /tmp/<script>.sh`). They are not portable to Windows or Git Bash. Their own headers say
+> so (`tools/qnx_bringup_check.sh:7-8` gives the `scp` + `ssh … 'sh /tmp/…'` incantation), and
+> that header was not read before running it.
+
+**The corollary, which is the real lesson:** this makes the diagnostic scripts **useless as a
+first diagnostic when SSH itself is broken** — you cannot use an SSH script to diagnose SSH, and
+you cannot run it on the PC without it lying to you. **The serial console is the fallback route
+in**, precisely because it needs no network stack. Anyone reaching for a script here should reach
+for the serial console first.
+
+### 16.6 Board `/tmp` inventory (post-reboot, as root)
+
+Taken over SSH as root after the reboots. `/tmp` **survived** the reboots — it is
+`/data/var/tmp` on `/dev/hd0t179`, persistent, which is why this debris outlived the session that
+created it.
+
+```
+-rwxr-xr-x  1 root    root      8880  T3
+-rw-r--r--  1 root    root         0  cal
+-rw-r--r--  1 root    root         1  d.bin
+-rw-r--r--  1 root    root         0  echo
+-rw-------  1 root    root     98304  elvis1.ses
+-rw-r--r--  1 root    root        36  keep_files
+-rw-r--r--  1 root    root         1  hp.txt
+-rw-r--r--  1 root    root        10  p.bin
+-rwxr-xr-x  1 qnxuser qnxuser   4474  qnx_bringup_check.sh
+-rw-r--r--  1 root    root         0  schedulecho
+-rwxr-xr-x  1 root    root    154384  schedulix
+-rwxr-xr-x  1 root    root    150520  schedulix_can
+-rw-r--r--  1 root    root         0  scheecho
+-rw-r--r--  1 root    root         0  seecho
+-rw-r--r--  1 root    root      2200  spd
+-rwxr-xr-x  1 root    root       826  spi.conf
+-rwxr-xr-x  1 root    root       826  spi2.conf
+```
+
+| Observation | Meaning |
+| --- | --- |
+| `/tmp` survived the reboots | It is a **partition** (`/data/var/tmp` on `/dev/hd0t179`), not tmpfs. Nothing here is cleared by a power-cycle. |
+| `cal`, `d.bin`, `echo`, `hp.txt`, `p.bin`, `spd`, `schedulecho`, `scheecho`, `seecho` | **Debris from the failed serial upload experiments** ([§7](#7-the-binary-upload-saga)). Zero-byte and 1-byte. `schedulecho` and `scheecho` are mangled command fragments — the `-e` echo and the `\r\n` line discipline mangling what was meant to be `schedule` / `echo`. **Clean these up.** |
+| `schedulix` — 154,384 B | The **stale** `deploy/` binary ([§8.1](#81-pre-test-finding--every-binary-in-deploy-is-stale)). |
+| `schedulix_can` — 150,520 B | **Unexplained.** Matches no known build — the current build is ~332 KB. **Flagged**, provenance unknown. Delete. |
+| `spi.conf`, `spi2.conf` — 826 B each | The MCP2515 SPI config, present twice under two names ([§7.2](#72-defect-2--bare-number-reply-parsing-matched-the-wrong-thing) is where the `spi2.conf` confusion arose). |
+| `elvis1.ses` — 98,304 B | Not ours. Pre-existing. |
+| `T3`, `keep_files`, `qnx_bringup_check.sh` | Unchanged from the end of 2026-10-06 ([§3.3](#33-tmp-and-storage)). |
+
+> **Neither `/tmp/schedulix` nor `/tmp/schedulix_can` is the binary that passed the GPIO LED
+> verification.** That run used the **Momentics IDE**, which deploys over `qconn` and does not
+> use `/tmp` at all. Stating this explicitly so nobody assumes `/tmp` holds the verified build —
+> it does not, and running either of those binaries would be running stale or unknown code.
+>
+> The current verified build lives on the **host** at
+> `build/aarch64le-debug/schedulix_can` (331,152 B), and on the board only wherever the IDE put
+> it. Deploy it deliberately.
+
+**Action: clean `/tmp` of the debris and both stale binaries, then redeploy from `build/`.**
+Not yet done.
 
 ---
 
@@ -1714,6 +1967,30 @@ python tests/test_phase6.py               # 13/13
 python tests/test_analyzer_integrity.py   # 3/3
 ```
 
+### A.8 SSH — the working commands (see §16)
+
+```powershell
+# log in  (-m is MANDATORY — see §16.4.1)
+ssh -m hmac-sha2-256 qnxuser@192.168.10.5     # password: qnxuser
+
+# become root
+su                                              # password: root
+
+# upload (same MAC requirement)
+scp -o "MACs=hmac-sha2-256" <local-file> root@192.168.10.5:/tmp/
+
+# run a diagnostic — MUST be on the board, not on Windows (§16.5)
+ssh -m hmac-sha2-256 root@192.168.10.5 'sh /tmp/qnx_bringup_check.sh'
+```
+
+Drop the `-m` by writing `~/.ssh/config` once:
+
+```
+Host qnxpi 192.168.10.5
+   User qnxuser
+     MACs hmac-sha2-256
+```
+
 ---
 
 ## Appendix B — file inventory
@@ -1729,12 +2006,19 @@ python tests/test_analyzer_integrity.py   # 3/3
 
 | Board path | Bytes | Provenance |
 | --- | ---: | --- |
-| `/tmp/sx` | 331,152 | `build/aarch64le-debug/schedulix_can`, byte-identical, 81.6 s |
+| `/tmp/sx` | 331,152 | `build/aarch64le-debug/schedulix_can`, byte-identical, 81.6 s. **No longer present** in the 2026-10-07 inventory (§16.6) |
+
+Additional artefacts on the board after the 2026-10-07 reboots — full listing and provenance
+notes in [§16.6](#166-board-tmp-inventory-post-reboot-as-root). In short: two **stale**
+binaries (`schedulix` 154,384 B from `deploy/`, `schedulix_can` 150,520 B of **unknown**
+origin) and nine debris files from the failed serial uploads. **Neither binary is the one that
+passed the GPIO verification.**
 
 ### B.3 Key files read but **not** modified this session
 
 | Path | Role in this session |
 | --- | --- |
+| `tools/qnx_ssh.py` | paramiko SSH client, written to work around exactly the MAC problem in §16 — and its own header gives the reason as *"QNX sshd advertises legacy algorithms (SHA-1 MACs, diffie-hellman-group1, CBC ciphers, ssh-rsa host keys) that OpenSSH 9.x refuses by default"*. **That diagnosis was wrong.** See §16.4.1. `ALGO_SETS` in particular disables `hmac-sha2-256`, the one MAC that works. |
 | `docs/SESSION_LOG.md` | Prior record — read with §11 applied |
 | `docs/HARDWARE_PROCUREMENT_PLAN.md` | §7.4 and §8 are the superseded module route |
 | `docs/gpio.md` | §3 stale on `/dev/mem`, silent on `GPFSEL` |
@@ -1754,9 +2038,9 @@ python tests/test_analyzer_integrity.py   # 3/3
 | `src/main.c:195-219` | `print_subcommand_help()` |
 | `src/main.c:439-506` | `uart` subcommand |
 | `src/main.c:508-524` | `gpio test` subcommand — `:515` prints `REAL PHYSICAL` |
-| `tools/qnx_ssh.py` | paramiko SSH client — the Ethernet-path equivalent, unusable this session |
 | `tools/qnx_can_install.sh` | 8-step on-target installer, 5,391 B |
-| `tools/qnx_bringup_check.sh` | Read-only on-target audit, 4,474 B |
+| `tools/qnx_bringup_check.sh` | Read-only on-target audit, 4,474 B. **Must run on the board** — run from Git Bash it reports the PC's state (§16.5) |
+| `tools/qnx_ssh_diag.sh` | SSH diagnostic. **Must run on the board**; run from Windows it wrote to `%LOCALAPPDATA%\Temp` and appeared to produce nothing (§16.5) |
 | `tools/spi.conf.mcp2515` | MCP2515 SPI config, 826 B |
 | `Makefile` | aarch64le build; targets `build/$(PLATFORM)-$(BUILD_PROFILE)` |
 | `Makefile.host` | Host build used by the Phase 3 test verification |

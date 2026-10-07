@@ -88,10 +88,11 @@ Then `ssh root@qnxpi` works. Needed for `mmap(MAP_PHYS)` and the CAN installer.
 ### SCP — the normal way
 
 ```powershell
-scp -o "MACs=hmac-sha2-256" <local-file> qnxpi:~/bin/
+scp -o "MACs=hmac-sha2-256" <local-file> qnxpi:/tmp/
 ```
 
-The `-o` flag is required for the same MAC reason.
+The `-o` flag is required for the same MAC reason. Use an absolute path on the
+target; a `~/bin` directory has not been verified to exist.
 
 ### Serial upload — when SSH is down
 
@@ -207,7 +208,7 @@ Solder the marker wires to pins **7, 11, 13** *before* fitting the HAT; the
 
 | Message | Cause | Fix |
 | --- | --- | --- |
-| `Algorithm negotiation fail` | Client offers no usable MAC | Add `-m hmac-sha2-256` |
+| `Algorithm negotiation fail` | **Momentics IDE terminal only** — its client offers no MAC the board accepts, and it has no way to pass `-m` | Use an external `ssh`; the IDE Run button is unaffected |
 | `Corrupted MAC on input` | Board picked a broken `-etm` MAC | Add `-m hmac-sha2-256` |
 | `Permission denied (publickey,keyboard-interactive)` | `PermitRootLogin no` | Use `qnxuser`, or enable root as in §3 |
 | `su: Authentication error` | Wrong password for root | Use `root`, not `qnxuser` |

@@ -93,10 +93,19 @@ say "GPIO"
 for t in /system/bin/gpio-bcm2711 /system/bin/mbox-bcm2711; do
     [ -x "$t" ] && ok "$t present" || bad "$t missing"
 done
-if [ -r /dev/mem ]; then
-    ok "/dev/mem readable - mmap register access likely works"
+# /dev/mem is NOT the access path. It does not exist on this QNX image at all.
+# GPIO registers are reached with mmap(MAP_PHYS|MAP_SHARED, NOFD,
+# PROT_NOCACHE, 0xFE200000), which was verified working on this board -- see
+# docs/VALIDATION_LOG.md section 4.4. Probing /dev/mem here would emit a
+# misleading warning about mmap failing when in fact nothing needs it.
+if [ -e /dev/mem ]; then
+    ok "/dev/mem exists (not required; mmap(MAP_PHYS) is used instead)"
 else
-    warn "/dev/mem not readable as this user - mmap may fail"
+    ok "/dev/mem absent - expected. mmap(MAP_PHYS) is the access path, verified working"
+fi
+# The real check: did the marker rewrite map the block?
+if grep -q 'BCM2711 registers mapped' /tmp/sx.log 2>/dev/null; then
+    ok "gpio_marker reported 'BCM2711 registers mapped' in /tmp/sx.log"
 fi
 fi
 

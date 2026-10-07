@@ -2,9 +2,33 @@
 """
 Schedulix - QNX Pi bring-up over SSH using paramiko.
 
-Paramiko is used instead of Windows OpenSSH because QNX sshd advertises legacy
-algorithms (SHA-1 MACs, diffie-hellman-group1, CBC ciphers, ssh-rsa host keys)
-that OpenSSH 9.x refuses by default with no clean way to re-enable.
+Root access is obtained with `su` (password `root`). Direct `root` SSH is
+disabled by default (`PermitRootLogin no`); see docs/RUNBOOK.md section 3.
+
+ALGORITHM NOTE, corrected 2026-10-07. An earlier version of this file claimed
+QNX sshd "advertises legacy algorithms (SHA-1 MACs, diffie-hellman-group1, CBC
+ciphers) that OpenSSH 9.x refuses". That is wrong, and the algorithm sets below
+encoded the wrong theory: several of them explicitly DISABLED hmac-sha2-256 --
+the one MAC that actually works.
+
+The board's real sshd_config is:
+    MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,
+         umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,
+         umac-128@openssh.com
+
+The `-etm` variants are listed FIRST and are BROKEN on this image. OpenSSH
+picks the server's first preference, so a default connection selects
+hmac-sha2-512-etm@openssh.com and fails with "Corrupted MAC on input". Forcing
+the non-ETM hmac-sha2-256 works:
+    ssh -m hmac-sha2-256 qnxuser@192.168.10.5
+
+So the fix is to disable the three `-etm` MACs, not to weaken ciphers or kex.
+That is what set 1 below now does.
+
+Also note `PasswordAuthentication no` with `UsePAM yes`: a working password
+login therefore succeeds via keyboard-interactive -> PAM, not via password
+authentication. That is why `qnxuser` could log in, and why `root` failed for an
+unrelated reason.
 
 This script does four things:
   1. probe      - find a working (user, algorithm) combination, report WHY others fail
@@ -51,15 +75,31 @@ PASSWORDS = [
 ALGO_SETS: list[tuple[str, dict]] = [
     ("paramiko default", {}),
     (
-        "etm MACs + legacy kex",
+        # THE FIX, verified working: disable only the broken -etm MACs.
+        # Equivalent to `ssh -m hmac-sha2-256` on the command line.
+        "disable broken -etm MACs (matches ssh -m hmac-sha2-256)",
         {
             "disabled_algorithms": {
                 "keys": [],
                 "macs": [
                     "hmac-sha2-512-etm@openssh.com",
                     "hmac-sha2-256-etm@openssh.com",
+                    "umac-128-etm@openssh.com",
+                ],
+            }
+        },
+    ),
+    (
+        "disable -etm MACs + narrow to sha2-256",
+        {
+            "disabled_algorithms": {
+                "keys": [],
+                "macs": [
+                    "hmac-sha2-512-etm@openssh.com",
+                    "hmac-sha2-256-etm@openssh.com",
+                    "umac-128-etm@openssh.com",
                     "hmac-sha2-512",
-                    "hmac-sha2-256",
+                    "umac-128@openssh.com",
                 ],
             }
         },

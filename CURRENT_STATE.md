@@ -29,7 +29,27 @@
 
 ## 4. Targets
 * **QNX Target**: Raspberry Pi 4 QNX RTOS 8.0 (`aarch64le`) at IP address `192.168.10.5`. The board actually in hand is **not** the `192.168.10.2` board referenced by earlier reports. Confirmed identity: `QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le`, 4× Cortex-A72 @1500 MHz, 8128 MB, 38 processes / 258 threads. A **passwordless root shell** is available over the serial console (`root@console:/#`, 115200 8N1).
-  * **Two proven access paths.** (1) Serial console via CH340 on COM6 — root, no password. (2) **Momentics IDE** — proven 2026-10-07; compiles, deploys, runs, and streams target `stdout` to the IDE console, but provides no root shell. Default SSH credentials are `qnxuser`/`qnxuser`; root login over SSH is disabled by default.
+  * **Three proven access paths.**
+    1. **SSH** — working, verified 2026-10-07. The `-m` flag is **mandatory**:
+       ```sh
+       ssh -m hmac-sha2-256 qnxuser@192.168.10.5     # password: qnxuser
+       ```
+       Credentials: `qnxuser`/`qnxuser`, `root`/`root`. Root SSH was disabled (`PermitRootLogin no`) by default and has since been enabled. Stop typing the flag — create `C:\Users\User\.ssh\config`:
+       ```
+       Host qnxpi 192.168.10.5
+          User qnxuser
+          MACs hmac-sha2-256
+       ```
+       Then `ssh qnxpi` is enough. `-m hmac-sha2-256` is required because the board's sshd lists
+       broken `-etm` MAC algorithms first and the client picks the server's first preference by
+       default (`Corrupted MAC on input`). It is **not** because the board lacks modern
+       algorithms. For file transfer, `scp -o "MACs=hmac-sha2-256"` works for the same reason.
+    2. **Serial console** via CH340 on COM6 — passwordless root at `root@console:/#`. No network
+       involved. This is the **fallback whenever SSH is misconfigured**, and the only way in when
+       Ethernet is absent.
+    3. **Momentics IDE** — proven 2026-10-07; compiles, deploys over `qconn`, runs, and streams
+       target `stdout` to the IDE console. Provides no root shell, and is unaffected by the SSH
+       MAC issue.
 * **Qt Target**: Windows host system running the desktop UI client.
 
 ## 5. Known Working Pieces
@@ -42,6 +62,8 @@
 * **Noun/verb CLI, verified on hardware 2026-10-06**: `schedulix uart status` and `schedulix uart send <data>` execute correctly on the board.
 * **GPIO marker, verified on real hardware 2026-10-07**: `schedulix gpio test` prints `GPIO Availability: REAL PHYSICAL`, drives all three marker pins (4 / 17 / 27), and reports `confirmed=YES` and `valid=YES` for each against a 200 ms nominal. An LED on header pin 11 was **physically observed blinking**. See `VALIDATION_LOG.md` §4.4.
 * **Momentics IDE as a deployment and log channel, verified 2026-10-07**: the IDE compiles, deploys to the board, runs the binary, and streams target `stdout` live to the IDE console. This is the deployment path that does not depend on the fragile serial upload.
+* **SSH access, verified 2026-10-07**: `ssh -m hmac-sha2-256 qnxuser@192.168.10.5` logs in with password `qnxuser`; `su` with password `root` gives a root shell; `PermitRootLogin yes` has been set so `ssh root@…` works too. `scp -o "MACs=hmac-sha2-256"` works for uploads. See `VALIDATION_LOG.md` §4.7 and `docs/RUNBOOK.md`.
+* **Tools caveat:** the shell scripts in `tools/` (`qnx_bringup_check.sh`, `qnx_ssh_diag.sh`, `qnx_can_install.sh`) are **QNX scripts**. They must be copied to the board and run there (`sh /tmp/<script>.sh`). Run from Git Bash or PowerShell on Windows they report the *Windows* machine's state and produce false gaps — MSYS maps `/tmp` to `C:\Users\User\AppData\Local\Temp`. Because that makes them useless as a first diagnostic when SSH is broken, the serial console is the route in.
 * Host toolchain: QNX SDP 8.0 at `C:\Users\User\qnx800` (`qcc` gcc 12.2.0, `ntoaarch64-strip`). `C:\QNX` holds **only the IDE**. Full `aarch64le` rebuild is clean — zero errors, zero warnings.
 
 ## 6. Known Missing / Gap Items (Phases 2.11 - 2.15)
@@ -50,18 +72,28 @@
   * RX is **confounded, not broken**: on this board `/dev/ser1` **is** the serial console (driver `devc-serminiuart`, base `0xfe215000`, the BCM2715 mini-UART/AUX), so bytes sent from the host are consumed by the login shell. `uart receive` returned the console's own newline. RX remains unverified against an external peer.
 * **CLI Structuring (Phase 2.14)**: **Done.** `src/main.c` implements a noun/verb parser (`schedulix <noun> <verb>`), not flat flags. Nouns are `status`, `workload`, `stress`, `trace`, `analyze`, `report`, `can`, `uart`, `gpio`, `experiment`, `help`. Verified live on the board — `schedulix uart status` and `schedulix uart send <data>` both work, and the binary advertises `uart status|start|send|receive` plus `gpio` and `can` groups. `--port <path>` and `--baud <rate>` override the UART defaults.
 * **Deployable binary is stale**: the authoritative artefact is `build/aarch64le-debug/schedulix_can` (331,152 bytes, 2026-08-30 21:34, matching the newest source file). **Every binary in `deploy/` is stale** — a byte scan for `UART Adapter Backend`, `uart [status|start|send|receive]` and `gpio test` found **none** of them in `deploy/schedulix_can-aarch64le-debug` (154,384 B, 2026-08-29), `deploy/schedulix_can` (179,264 B, 2026-08-30) or `deploy/schedulix_can-x86_64` (175,360 B, 2026-08-30). All three strings are present in `build/aarch64le-debug/schedulix_can`. Deploy from `build/`, not `deploy/`.
+* **Board `/tmp` holds only stale binaries and debris — clean it up.** `/tmp` is `/data/var/tmp` on `/dev/hd0t179` and **persists across reboots**, so it accumulates. Current contents, as inventoried over SSH as root after the reboots:
+  * `schedulix` — 154,384 B. The **stale** `deploy/` binary.
+  * `schedulix_can` — 150,520 B. **Unexplained** — matches no known build (the current build is ~332 KB). Flagged, provenance unknown.
+  * **Neither is the binary that passed the GPIO LED verification.** That ran from the Momentics IDE, which deploys over `qconn` and does not use `/tmp`. Do not assume the verified build is in `/tmp`.
+  * Junk debris from the failed serial upload experiments: zero-byte and 1-byte files `cal`, `d.bin`, `echo`, `hp.txt`, `p.bin`, `spd`, `schedulecho`, `scheecho`, `seecho` — the last three being mangled command fragments.
+  * Also present: `spi.conf`, `spi2.conf`, `elvis1.ses`, `T3`, `keep_files`, `qnx_bringup_check.sh`.
+
+  Delete the stale binaries and the debris, then deploy deliberately from `build/`.
 * **Qt Integration**: The Qt app relies solely on `MockProvider` and does not yet parse the QNX backend's JSON reports.
 
 ## 7. Proposed Implementation Sequence
 1. ~~**Rewrite `gpio_marker.c`**: replace the `/dev/mem` mmap with `MAP_PHYS | MAP_SHARED` + `NOFD` + `PROT_NOCACHE` on `0xfe200000`, write `GPFSELn` before any `GPSET0`/`GPCLR0`, implement real `gpio_marker_get()`, and cover the full GPIO 0–53 range (bank 1 at `+32`).~~ **Done, 2026-10-07, verified on hardware.**
 2. **Fix the UART TX trace marker** at `src/uart_adapter.c:151`: add a dedicated `TRACE_EXTERNAL_EVENT_TX` type so TX and RX are distinguishable. **This is now the next item.** Append it at the **end** of `trace_event_type_t` for the same reason `TRACE_GPIO_MARKER_HIGH = 14` / `_LOW = 15` were appended — trace records are binary, and inserting mid-enum would renumber 0–13.
-3. **Write `qnx_can_adapter.c`**: real `/dev/can0` mailboxes and `CAN_DEVCTL_*` calls to replace the simulated adapter and the TCP injector.
-4. **Verify UART RX against an external peer**: `/dev/ser1` doubles as the console, so RX must be proven on a second board or with the console detached.
-5. **Add JSON output reporting and clean exit codes** to the noun/verb CLI.
-6. **Write the Qt JSON loader** to replace `MockProvider`.
+3. **Install the CAN driver (Phase 4)** — **unblocked as of 2026-10-07.** `scp -o "MACs=hmac-sha2-256"` works, so `can-mcp2515` (148,840 B), `spi.conf.mcp2515` (826 B) and `qnx_can_install.sh` (5,391 B) go over by `scp` instead of the fragile serial upload. Two things are still genuinely blocking and are physical, not transport: the **RS485 CAN HAT is not mounted**, and its **crystal frequency is unconfirmed** (8 MHz vs 16 MHz — a wrong value yields a driver that starts cleanly and receives zero frames).
+4. **Write `qnx_can_adapter.c`**: real `/dev/can0` mailboxes and `CAN_DEVCTL_*` calls to replace the simulated adapter and the TCP injector. Depends on step 3.
+5. **Verify UART RX against an external peer**: `/dev/ser1` doubles as the console, so RX must be proven on a second board or with the console detached.
+6. **Add JSON output reporting and clean exit codes** to the noun/verb CLI.
+7. **Write the Qt JSON loader** to replace `MockProvider`.
 
 ## 8. Risks
 * **Blocking UART operations**: *Mitigated.* `uart_adapter_init()` opens the port with `O_NONBLOCK` and sets `VMIN = 0` / `VTIME = 5` (a 0.5 s read timeout), so `read()` cannot starve real-time tasks. If throughput ever requires it, move I/O to a dedicated low-priority helper thread.
 * **Physical Hardware Dependencies**: GPIO markers now have a **verified physical path** (LED observed blinking, `GPLEV` readback confirmed). Remaining caveats: marker wires on header pins 7/11/13 must be soldered **before** the RS485 CAN HAT is mounted, since the HAT covers them; and GPIO 4 is the **TXD3** pin, so confirm nothing on the image claims it before relying on it as a marker. Keep the software mocks enabled automatically when the physical mapping is missing — and treat any `MOCK` result as unproven rather than as a pass.
 * **Marker timing under load**: the 2026-10-07 verification measured a deliberate 200 ms pulse in a test harness. Marker jitter while `BRAKE_CTL` / `ADAS_FUSION` / `DIAG_POLL` are actually running is **not yet characterised**.
+* **SSH is brittle in a way that looks like a board fault**: a plain `ssh` fails with `Corrupted MAC on input` because the client picks the board's *first-listed* MAC, and the `-etm` implementations are broken. Always pass `-m hmac-sha2-256` (or set `MACs` in `~/.ssh/config`). If SSH is misconfigured the serial console is the fallback. Two other traps: root login was disabled by default, and the host has two Ethernet adapters (`192.168.10.1` for the board, `192.168.56.1`) — the second confuses routing.
 * **Stale deploy artefacts**: shipping a binary from `deploy/` rather than `build/` will silently produce a program with no UART or CLI subcommands.

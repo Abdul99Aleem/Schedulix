@@ -1,0 +1,77 @@
+can-mcp2515 - Driver for an MCP2515 CAN Controller
+
+The MCP2515 is a CAN Controller that offers 3 Tx buffers and 2 Rx buffers.
+
+Modes:
+  In IO mode all of these buffers are exposed as mailboxes. Individual MIDs
+  and MFILTERs can be set on these mailboxes as desired. Filtering is
+  supported by setting an appropriate MFILTER/MID via the CAN DCMD devctls.
+
+  In RAW mode only a single Tx/Rx mailbox pair is exposed. In this case no
+  MFILTERs can be set and thus no filtering on reception is possible.
+  Everything will come through the single mailbox.
+
+Standard/Extended Data Frames and MIDs:
+  The CAN protocol has two type of data frames:
+  - Standard Data Frames (SDF) that have an 11bit ID, called a SID.
+  - Extended Data Frames (EDF) that have a 29bit ID, called an EID.
+
+  SIDs/EIDs are collectively known as a MID (Message ID). In a MID:
+  - An SID occupies bits 18-28
+  - An EID occupies bits  0-28
+  However there is no explicit way to look at a MID and know if it is a SID or
+  an EID. This causes ambiguity when setting MIDs and MFILTERs through the
+  CAN_DEVCTL_SET_MID and CAN_DEVCTL_SET_MFILTER devctls. Or when writing a
+  frame through write() calls.
+
+  By default, the driver will assume SIDs for these two devctls. This works
+  well if your CAN bus only deals with SDF frames. You can also explicitly
+  set this by specifying '--mid=sid' on the command line.
+
+  If your CAN bus only deals with EDF frames, then use the '--mid=eid' command
+  line switch to have the driver assume EIDs for these two devctls.
+
+  If your CAN bus needs to deal with a mix of SDF and EDF frames then you
+  can use the '--mid=ext' command line option to enable an extension to
+  the MID format. Bit 30 of the MID indicates whether it is an EID or an SID.
+  - If the bit is set (high) the MID is an EID.
+  - If the bit is unset (low) the MID is an SID.
+  It is the client's responsibility to set the bit appropriately. In addition,
+  when setting an MFILTER, the currently set MID is checked to see which bits
+  of the MFILTER are valid. Thus always set the MID first when using this mode.
+
+  Please note that DEVCTLs that explicitly provide a CAN_MSG struct for
+  transmission explicitly indicate whether the MID is extended or not. Thus
+  the --mid setting does not impact those devctls.
+
+Usage: can-mcp2515 [options]
+
+Required options:
+  -s/--spi <path>     Path to the SPI device node for the MCP2515.
+  -c/--clock <Hz>     The frequency, in Hertz, of the clock feeding the MCP2515.
+                      Must be in the range 1000000-40000000.
+  -g/--gpio <gpio>    The GPIO that the MCP2515 uses for interrupts.
+
+General options:
+  -3/--triple-sample  When sampling the CAN Bus do so three times for each bit.
+  -B/--bps <bps>      The bitrate in bits per second. Defaults to 500000.
+  -D/--debug          Debug mode. Logging is sent to stdout.
+  -h/--help           Print help.
+  -M/--msg-queue-size <num>   Per node message queue size. Defaults to 256
+  -m/--mode <mode>    Operating mode. Either "io" or "raw". Defaults to "io".
+  --mid <type>        What type of MID to use. Either "sid", "eid", or "ext".
+                      Defaults to "sid".
+  -U/--user <str>     After initialization, causes the driver to drop root
+                      and change to the specified user & group(s).
+                      The format of <str> is either:
+                      uid[:gid[,sgid]*]
+                      or
+                      username[,sgid]*
+                      Where uid/gid/sgid must be numerical values and username
+                      is the name of a user specified in /etc/passwd.
+  -u/--unit <num>     The numeric unit of the CAN device to create.
+                      Defaults to 0.
+  -V/--version        Print the version of the driver and exit.
+  -v/--verbose        Increase logging verbosity. Can be specified multiple
+                      times to increase verbosity further.
+  -W/--wait-queue-size <num>  Per node wait queue size. Defaults to 32.

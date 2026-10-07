@@ -90,6 +90,10 @@ static uint64_t g_low_ts[MARKER_SLOTS];
 static int g_hw_level_high[MARKER_SLOTS];
 static int g_hw_level_low[MARKER_SLOTS];
 
+/* Pins already switched to output mode, so the GPFSEL read-modify-write is
+ * paid once per pin instead of on every edge. */
+static int g_pin_configured[GPIO_MAX_PIN + 1];
+
 #if defined(__QNX__) || defined(__QNXNTO__)
 static volatile uint32_t *g_gpio_base = NULL;
 #else
@@ -129,6 +133,7 @@ int gpio_marker_init(void) {
         g_high_ts[i] = 0; g_low_ts[i] = 0;
         g_hw_level_high[i] = -1; g_hw_level_low[i] = -1;
     }
+    memset(g_pin_configured, 0, sizeof(g_pin_configured));
 
 #if defined(__QNX__) || defined(__QNXNTO__)
     /* Physical mapping. /dev/mem does not exist in this image, so
@@ -166,6 +171,7 @@ void gpio_marker_shutdown(void) {
             int reg   = pin / GPFSEL_PINS_REG;
             int shift = (pin % GPFSEL_PINS_REG) * 3;
             g_gpio_base[(GPFSEL0_OFF / 4) + reg] &= ~(7u << shift);
+            g_pin_configured[pin] = 0;
         }
 #endif
     }
@@ -229,10 +235,15 @@ int gpio_marker_set(int bcm_pin, int value) {
 #if defined(__QNX__) || defined(__QNXNTO__)
     if (!g_gpio_base) return -1;  /* mock */
 
-    /* Configure as output on first use. Writing GPSET0 while the pin is
-     * still an input does nothing at the pad -- this is the bug that made the
-     * old markers invisible. */
-    if (gpio_marker_configure_output(bcm_pin) != 0) return -1;
+    /* Configure as output, but only the first time. Writing GPSET0 while the
+     * pin is still an input does nothing at the pad -- this is the bug that
+     * made the old markers invisible. Doing the read-modify-write on *every*
+     * edge inflated the measured pulse width (2.0 ms nominal came back as
+     * ~2.98 ms, failing the 50 us tolerance), so it is gated here. */
+    if (!g_pin_configured[bcm_pin]) {
+        if (gpio_marker_configure_output(bcm_pin) != 0) return -1;
+        g_pin_configured[bcm_pin] = 1;
+    }
 
     volatile uint32_t *r =
         g_gpio_base + ((value ? GPSET0_OFF : GPCLR0_OFF) / 4)

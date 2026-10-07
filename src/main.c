@@ -513,14 +513,40 @@ int handle_subcommands(int argc, char *argv[]) {
         printf("GPIO Marker validation test:\n");
         gpio_marker_init();
         printf("GPIO Availability: %s\n", gpio_marker_is_available() ? "REAL PHYSICAL" : "MOCK");
-        printf("Toggling pin 4 (BRAKE), 17 (ADAS), 27 (DIAG)...\n");
-        printf("Pin function select (fsel): 4=%d 17=%d 27=%d  (1=output)\n",
+        /* Drive every marker pin, not just BRAKE. The previous version toggled only
+         * GPIO 4 (BRAKE), so a LED wired to pin 11 (ADAS) or pin 13 (DIAG)
+         * stayed dark and the test looked broken. */
+        static const int pins[3]   = { 4, 17, 27 };
+        static const uint32_t ids[3] = { TASK_ID_BRAKE, TASK_ID_ADAS, TASK_ID_DIAG };
+        static const char *names[3] = { "BRAKE(GPIO4/pin7)",
+                                        "ADAS (GPIO17/pin11)",
+                                        "DIAG (GPIO27/pin13)" };
+
+        printf("fsel before: 4=%d 17=%d 27=%d  (1=output)\n",
                gpio_marker_fsel(4), gpio_marker_fsel(17), gpio_marker_fsel(27));
 
-        gpio_marker_for_task_high(TASK_ID_BRAKE);
-        usleep(2000);
-        gpio_marker_for_task_low(TASK_ID_BRAKE);
-        gpio_validation_t v = gpio_marker_validate(TASK_ID_BRAKE, 0, 2000000ULL);
+        printf("Toggling all three marker pins, 200 ms apart...\n");
+        for (int i = 0; i < 3; i++) {
+            printf("  %-18s ... ", names[i]);
+            fflush(stdout);
+            gpio_marker_for_task_high(ids[i]);
+            usleep(200000);          /* 200 ms: visible on an LED */
+            gpio_marker_for_task_low(ids[i]);
+
+            gpio_validation_t v = gpio_marker_validate(ids[i], 0, 200000000ULL);
+            printf("fsel=%d  hw high=%d low=%d confirmed=%s  pulse=%llu us  delta=%lld us  valid=%s\n",
+                   gpio_marker_fsel(pins[i]),
+                   v.hw_level_high, v.hw_level_low,
+                   v.hw_confirmed ? "YES" : "NO",
+                   (unsigned long long)((v.gpio_low_ns - v.gpio_high_ns) / 1000),
+                   (long long)(v.delta_ns / 1000),
+                   v.valid ? "YES" : "NO");
+        }
+
+        printf("fsel after : 4=%d 17=%d 27=%d  (1=output)\n",
+               gpio_marker_fsel(4), gpio_marker_fsel(17), gpio_marker_fsel(27));
+
+        gpio_validation_t v = gpio_marker_validate(TASK_ID_BRAKE, 0, 200000000ULL);
         printf("Validation: delta %lld ns, valid: %s\n", (long long)v.delta_ns, v.valid ? "YES" : "NO");
         /* Report the readback separately: this is what distinguishes a real
          * edge on the wire from a write that silently did nothing. */

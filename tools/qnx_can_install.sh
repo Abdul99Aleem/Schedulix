@@ -50,7 +50,11 @@ FIX_SPI3=0
 
 die() { echo "ERROR: $*"; exit 1; }
 
-[ "$(id)" = "root" ] || die "must run as root. QSTI has no sudo - use: ssh root@192.168.10.5 'sh $0'"
+# Check the numeric uid, not the whole `id` output. The previous check compared
+# "$(id)" - which expands to "uid=0(root) gid=0(root) groups=0(root)" - against
+# the literal string "root", so it could NEVER succeed, even for uid 0.
+# QSTI has no sudo, so this is the only privilege gate.
+[ "$(id -u)" = "0" ] || die "must run as root (uid 0). QSTI has no sudo - use: su, or ssh root@192.168.10.5 'sh $0'"
 
 echo "== 1/8 verify prerequisites"
 [ -f "$DRV_SRC" ] || die "$DRV_SRC not found - upload can-mcp2515 first"

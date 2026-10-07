@@ -56,27 +56,39 @@ def main():
             text=True,
         )
         out = (proc.stdout or "") + (proc.stderr or "")
+        line = out.strip().splitlines()[-1] if out.strip() else ""
 
-        if SKIP_RE.search(out):
-            skipped.append((script, desc))
-            print("SKIP %-28s %s" % (script, desc))
-            continue
-
-        m = None
-        for m in COUNT_RE.finditer(out):
-            pass  # keep the last match; suites print per-case lines then a total
         counts = COUNT_RE.findall(out)
 
+        # Decide between "whole suite skipped" and "suite ran with some cases
+        # skipped" by looking for a results line FIRST. A suite can legitimately
+        # print "SKIP <case>" for one case and still pass the rest, so treating
+        # any SKIP line as a whole-suite skip would under-report real coverage.
         if counts:
             # The final match is the suite total.
             p, t = counts[-1]
             total_pass += int(p)
             total_total += int(t)
-            ok = proc.returncode == 0 and int(p) == int(t)
-            print("%s %-28s %-28s %s/%s" % (
-                "PASS" if ok else "FAIL", script, desc, p, t))
+            ok = proc.returncode == 0
+            # A suite may report "12/13 ... PASS (1 skipped: ...)". That is a
+            # pass with a prerequisite absent, not a failure, so do not require
+            # p == t when the suite says it skipped something deliberately.
+            deliberate_skip = "skipped" in line.lower()
+            if ok and deliberate_skip:
+                print("PASS %-28s %-28s %s/%s (%s)"
+                      % (script, desc, p, t, line.split("(", 1)[-1].rstrip(")")))
+            else:
+                ok = ok and int(p) == int(t)
+                print("%s %-28s %-28s %s/%s" % (
+                    "PASS" if ok else "FAIL", script, desc, p, t))
             if not ok:
-                failed.append((script, out.strip().splitlines()[-1] if out.strip() else "?"))
+                failed.append((script, line or "suite failed"))
+        elif SKIP_RE.search(out):
+            # No results line at all, and the suite said SKIP: it could not run
+            # (e.g. a required host tool is missing).
+            skipped.append((script, desc))
+            print("SKIP %-28s %s" % (script, desc))
+            continue
         elif OVERALL_RE.search(out):
             # No "N/N" summary line. Count the individual case lines instead of
             # reporting a single pass, so the aggregate total stays honest.

@@ -224,18 +224,23 @@ would complete the optional deliverable.
 | Suite | Count | Covers |
 | --- | --- | --- |
 | `run_tests.py` | 5 | CAN ID → workload decode |
-| `test_phase6.py` | 13 | Stress scenarios, knee sweep, manifest, analyzer |
+| `test_phase6.py` | 13 | Stress scenarios, knee sweep, manifest, analyzer, QNX build contents |
 | `test_analyzer_integrity.py` | 3 | Trace header integrity, regression sensitivity |
 | `test_uart_tx_marker.py` | 5 | UART TX trace event type |
 | `test_spi_conf_edit.py` | 13 | Installer `spi.conf` edit is section-aware and idempotent |
 
-The last suite is new. It extracts the awk program **verbatim from the
-installer** and asserts that only `spi0/dev0` is modified, that `spi0/dev1` and
-the `spi3` bus survive byte-identical, and that re-running is a no-op — the
-regression that motivated fixing the installer.
+`test_phase6.py` reports **12/13 with one skip** on a fresh clone, because
+`test_qnx_build` validates the compiled binary and `build/` is gitignored. Run
+`make` first to get the full 39/39.
+
+The `test_spi_conf_edit` suite is new. It extracts the awk program **verbatim
+from the installer** and asserts that only `spi0/dev0` is modified, that
+`spi0/dev1` and the `spi3` bus survive byte-identical, and that re-running is a
+no-op — the regression that motivated fixing the installer.
 
 QNX target build: **zero errors, zero warnings**, `aarch64le-debug/schedulix_can`
-at 333,560 bytes.
+at 333,560 bytes (130,160 stripped). The CAN driver rebuilds from a clean tree
+to exactly the committed sizes: 148,840 release, 332,808 debug.
 
 ---
 

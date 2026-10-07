@@ -166,6 +166,10 @@ No board required:
 python tools/run_all_tests.py     # expect 39/39 host tests PASS
 ```
 
+On a fresh clone you get **38/39**, with one test skipped: `test_qnx_build`
+checks the compiled QNX binary, so it needs `make` to have run first (section 4
+of the guide). Run `make`, then re-test, to reach 39/39.
+
 ### Document index
 
 | Document | Contents |

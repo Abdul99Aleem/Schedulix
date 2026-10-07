@@ -79,15 +79,17 @@ board. Check this before concluding anything is broken.
 
 ```bash
 git clone https://github.com/Abdul99Aleem/Schedulix.git
-cd Schedulix/schedulix_can          # if you cloned the parent repo
+cd Schedulix
 ```
 
-Or work on a branch:
+**The repository root _is_ the backend.** There is no `schedulix_can`
+subdirectory to descend into — `src/`, `tools/`, `tests/` and `docs/` all sit
+directly in the clone root.
+
+To work on the current development branch rather than the default:
 
 ```bash
-git clone https://github.com/Abdul99Aleem/Schedulix.git
-cd Schedulix/schedulix_can
-git checkout hw/procurement-and-gap-plan
+git clone --branch hw/procurement-and-gap-plan https://github.com/Abdul99Aleem/Schedulix.git
 ```
 
 ### SSH client configuration (important)
@@ -167,6 +169,19 @@ PASS test_spi_conf_edit.py        installer spi.conf edit      13/13
 
 39/39 host tests PASS
 ```
+
+> **One test needs a build.** `test_qnx_build` verifies that the compiled QNX
+> binary actually contains the stress code, so it can only run after section 4.
+> On a fresh clone `build/` is empty (it is gitignored) and that one test
+> **skips**, giving:
+>
+> ```
+> PASS test_phase6.py   stress scenarios + analyzer  12/13 (1 skipped: no build artefact)
+> 38/39 host tests PASS
+> ```
+>
+> That is correct behaviour, not a failure. Run `make`, then re-test, to reach
+> 39/39.
 
 Or run them individually:
 

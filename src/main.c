@@ -483,6 +483,8 @@ int handle_subcommands(int argc, char *argv[]) {
             }
             int n = uart_adapter_send((const uint8_t*)data, strlen(data));
             printf("Sent %d bytes over UART: '%s'\n", n, data);
+            printf("Trace record: %s (event type %d, was EXTERNAL_EVENT_RX=1 before the fix)\n",
+                   trace_event_to_string(TRACE_EXTERNAL_EVENT_TX), (int)TRACE_EXTERNAL_EVENT_TX);
             uart_adapter_trace_tx(1, g_seq++, data[0]);
             uart_adapter_shutdown();
             return 0;
@@ -492,6 +494,8 @@ int handle_subcommands(int argc, char *argv[]) {
             int n = uart_adapter_receive(buf, sizeof(buf) - 1);
             if (n > 0) {
                 printf("Received %d bytes from UART: '%s'\n", n, (char*)buf);
+                printf("Trace record: %s (event type %d)\n",
+                       trace_event_to_string(TRACE_EXTERNAL_EVENT_RX), (int)TRACE_EXTERNAL_EVENT_RX);
                 uart_adapter_trace_rx(1, g_seq++, buf[0]);
             } else {
                 printf("No UART data available.\n");

@@ -46,6 +46,12 @@ typedef struct {
      * incoming trigger. */
     uint64_t gpio_marker_high_ns;
     uint64_t gpio_marker_low_ns;
+    /* UART transmits, from TRACE_EXTERNAL_EVENT_TX. Also excluded from
+     * external_event_time: a transmit is something WE sent, so treating it
+     * as the arrival that releases a workload would invert the causality.
+     * Counted instead, which is what makes TX visible in the report. */
+    uint64_t uart_tx_time;
+    uint32_t uart_tx_count;
     uint64_t release_time;
     uint64_t ready_time;
     uint64_t first_run_time;

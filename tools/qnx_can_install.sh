@@ -19,9 +19,21 @@ DRV_SRC=/tmp/can-mcp2515
 DRV_DST=/system/bin/can-mcp2515
 
 # --- tune these -------------------------------------------------------------
-# Crystal on your MCP2515 module. Generic modules are 8 MHz; the Waveshare
-# 2-CH CAN HAT is 16 MHz. WRONG VALUE = driver starts cleanly, zero frames.
-CLOCK_HZ=8000000
+# Crystal on your MCP2515 module. WRONG VALUE = the driver starts cleanly and
+# then receives zero frames, with no error message. That failure mode is why
+# this is worth reading off the board rather than assuming.
+#
+# For the Waveshare RS485 CAN HAT (SKU 14882), per the Waveshare wiki:
+#   - current boards      12000000  (12 MHz)
+#   - pre-Aug-2019 boards  8000000  ( 8 MHz)
+# The SKU alone does not disambiguate; the product page does not state it.
+#
+# CONFIRMED on our boards: the crystal is marked "EAS12.000", i.e. 12 MHz.
+# Read the marking on the silver can-shaped crystal to be sure - it sits next
+# to the MCP2515. "EAS" is the maker's code, "12.000" the frequency.
+#
+# Generic bare MCP2515 modules are usually 8 MHz.
+CLOCK_HZ=12000000
 
 # CAN bitrate. Must match the other node on the bus.
 BPS=500000
@@ -130,7 +142,9 @@ else
     echo
     echo "   Most likely causes:"
     echo "     1. No MCP2515 connected yet - expected if hardware is not wired"
-    echo "     2. Wrong CLOCK_HZ - module is 8 MHz vs 16 MHz"
+    echo "     2. Wrong CLOCK_HZ - Waveshare RS485 CAN HAT (SKU 14882) ships with a"
+    echo "        12 MHz crystal on current boards; pre-Aug-2019 boards have 8 MHz."
+    echo "        Read the marking on the silver can. Try the other value."
     echo "     3. INT GPIO does not match your wiring"
     echo "     4. SPI mode still wrong - check step 3 output"
     echo

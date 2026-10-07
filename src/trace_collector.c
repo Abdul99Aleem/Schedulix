@@ -30,8 +30,12 @@ static int need_drop(trace_mode_t mode, uint32_t n, const sched_trace_record_t *
     if (mode == TRACE_MODE_FULL) return 0;
     if (mode == TRACE_MODE_EVENT_ONLY) {
         /* GPIO markers are kept: they are the instrument-validation signal,
-         * so dropping them in EVENT_ONLY mode would defeat their purpose. */
+         * so dropping them in EVENT_ONLY mode would defeat their purpose.
+         * UART TX is kept alongside RX: a transmit is a real I/O boundary
+         * event and the whole point of the dedicated type is that it is
+         * distinguishable from an arrival. */
         return !(rec->event_type == TRACE_EXTERNAL_EVENT_RX ||
+                 rec->event_type == TRACE_EXTERNAL_EVENT_TX ||
                  rec->event_type == TRACE_EVENT_DECODED ||
                  rec->event_type == TRACE_WORKLOAD_DEADLINE_MISS ||
                  rec->event_type == TRACE_WORKLOAD_DEADLINE ||

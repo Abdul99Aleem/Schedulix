@@ -149,6 +149,15 @@ size_t analyzer_correlate(activation_analysis_t **out, size_t *out_n) {
                     /* Arrival of an external trigger. */
                     if (a->external_event_time == 0) a->external_event_time = r2->timestamp_ns;
                     break;
+                case TRACE_EXTERNAL_EVENT_TX:
+                    /* A transmit is something WE sent, so it must not populate the
+                     * arrival-time field: that field means "an external
+                     * arrival released this workload", and a transmit has
+                     * the opposite causality. Counted instead so TX is
+                     * distinguishable from RX in the analysis. */
+                    a->uart_tx_time = r2->timestamp_ns;
+                    a->uart_tx_count++;
+                    break;
                 case TRACE_GPIO_MARKER_HIGH:
                     a->gpio_marker_high_ns = r2->timestamp_ns;
                     break;

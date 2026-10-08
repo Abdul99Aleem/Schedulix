@@ -104,7 +104,8 @@ static void* workload_thread(void *arg){
                     uint64_t ideal_release = t0 + (uint64_t)act_idx * period;
                     uint64_t release_offset = now > ideal_release ? now - ideal_release : 0;
                     trace_emit(TRACE_WORKLOAD_RELEASE, ctx->task_id, pact, pact, ideal_release, release_offset);
-                    trace_workload_ready(ctx->task_id, pact, pact);
+                    /* READY deliberately not emitted here -- see the note at
+                     * the dispatch point in the worker loop below. */
                     act_idx++;
                     has_release = 1;
                     break;
@@ -141,8 +142,17 @@ static void* workload_thread(void *arg){
         }
         if (!has_release) continue;
         ctx->activations_started++;
-        // t_release is from queue (releaser time), not now, so ready_wait = first_run - release will capture contention
+        // t_release is from the queue (producer time), not now.
         uint64_t t_start = mono_ns();
+        /* READY is stamped HERE, not at enqueue. It used to be emitted inside
+         * the producer's lock, immediately after RELEASE, so ready_time was
+         * effectively equal to release_time and the analyzer's
+         * ready_wait = first_run - ready could never see ready-queue waiting.
+         * That made the latency curve flat under load: same-core contention at
+         * priority 20 still reported 0.00 ms ready wait and 0 deadline misses
+         * while occupying 9 of every 10 ms. This is the dispatch point, so it
+         * is the correct place to record that the task has become runnable. */
+        trace_workload_ready(ctx->task_id, act, corr);
         trace_workload_start(ctx->task_id, act, corr);
         gpio_marker_for_task_high(ctx->task_id);
 
@@ -251,7 +261,8 @@ int workload_release_by_id(uint32_t task_id, uint32_t corr){
     atomic_store(&c->pending_tail, tail+1);
     atomic_fetch_add(&c->pending_releases,1);
     trace_workload_release(c->task_id, act, corr, c->config->deadline_ns);
-    trace_workload_ready(c->task_id, act, corr);
+    /* READY deliberately not emitted here -- see the note at the dispatch
+     * point in the worker loop. */
     pthread_cond_signal(&c->cond);
     pthread_mutex_unlock(&c->lock);
     return 0;

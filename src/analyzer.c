@@ -394,7 +394,10 @@ int analyzer_write_json(const char *path, const activation_analysis_t *acts, siz
         emitted++;
     }
     fprintf(f, "\n  ],\n");
-    fprintf(f, "  \"detail_note\": \"%llu deadline misses total, %zu shown (cap %d)\",\n",
+    /* Last member of the object: no trailing comma. Strict JSON parsers reject
+     * the file outright if one is present, which made every analysis_s1_*.json
+     * unreadable by json.load. */
+    fprintf(f, "  \"detail_note\": \"%llu deadline misses total, %zu shown (cap %d)\"\n",
             (unsigned long long)total_misses, emitted, ANALYZER_JSON_MAX_DETAIL);
 
     fprintf(f,"}\n");

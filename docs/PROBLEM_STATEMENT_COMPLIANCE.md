@@ -32,7 +32,7 @@ as such.
 | Jitter | 🟡 |
 | CPU utilization | 🟡 |
 | Deadline misses | ✅ |
-| Context switches | ✅ |
+| Context switches | 🟡 |
 | CLI (mandatory deliverable) | ✅ |
 | Python/Qt/Web viewer (optional) | 🔴 mocked data path |
 
@@ -40,11 +40,11 @@ as such.
 blocked on target-side SPI startup, not on code — the driver builds and the
 installer runs.**
 
-**Updated 2026-10-08.** The context-switch claim is now ✅ — verified by a
-24 MB kernel-event capture on the replacement board. Workload tasks moved to ✅
-after a live S0 run (2,125 records, zero drops, zero misses). GPIO markers are
-now verified on **two independent boards**. See
-[`SESSION_LOG_2026-10-08.md`](SESSION_LOG_2026-10-08.md).
+**Updated 2026-10-08.** Workload tasks are ✅ after live S0 and S4 runs on the
+replacement board. GPIO markers are verified on **two independent boards**. The
+kernel trace **captures** successfully and the `libtraceparser` path has been
+corrected (five defects), but the **context-switch count is not yet a validated
+measurement** — see §4. Treat that row as 🟡, not ✅.
 
 **Still open:** the load sweep has not been run, so **jitter has no meaningful
 number yet** (it is zero at S0 by design). **CPU utilization is not measured** —
@@ -171,7 +171,7 @@ including that new event types survive the `EVENT_ONLY` filter.
 | Deadline misses | ✅ | `analyzer.h` | `slack_ns` = deadline − response, `deadline_miss` flag; regression-tested |
 | Jitter | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; not independently re-verified |
 | CPU utilization | 🟡 | analyzer report | Present; not independently confirmed this session |
-| **Context switches** | ✅ | `qnx_tracer.c` → `tracelogger` → `/tmp/schedulix.kev` | **Substantiated 2026-10-08** — 24 MB capture from an instrumented kernel. See below. |
+| **Context switches** | 🟡 | `qnx_tracer.c` → `tracelogger` → `.kev` → `libtraceparser` | **Capture works; parser fixed; count still unverified.** See below. |
 | **Jitter** | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; **zero at S0 by design**, meaningful only under load. Load sweep not yet run. |
 
 ### The context-switch claim — RESOLVED 2026-10-08
@@ -204,16 +204,46 @@ tracelogger -f /tmp/schedulix.kev -s 10 -w
 **Result: 24,129,669 bytes.** Repeated captures gave 23.8 MB and 10.3 MB. The
 instrumented kernel is present and thread state events are being logged.
 
-Two honest caveats to state when presenting this:
+**Capture is verified. The context-switch COUNT is not.** These are separate
+claims and only the first is proven.
 
-- `tracelogger` reports **`Help, we're not keeping up`** — kernel event buffers
-  overran and some events were lost. Raising buffer counts (`-b 512 -k 32`) did
-  **not** help; it is a write-bandwidth limit on a 1500 MHz A72, not a
-  configuration error. **Switch counts from these captures are a lower bound,
-  not an exact figure.**
-- Do not conflate this with `Trace: records 2125 dropped 0`, which is
-  Schedulix's *application* ring buffer (capacity 16,384). Different buffers,
-  both real.
+### What was wrong, and what is fixed (2026-10-08)
+
+Five defects in the `.kev` path, all found by diffing decoder output against the
+QNX documentation, all fixed and committed:
+
+| Defect | Effect |
+| --- | --- |
+| `traceparser_cs_range` passed `_TRACE_PR_TH_C >> 10`, an *internal* encoding where an *external* class is required | Callback never fired; no thread events decoded at all |
+| `traceparser_get_info` result cast to `uint64_t*` when it returns `unsigned*` | Read 8 bytes across two 4-byte fields; every timestamp decoded to the same value |
+| Rollover compared against `_TRACEPARSER_INFO_CLK`, the trace base rather than the previous event | Non-monotonic timestamps; now anchored on `_NTO_TRACE_CONTROLTIME`, the documented rollover anchor |
+| `qnx_kernel_trace_get_events(NULL, 0)` returned 0 | A full 32768-event parse reported "Parsed 0 events" |
+| Correlator used MUTEX=11, CONDVAR=12, SEM=15, DESTROY=23 | Real values are 13, 14, 17, 25. Nanosleep was misread as a mutex block — a **wrong root cause** on any periodic workload |
+
+Also fixed: `qnx_tracer.c` spawned `tracelogger -s 65536`, and `-s` is
+**seconds** — an 18.2-hour capture that only `slay` ever ended. And the
+application ring buffer was 16384 records, which S4's event storm overran,
+silently dropping 4926 records (23% of the trace). Capacity is now 65536 and S4
+reports `dropped 0`.
+
+### What remains unverified
+
+- **The decoded trace does not yet contain the workload's threads.** After every
+  fix, decoding still yields `PID 1` system threads at `CREATE`/`INTR`, with the
+  workload's own TIDs absent. This is consistent with the capture being
+  dominated by system state and the workload's events falling outside the
+  parser's 32768-event window.
+- **`Help, we're not keeping up` persists** (`4/128` even with `-F1 -F2 -F3 -F6`
+  and `-b 128`). Per the SAT guide, a buffer overrun means "entire blocks of
+  events out of chronological order". **Any switch count from these captures is
+  an upper bound at best, and is not currently a measurement of anything.**
+- Do not conflate the tracelogger overrun with `Trace: records 21310 dropped 0`,
+  which is Schedulix's *application* ring buffer. Different buffers, both real;
+  only the latter is currently clean.
+
+**Practical consequence:** context switches should be presented as *implemented
+and instrumented, decode verified on hardware, count not yet validated* — not as
+a measured figure.
 
 ---
 
@@ -283,8 +313,8 @@ to exactly the committed sizes: 148,840 release, 332,808 debug.
 
 | | Count | Items |
 | --- | --- | --- |
-| ✅ Verified | 14 | Platform, GPIO (2 boards), UART TX, workload execution, trace collector, analyzer, stress generator, shared memory, sampling/flush, latency, deadline misses, **context switches**, CLI, test suite |
-| 🟡 Implemented, unverified | 3 | Jitter (no meaningful number until the sweep runs), CPU utilization (not measured at all), UART RX as trigger |
+| ✅ Verified | 13 | Platform, GPIO (2 boards), UART TX, workload execution, trace collector, analyzer, stress generator, shared memory, sampling/flush, latency, deadline misses, CLI, test suite |
+| 🟡 Implemented, unverified | 4 | **Context switches** (capture + decode verified, count not validated), jitter (no meaningful number until the sweep runs), CPU utilization (not measured at all), UART RX as trigger |
 | 🔴 Not implemented / blocked | 3 | CAN on real bus, `qnx_can_adapter.c`, Qt data path |
 
 ### Critical path to completion

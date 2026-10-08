@@ -224,6 +224,7 @@ static void print_subcommand_help(void) {
     printf("  gpio test                      Test physical/mock GPIO toggling\n");
     printf("  experiment list                List benchmark scenarios S0..S6\n");
     printf("  experiment run S<id>           Run benchmark scenario (S0..S6)\n");
+    printf("  experiment run S1:<load%%>      CPU saturation at <load>%% (0..95)\n");
 }
 
 int handle_subcommands(int argc, char *argv[]) {
@@ -696,19 +697,44 @@ int handle_subcommands(int argc, char *argv[]) {
             return 0;
         } else if (!strcmp(sub, "run")) {
             if (argc < 4) {
-                printf("Usage: schedulix experiment run S<id> or <id>\n");
+                printf("Usage: schedulix experiment run S<id>[:<load%%>] or <id>[:<load%%>]\n");
                 return 1;
             }
-            const char *id_str = argv[3];
+            /* Parse "S1:20" / "1:20" into scenario 1 at 20% load. The previous
+             * code did atoi(id_str+1), which silently discarded everything from
+             * the colon onward -- so "S1:20" ran scenario 1 at the hardcoded
+             * default load of 80%, and every point of the sweep produced an
+             * identical run. Copy the argument first: it is argv, and strtok
+             * would otherwise modify the process's own arguments. */
+            char id_buf[64];
+            snprintf(id_buf, sizeof(id_buf), "%s", argv[3]);
+            int load = -1;
+            char *colon = strchr(id_buf, ':');
+            if (colon) {
+                *colon = '\0';
+                load = atoi(colon + 1);
+                if (load < 0 || load > 95) {
+                    printf("Invalid load %d%%. Use 0..95.\n", load);
+                    return 1;
+                }
+            }
             int id = -1;
-            if (id_str[0] == 'S' || id_str[0] == 's') {
-                id = atoi(id_str + 1);
+            if (id_buf[0] == 'S' || id_buf[0] == 's') {
+                id = atoi(id_buf + 1);
             } else {
-                id = atoi(id_str);
+                id = atoi(id_buf);
             }
             if (id < 0 || id > 6) {
-                printf("Invalid scenario ID: %s. Use 0..6.\n", id_str);
+                printf("Invalid scenario ID: %s. Use 0..6.\n", argv[3]);
                 return 1;
+            }
+            if (load >= 0 && id != 1) {
+                printf("Load override only applies to S1 (CPU saturation). "
+                       "Got S%d with load %d%%.\n", id, load);
+                load = -1;
+            }
+            if (load >= 0) {
+                printf("[S1] running CPU saturation at %d%% load\n", load);
             }
             
             char trace[64]; snprintf(trace,sizeof(trace),"trace_s%d.bin",id);
@@ -721,12 +747,13 @@ int handle_subcommands(int argc, char *argv[]) {
             if(trc!=0) fprintf(stderr,"[%s] kernel trace unavailable\n", scenario_name((scenario_id_t)id));
             if(workload_init_all()!=0){ write_failure_report(scenario_name((scenario_id_t)id),"workload init failed"); return 1; }
             struct timespec t0,t1; clock_gettime(CLOCK_MONOTONIC,&t0);
-            int rc = scenario_run((scenario_id_t)id, 5000); // run for 5 seconds
+            int rc = (load >= 0) ? scenario_run_with_load((scenario_id_t)id, load, 5000)
+                               : scenario_run((scenario_id_t)id, 5000);
             clock_gettime(CLOCK_MONOTONIC,&t1); uint64_t dur=(t1.tv_sec-t0.tv_sec)*1000000000ULL + (t1.tv_nsec-t0.tv_nsec);
             if(rc!=0){ write_failure_report(scenario_name((scenario_id_t)id),"scenario failed"); trace_collector_shutdown(); workload_stop_all(); workload_join_all(); return 1; }
             trace_collector_flush(trace);
             qnx_provenance_t prov; qnx_tracer_get_provenance(&prov);
-            manifest_collect_full(scenario_name((scenario_id_t)id),-1,5000,trace,prov.privileged?"/tmp/schedulix.kev":"FAILED: no kernel trace",dur,"command run");
+            manifest_collect_full(scenario_name((scenario_id_t)id),load,5000,trace,prov.privileged?"/tmp/schedulix.kev":"FAILED: no kernel trace",dur,load>=0?"S1 load override":"command run");
             manifest_write_json(manifest);
             activation_analysis_t *acts=NULL; size_t n=0;
             if(analyzer_load_trace_file(trace)==0){

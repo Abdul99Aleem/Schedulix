@@ -40,7 +40,18 @@ typedef struct {
     uint32_t task_id;
     uint32_t activation_id;
     uint32_t correlation_id;
-    uint64_t external_event_time;
+    uint64_t external_event_time; /* only from TRACE_EXTERNAL_EVENT_RX */
+    /* GPIO marker edges from TRACE_GPIO_MARKER_{HIGH,LOW}. Kept separate from
+     * external_event_time because a marker is self-generated, not an
+     * incoming trigger. */
+    uint64_t gpio_marker_high_ns;
+    uint64_t gpio_marker_low_ns;
+    /* UART transmits, from TRACE_EXTERNAL_EVENT_TX. Also excluded from
+     * external_event_time: a transmit is something WE sent, so treating it
+     * as the arrival that releases a workload would invert the causality.
+     * Counted instead, which is what makes TX visible in the report. */
+    uint64_t uart_tx_time;
+    uint32_t uart_tx_count;
     uint64_t release_time;
     uint64_t ready_time;
     uint64_t first_run_time;
@@ -89,6 +100,11 @@ int analyzer_print_report(const activation_analysis_t *acts, size_t n, const tra
 
 /* Delay attribution helper */
 void analyzer_delay_attribution(const activation_analysis_t *a, char *buf, size_t len);
+
+/* Cap on deadline-miss records written to analysis JSON. Per-activation records
+ * were ~600 bytes each and a 5 s run produced ~2,500 of them; misses are rare,
+ * so bounding them keeps the file readable without hiding the RCA evidence. */
+#define ANALYZER_JSON_MAX_DETAIL 200
 
 /* Stress helpers */
 int analyzer_load_vs_latency(const activation_analysis_t *acts, size_t n);

@@ -1,0 +1,4 @@
+*.o
+*.dep
+can-mcp2515_g*
+repo_status.txt

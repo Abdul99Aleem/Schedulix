@@ -1,0 +1,33 @@
+.DS_Store
+*.swp
+stage/
+
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/cmake-variants.yaml
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+.ionide
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+# Added by tools/build_can_driver.sh: make infrastructure copied in from the
+# SDP, and build output. These are generated, not source.
+build/
+*.o
+*.dep
+*.pinfo
+recurse.mk
+qconfig.mk
+qconf-*.mk
+mk/qconfig.mk

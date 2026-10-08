@@ -148,5 +148,8 @@ int uart_adapter_trace_rx(uint32_t act_id, uint32_t corr_id, uint8_t byte) {
 }
 
 int uart_adapter_trace_tx(uint32_t act_id, uint32_t corr_id, uint8_t byte) {
-    return trace_collector_record_simple(TRACE_EXTERNAL_EVENT_RX, 0xFFFFu, act_id, corr_id, byte, 2 /* UART TX marker */);
+    /* Previously recorded the RX type, which made TX indistinguishable from
+     * RX. The direction was carried in arg1 (1 = rx, 2 = tx) but nothing
+     * read it, so every UART transmit looked like an arrival. */
+    return trace_collector_record_simple(TRACE_EXTERNAL_EVENT_TX, 0xFFFFu, act_id, corr_id, byte, 2 /* UART TX marker */);
 }

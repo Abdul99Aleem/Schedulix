@@ -60,7 +60,20 @@ int qnx_tracer_start(const char *kev_path, uint32_t flags){
         return -1; /* EPERM */
     }
     pid_t pid;
-    char *argv[] = {"tracelogger", "-f", g_kev, "-s", "65536", "-b", "64", NULL};
+    /* -s is SECONDS per the utilities reference, so the old "-s 65536" asked for
+     * 18.2 hours of tracing and only qnx_tracer_stop()'s slay ever ended it.
+     *
+     * The class filters matter more. In non-daemon mode tracelogger enables ALL
+     * classes, so kernel-call and interrupt traffic swamped the capture: the
+     * buffer overran on every run and the workload's own thread events were
+     * pushed past the parser's 32768-event window, so decoding showed only
+     * PID 1 boot threads. Keeping thread + system is all context-switch
+     * counting and the correlator need.
+     *
+     * -w (wide) is deliberate: fast mode drops the data payload the correlator
+     * reads for PID/TID. -b 128 raises the flush buffer headroom. */
+    char *argv[] = {"tracelogger", "-f", g_kev, "-s", "30", "-w",
+                    "-F1", "-F2", "-F3", "-F6", "-b", "128", NULL};
     extern char **environ;
     int rc = posix_spawnp(&pid, "tracelogger", NULL, NULL, argv, environ);
     if (rc != 0) {
@@ -90,7 +103,22 @@ int qnx_tracer_start(const char *kev_path, uint32_t flags){
 }
 int qnx_tracer_stop(void){
 #if defined(__QNX__)
-    if(g_running) system("slay tracelogger 2>/dev/null");
+    /* SIGINT, not SIGTERM: killing tracelogger mid-buffer write can discard the
+     * events still queued in the kernel's buffers. SIGINT lets it flush and
+     * exit cleanly, which matters because the scenario calls this immediately
+     * before writing analysis JSON that references the .kev. */
+    if(g_running) system("slay -s INT tracelogger 2>/dev/null");
+    /* Give the flush a moment. tracelogger holds up to -b dynamic buffers. */
+    for(int i=0;i<20;i++){
+        struct timespec ts={0,50000000}; /* 50 ms */
+        nanosleep(&ts,NULL);
+        struct stat st;
+        if(stat(g_kev,&st)!=0 || st.st_size==0) break;
+        /* Two consecutive stable sizes means the write has settled. */
+        size_t prev = st.st_size;
+        nanosleep(&ts,NULL);
+        if(stat(g_kev,&st)==0 && st.st_size==prev) break;
+    }
 #endif
     g_end_ns = mono_ns();
     g_running=0;

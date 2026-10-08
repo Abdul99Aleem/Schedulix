@@ -29,7 +29,15 @@
 #include "manifest.h"
 #include "uart_adapter.h"
 #include "qnx_kernel_trace_parser.h"
+#include "scheduler_correlator.h"
 #include <sys/stat.h>
+
+/* Trace ring capacity. 16384 was enough for S0 (2125 records) but S4's event
+ * storm overran it and dropped 4926 records -- losing 23% of the trace, so the
+ * S4 latency figures described only the events that survived. At 48 bytes per
+ * record, 65536 costs about 3.2 MB of heap, which the Pi has in abundance
+ * (7.5 GB free). */
+#define SCHEDULIX_TRACE_CAPACITY 65536
 
 #ifdef ENABLE_TCP
 #include "can_injector.h"
@@ -104,7 +112,7 @@ static int run_phase1_demo(void){
     workload_manifest_print();
     printf("\nInitializing workloads...\n");
     prepare_atomic_artifacts("trace_phase1.bin","manifest_phase1.json","analysis_phase1.json");
-    if(trace_collector_init_heap(8192, TRACE_MODE_FULL, 0)!=0){ write_failure_report("S0_PHASE1","trace init failed"); return 1; }
+    if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0)!=0){ write_failure_report("S0_PHASE1","trace init failed"); return 1; }
     trace_instr_init();
     gpio_marker_init();
     if(workload_init_all()!=0){ write_failure_report("S0_PHASE1","workload init failed"); return 1; }
@@ -133,7 +141,7 @@ static int run_full_demo(void){
     workload_config_print_table();
     prepare_atomic_artifacts("trace.bin","manifest.json","analysis.json");
     uint64_t t0 = 0; struct timespec ts0; clock_gettime(CLOCK_MONOTONIC,&ts0); t0=(uint64_t)ts0.tv_sec*1000000000ULL+ts0.tv_nsec;
-    if(trace_collector_init_heap(16384, TRACE_MODE_FULL, 0)!=0){ write_failure_report("FULL_CORE","trace init failed"); return 1; }
+    if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0)!=0){ write_failure_report("FULL_CORE","trace init failed"); return 1; }
     trace_instr_init();
     gpio_marker_init();
     int trc = qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD|QNX_TRACE_INT);
@@ -216,6 +224,7 @@ static void print_subcommand_help(void) {
     printf("  gpio test                      Test physical/mock GPIO toggling\n");
     printf("  experiment list                List benchmark scenarios S0..S6\n");
     printf("  experiment run S<id>           Run benchmark scenario (S0..S6)\n");
+    printf("  experiment run S1:<load%%>      CPU saturation at <load>%% (0..95)\n");
 }
 
 int handle_subcommands(int argc, char *argv[]) {
@@ -317,7 +326,7 @@ int handle_subcommands(int argc, char *argv[]) {
         }
         const char *sub = argv[2];
         if (!strcmp(sub, "start")) {
-            if (trace_collector_init_heap(16384, TRACE_MODE_FULL, 0) == 0) {
+            if (trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0) == 0) {
                 printf("Trace collector initialized with capacity 16384.\n");
                 return 0;
             } else {
@@ -361,17 +370,127 @@ int handle_subcommands(int argc, char *argv[]) {
                 printf("Error parsing trace: %d\n", rc);
                 return 1;
             }
-            KernelTraceEvent evs[256];
-            size_t n = qnx_kernel_trace_get_events(evs, 256);
-            printf("Successfully parsed %d events.\n", (int)n);
-            printf("%-18s %-18s %-4s %-10s %-8s %-8s\n", "Cycles", "Time(ns)", "CPU", "Event", "PID", "TID");
-            printf("--------------------------------------------------------------------------------\n");
-            for (size_t i = 0; i < n; i++) {
-                printf("%-18llu %-18llu %-4u %-10u %-8u %-8u\n",
-                       (unsigned long long)evs[i].timestamp_cycles,
-                       (unsigned long long)evs[i].timestamp_ns,
-                       evs[i].cpu, evs[i].event_type, evs[i].pid, evs[i].tid);
+            /* Show the first 40 rows but report the true totals. Capping the
+             * display at 256 made a 24 MB capture look like it held 256
+             * events, when the parser had stopped early. */
+            size_t total = qnx_kernel_trace_get_events(NULL, 0);
+            KernelTraceEvent *evs = malloc((total ? total : 1) * sizeof(KernelTraceEvent));
+            if (!evs) { printf("Out of memory for %zu events\n", total); return 1; }
+            size_t n = qnx_kernel_trace_get_events(evs, total);
+            printf("Parsed %zu events.\n", n);
+            if (!qnx_kernel_trace_is_complete()) {
+                printf("NOTE: this .kev holds more events than the parser keeps.\n");
+                printf("      Showing the FIRST %zu. Use a shorter capture for a complete\n", n);
+                printf("      decode:  tracelogger -f /tmp/demo.kev -s 2 -w -F3\n");
             }
+            printf("Cycles/sec: %llu\n", (unsigned long long)qnx_kernel_trace_get_cycles_per_sec());
+
+            /* Show rows from AFTER the state dump, which is what the caller
+             * actually wants to see. The snapshot at the head of the file is
+             * noise for this purpose. */
+            size_t dump_end = 0;
+            if (n > 0) {
+                uint64_t t0 = evs[0].timestamp_cycles;
+                size_t i = 1;
+                while (i < n && (evs[i].timestamp_cycles - t0) <= qnx_kernel_trace_dump_burst_cycles()) i++;
+                bool has_create = false;
+                for (size_t k = 0; k < i && k < 4096; k++) {
+                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
+                }
+                dump_end = has_create ? i : 0;
+            }
+            size_t rows = n - dump_end < 30 ? n - dump_end : 30;
+            if (dump_end) {
+                printf("(skipping %zu initial state-dump events)\n\n", dump_end);
+            }
+            printf("\n%-18s %-14s %-4s %-10s %-8s %-8s %s\n",
+                   "Cycles", "Time(ms)", "CPU", "State", "PID", "TID", "Name");
+            printf("--------------------------------------------------------------------------------\n");
+            for (size_t i = dump_end; i < dump_end + rows; i++) {
+                const char *st = thread_state_name(evs[i].event_type);
+                printf("%-18llu %-14.3f %-4u %-10u %-8u %-8u %s\n",
+                       (unsigned long long)evs[i].timestamp_cycles,
+                       (double)evs[i].timestamp_ns / 1e6,
+                       evs[i].cpu, evs[i].event_type, evs[i].pid, evs[i].tid, st);
+            }
+            if (n > rows) printf("... %zu more events\n", n - rows);
+
+            /* Count context switches, skipping two things that inflate the total:
+             *
+             * 1. The initial system-state dump. _NTO_TRACE_START emits one snapshot
+             *    of every live thread (CREATE/READY pairs, all clustered at the same
+             *    timestamp). Those are not scheduling events, and counting them
+             *    produced ~12,000 "switches" that were really just the snapshot.
+             *    Detection: CREATE events (state 24) appearing at the very start of
+             *    the trace. Skip until the first CREATE.
+             *
+             * 2. Timestamp regressions. A regression means the kernel overwrote an
+             *    in-progress buffer, so per-CPU thread state is no longer
+             *    meaningful across it -- reset, and mark the count unreliable.
+             */
+            /* Locate the _NTO_TRACE_START state dump. It is emitted as one burst: every
+             * live thread reported as CREATE/READY at effectively the same
+             * timestamp, before any real scheduling happens. Scanning for the
+             * first CREATE alone is not enough -- the dump interleaves
+             * RUNNING and INTR events, so CREATE continues for hundreds of
+             * rows. Bound the dump by timestamp instead: it occupies the
+             * opening burst, so walk forward while the timestamp stays within
+             * 1 ms of the first event, then start counting after that. */
+            size_t start = 0;
+            if (n > 0) {
+                uint64_t t0 = evs[0].timestamp_cycles;
+                uint64_t burst = qnx_kernel_trace_dump_burst_cycles();
+                size_t i = 1;
+                while (i < n && (evs[i].timestamp_cycles - t0) <= burst) i++;
+                /* Only treat it as a dump if it looks like one: it should
+                 * contain thread-creation events. Otherwise this is genuine
+                 * scheduling from the first row and we must not skip it. */
+                bool has_create = false;
+                for (size_t k = 0; k < i && k < 4096; k++) {
+                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
+                }
+                start = has_create ? i : 0;
+            }
+
+            uint32_t switches = 0;
+            size_t resets = 0;
+            uint32_t cur_tid[MAX_CPUS] = {0};
+            uint64_t prev_cycles = 0;
+            bool have_prev = false;
+            bool ordered = true;
+            for (size_t i = start; i < n; i++) {
+                uint32_t c = evs[i].cpu < MAX_CPUS ? evs[i].cpu : 0;
+                if (have_prev && evs[i].timestamp_cycles < prev_cycles) {
+                    memset(cur_tid, 0, sizeof(cur_tid));
+                    resets++;
+                    ordered = false;
+                }
+                prev_cycles = evs[i].timestamp_cycles;
+                have_prev = true;
+                if (evs[i].event_type == 1 /* STATE_RUNNING */) {
+                    if (cur_tid[c] != 0 && cur_tid[c] != evs[i].tid) switches++;
+                    cur_tid[c] = evs[i].tid;
+                }
+            }
+
+            size_t parser_ooo = qnx_kernel_trace_get_out_of_order();
+            size_t span = n - start;
+
+            printf("\nContext switches observed: %u\n", switches);
+            printf("  %zu events counted, %zu skipped as the _NTO_TRACE_START state dump\n", span, start);
+
+            if (!ordered || parser_ooo) {
+                printf("  CAVEAT: %zu timestamp regressions -- buffer overruns scrambled\n", resets);
+                printf("  block order, so this is an UPPER BOUND, not a measurement.\n");
+                printf("  Reduce volume: tracelogger -f demo.kev -s 1 -w -F1 -F2 -F3 -F6\n");
+            } else if (!qnx_kernel_trace_is_complete()) {
+                printf("  Ordering OK in the decoded prefix, but the .kev held more\n");
+                printf("  events than %d. Switches are a lower bound on the whole trace.\n",
+                       MAX_KERNEL_EVENTS);
+            } else {
+                printf("  Ordering monotonic across a complete decode -- measurement.\n");
+            }
+            free(evs);
             return 0;
         } else {
             printf("Unknown trace subcommand: %s. Expected start|stop|flush|status|decode\n", sub);
@@ -483,6 +602,8 @@ int handle_subcommands(int argc, char *argv[]) {
             }
             int n = uart_adapter_send((const uint8_t*)data, strlen(data));
             printf("Sent %d bytes over UART: '%s'\n", n, data);
+            printf("Trace record: %s (event type %d, was EXTERNAL_EVENT_RX=1 before the fix)\n",
+                   trace_event_to_string(TRACE_EXTERNAL_EVENT_TX), (int)TRACE_EXTERNAL_EVENT_TX);
             uart_adapter_trace_tx(1, g_seq++, data[0]);
             uart_adapter_shutdown();
             return 0;
@@ -492,6 +613,8 @@ int handle_subcommands(int argc, char *argv[]) {
             int n = uart_adapter_receive(buf, sizeof(buf) - 1);
             if (n > 0) {
                 printf("Received %d bytes from UART: '%s'\n", n, (char*)buf);
+                printf("Trace record: %s (event type %d)\n",
+                       trace_event_to_string(TRACE_EXTERNAL_EVENT_RX), (int)TRACE_EXTERNAL_EVENT_RX);
                 uart_adapter_trace_rx(1, g_seq++, buf[0]);
             } else {
                 printf("No UART data available.\n");
@@ -513,12 +636,45 @@ int handle_subcommands(int argc, char *argv[]) {
         printf("GPIO Marker validation test:\n");
         gpio_marker_init();
         printf("GPIO Availability: %s\n", gpio_marker_is_available() ? "REAL PHYSICAL" : "MOCK");
-        printf("Toggling pin 4 (BRAKE), 17 (ADAS), 27 (DIAG)...\n");
-        gpio_marker_for_task_high(TASK_ID_BRAKE);
-        usleep(2000);
-        gpio_marker_for_task_low(TASK_ID_BRAKE);
-        gpio_validation_t v = gpio_marker_validate(TASK_ID_BRAKE, 0, 2000000ULL);
+        /* Drive every marker pin, not just BRAKE. The previous version toggled only
+         * GPIO 4 (BRAKE), so a LED wired to pin 11 (ADAS) or pin 13 (DIAG)
+         * stayed dark and the test looked broken. */
+        static const int pins[3]   = { 4, 17, 27 };
+        static const uint32_t ids[3] = { TASK_ID_BRAKE, TASK_ID_ADAS, TASK_ID_DIAG };
+        static const char *names[3] = { "BRAKE(GPIO4/pin7)",
+                                        "ADAS (GPIO17/pin11)",
+                                        "DIAG (GPIO27/pin13)" };
+
+        printf("fsel before: 4=%d 17=%d 27=%d  (1=output)\n",
+               gpio_marker_fsel(4), gpio_marker_fsel(17), gpio_marker_fsel(27));
+
+        printf("Toggling all three marker pins, 200 ms apart...\n");
+        for (int i = 0; i < 3; i++) {
+            printf("  %-18s ... ", names[i]);
+            fflush(stdout);
+            gpio_marker_for_task_high(ids[i]);
+            usleep(200000);          /* 200 ms: visible on an LED */
+            gpio_marker_for_task_low(ids[i]);
+
+            gpio_validation_t v = gpio_marker_validate(ids[i], 0, 200000000ULL);
+            printf("fsel=%d  hw high=%d low=%d confirmed=%s  pulse=%llu us  delta=%lld us  valid=%s\n",
+                   gpio_marker_fsel(pins[i]),
+                   v.hw_level_high, v.hw_level_low,
+                   v.hw_confirmed ? "YES" : "NO",
+                   (unsigned long long)((v.gpio_low_ns - v.gpio_high_ns) / 1000),
+                   (long long)(v.delta_ns / 1000),
+                   v.valid ? "YES" : "NO");
+        }
+
+        printf("fsel after : 4=%d 17=%d 27=%d  (1=output)\n",
+               gpio_marker_fsel(4), gpio_marker_fsel(17), gpio_marker_fsel(27));
+
+        gpio_validation_t v = gpio_marker_validate(TASK_ID_BRAKE, 0, 200000000ULL);
         printf("Validation: delta %lld ns, valid: %s\n", (long long)v.delta_ns, v.valid ? "YES" : "NO");
+        /* Report the readback separately: this is what distinguishes a real
+         * edge on the wire from a write that silently did nothing. */
+        printf("Hardware readback: level after high=%d, after low=%d, confirmed=%s\n",
+               v.hw_level_high, v.hw_level_low, v.hw_confirmed ? "YES" : "NO");
         gpio_marker_shutdown();
         return 0;
     }
@@ -541,37 +697,63 @@ int handle_subcommands(int argc, char *argv[]) {
             return 0;
         } else if (!strcmp(sub, "run")) {
             if (argc < 4) {
-                printf("Usage: schedulix experiment run S<id> or <id>\n");
+                printf("Usage: schedulix experiment run S<id>[:<load%%>] or <id>[:<load%%>]\n");
                 return 1;
             }
-            const char *id_str = argv[3];
+            /* Parse "S1:20" / "1:20" into scenario 1 at 20% load. The previous
+             * code did atoi(id_str+1), which silently discarded everything from
+             * the colon onward -- so "S1:20" ran scenario 1 at the hardcoded
+             * default load of 80%, and every point of the sweep produced an
+             * identical run. Copy the argument first: it is argv, and strtok
+             * would otherwise modify the process's own arguments. */
+            char id_buf[64];
+            snprintf(id_buf, sizeof(id_buf), "%s", argv[3]);
+            int load = -1;
+            char *colon = strchr(id_buf, ':');
+            if (colon) {
+                *colon = '\0';
+                load = atoi(colon + 1);
+                if (load < 0 || load > 95) {
+                    printf("Invalid load %d%%. Use 0..95.\n", load);
+                    return 1;
+                }
+            }
             int id = -1;
-            if (id_str[0] == 'S' || id_str[0] == 's') {
-                id = atoi(id_str + 1);
+            if (id_buf[0] == 'S' || id_buf[0] == 's') {
+                id = atoi(id_buf + 1);
             } else {
-                id = atoi(id_str);
+                id = atoi(id_buf);
             }
             if (id < 0 || id > 6) {
-                printf("Invalid scenario ID: %s. Use 0..6.\n", id_str);
+                printf("Invalid scenario ID: %s. Use 0..6.\n", argv[3]);
                 return 1;
+            }
+            if (load >= 0 && id != 1) {
+                printf("Load override only applies to S1 (CPU saturation). "
+                       "Got S%d with load %d%%.\n", id, load);
+                load = -1;
+            }
+            if (load >= 0) {
+                printf("[S1] running CPU saturation at %d%% load\n", load);
             }
             
             char trace[64]; snprintf(trace,sizeof(trace),"trace_s%d.bin",id);
             char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s%d.json",id);
             char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s%d.json",id);
             prepare_atomic_artifacts(trace,manifest,analysis);
-            if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
+            if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
             trace_instr_init(); gpio_marker_init();
             int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
             if(trc!=0) fprintf(stderr,"[%s] kernel trace unavailable\n", scenario_name((scenario_id_t)id));
             if(workload_init_all()!=0){ write_failure_report(scenario_name((scenario_id_t)id),"workload init failed"); return 1; }
             struct timespec t0,t1; clock_gettime(CLOCK_MONOTONIC,&t0);
-            int rc = scenario_run((scenario_id_t)id, 5000); // run for 5 seconds
+            int rc = (load >= 0) ? scenario_run_with_load((scenario_id_t)id, load, 5000)
+                               : scenario_run((scenario_id_t)id, 5000);
             clock_gettime(CLOCK_MONOTONIC,&t1); uint64_t dur=(t1.tv_sec-t0.tv_sec)*1000000000ULL + (t1.tv_nsec-t0.tv_nsec);
             if(rc!=0){ write_failure_report(scenario_name((scenario_id_t)id),"scenario failed"); trace_collector_shutdown(); workload_stop_all(); workload_join_all(); return 1; }
             trace_collector_flush(trace);
             qnx_provenance_t prov; qnx_tracer_get_provenance(&prov);
-            manifest_collect_full(scenario_name((scenario_id_t)id),-1,5000,trace,prov.privileged?"/tmp/schedulix.kev":"FAILED: no kernel trace",dur,"command run");
+            manifest_collect_full(scenario_name((scenario_id_t)id),load,5000,trace,prov.privileged?"/tmp/schedulix.kev":"FAILED: no kernel trace",dur,load>=0?"S1 load override":"command run");
             manifest_write_json(manifest);
             activation_analysis_t *acts=NULL; size_t n=0;
             if(analyzer_load_trace_file(trace)==0){
@@ -655,7 +837,7 @@ int main(int argc, char *argv[]) {
                 char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s1_%d.json",pct);
                 char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s1_%d.json",pct);
                 prepare_atomic_artifacts(trace,manifest,analysis);
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report("S1_SWEEP","trace init failed"); continue; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report("S1_SWEEP","trace init failed"); continue; }
                 trace_instr_init(); gpio_marker_init();
                 int trc = qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[S1 %d%%] kernel trace unavailable (run as root)\n", pct);
@@ -711,7 +893,7 @@ int main(int argc, char *argv[]) {
             const char *arg = (i+1<argc)? argv[i+1] : "all";
             if(!strcmp(arg,"all")){
                 prepare_atomic_artifacts("trace_stress.bin","manifest_stress.json","analysis_stress.json");
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report("S0-S6","trace init failed"); return 1; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report("S0-S6","trace init failed"); return 1; }
                 trace_instr_init(); gpio_marker_init();
                 int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[S0-S6] kernel trace unavailable\n");
@@ -748,7 +930,7 @@ int main(int argc, char *argv[]) {
                 char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s%d.json",id);
                 char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s%d.json",id);
                 prepare_atomic_artifacts(trace,manifest,analysis);
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
                 trace_instr_init(); gpio_marker_init();
                 int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[%s] kernel trace unavailable\n", scenario_name((scenario_id_t)id));

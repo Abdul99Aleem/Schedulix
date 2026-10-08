@@ -25,7 +25,17 @@ typedef enum {
     TRACE_WORKLOAD_BLOCK_BEGIN = 10, /* mutex/IPC block */
     TRACE_WORKLOAD_BLOCK_END   = 11,
     TRACE_PREEMPTION           = 12,
-    TRACE_CPU_MIGRATION        = 13
+    TRACE_CPU_MIGRATION        = 13,
+    /* Appended, never inserted: trace records are binary and the Qt
+     * frontend may already map 0..13. */
+    TRACE_GPIO_MARKER_HIGH     = 14, /* marker pin driven high */
+    TRACE_GPIO_MARKER_LOW      = 15, /* marker pin driven low  */
+    /* UART transmit. Previously uart_adapter_trace_tx() recorded a
+     * transmit as TRACE_EXTERNAL_EVENT_RX, so TX and RX were
+     * indistinguishable in the trace -- arg1 carried the direction (1/2)
+     * but nothing read it. Appended, never inserted: trace records are
+     * binary and the Qt frontend may already map 0..15. */
+    TRACE_EXTERNAL_EVENT_TX    = 16
 } trace_event_type_t;
 
 const char* trace_event_to_string(uint32_t type);

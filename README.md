@@ -174,6 +174,7 @@ of the guide). Run `make`, then re-test, to reach 39/39.
 
 | Document | Contents |
 | --- | --- |
+| [`docs/HACKATHON_RUNBOOK.md`](docs/HACKATHON_RUNBOOK.md) | **48hr hackathon runbook** — roles, time-boxed plan, demo script, judge Q&A |
 | [`docs/HANDOVER.md`](docs/HANDOVER.md) | **Start here** — what is verified, what is next, and why the load sweep is flat |
 | [`docs/BRINGUP_GUIDE.md`](docs/BRINGUP_GUIDE.md) | **Master guide** — clone → build → deploy → UART → GPIO → CAN → verify |
 | [`docs/PROBLEM_STATEMENT_COMPLIANCE.md`](docs/PROBLEM_STATEMENT_COMPLIANCE.md) | Requirement-by-requirement scorecard, verified vs. unverified |

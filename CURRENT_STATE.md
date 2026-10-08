@@ -13,6 +13,10 @@
 > (**26/26 + 1 skip from PowerShell** — `test_spi_conf_edit.py` needs `awk`;
 > run it from Git Bash for the full 39).
 >
+> **START HERE → [`docs/HANDOVER.md`](docs/HANDOVER.md).** What is verified, what
+> is not, the twelve defects fixed this cycle, why the load sweep is flat (it is
+> correct `SCHED_FIFO` behaviour, not a bug), and the prioritised next phases.
+>
 > **Latest session: [`docs/SESSION_LOG_2026-10-08.md`](docs/SESSION_LOG_2026-10-08.md).**
 > The board was replaced and the **original SD card moved into it**. Verified
 > live on 2026-10-08: instrumented kernel trace capture (**24 MB** — the

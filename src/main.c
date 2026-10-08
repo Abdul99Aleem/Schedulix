@@ -381,8 +381,16 @@ int handle_subcommands(int argc, char *argv[]) {
              * actually wants to see. The snapshot at the head of the file is
              * noise for this purpose. */
             size_t dump_end = 0;
-            while (dump_end < n && evs[dump_end].event_type != 24 /* STATE_CREATE */) dump_end++;
-            if (dump_end >= n) dump_end = 0;
+            if (n > 0) {
+                uint64_t t0 = evs[0].timestamp_cycles;
+                size_t i = 1;
+                while (i < n && (evs[i].timestamp_cycles - t0) <= qnx_kernel_trace_dump_burst_cycles()) i++;
+                bool has_create = false;
+                for (size_t k = 0; k < i && k < 4096; k++) {
+                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
+                }
+                dump_end = has_create ? i : 0;
+            }
             size_t rows = n - dump_end < 30 ? n - dump_end : 30;
             if (dump_end) {
                 printf("(skipping %zu initial state-dump events)\n\n", dump_end);
@@ -412,13 +420,29 @@ int handle_subcommands(int argc, char *argv[]) {
              *    in-progress buffer, so per-CPU thread state is no longer
              *    meaningful across it -- reset, and mark the count unreliable.
              */
+            /* Locate the _NTO_TRACE_START state dump. It is emitted as one burst: every
+             * live thread reported as CREATE/READY at effectively the same
+             * timestamp, before any real scheduling happens. Scanning for the
+             * first CREATE alone is not enough -- the dump interleaves
+             * RUNNING and INTR events, so CREATE continues for hundreds of
+             * rows. Bound the dump by timestamp instead: it occupies the
+             * opening burst, so walk forward while the timestamp stays within
+             * 1 ms of the first event, then start counting after that. */
             size_t start = 0;
-            while (start < n && evs[start].event_type != 24 /* STATE_CREATE */) {
-                start++;
-                if (start >= n) break;
+            if (n > 0) {
+                uint64_t t0 = evs[0].timestamp_cycles;
+                uint64_t burst = qnx_kernel_trace_dump_burst_cycles();
+                size_t i = 1;
+                while (i < n && (evs[i].timestamp_cycles - t0) <= burst) i++;
+                /* Only treat it as a dump if it looks like one: it should
+                 * contain thread-creation events. Otherwise this is genuine
+                 * scheduling from the first row and we must not skip it. */
+                bool has_create = false;
+                for (size_t k = 0; k < i && k < 4096; k++) {
+                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
+                }
+                start = has_create ? i : 0;
             }
-            /* If no CREATE was seen, we are not looking at a state dump. */
-            if (start >= n) start = 0;
 
             uint32_t switches = 0;
             size_t resets = 0;

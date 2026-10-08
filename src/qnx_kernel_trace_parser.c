@@ -197,6 +197,15 @@ bool qnx_kernel_trace_is_complete(void) {
     return g_is_complete;
 }
 
+/* Width of the opening burst emitted by _NTO_TRACE_START: 1 ms of the trace
+ * clock, long enough to hold the full thread snapshot and far shorter than any
+ * real scheduling burst at these rates. Exposed so the CLI applies the same
+ * window this code was derived from, rather than hard-coding a second value. */
+uint64_t qnx_kernel_trace_dump_burst_cycles(void) {
+    uint64_t cps = g_cycles_per_sec ? g_cycles_per_sec : 1000000000ULL;
+    return cps / 1000000ULL; /* 1 ms worth of cycles */
+}
+
 size_t qnx_kernel_trace_get_out_of_order(void) {
     return g_out_of_order;
 }

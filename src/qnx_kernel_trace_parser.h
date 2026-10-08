@@ -31,4 +31,9 @@ const char* thread_state_name(uint32_t event_type);
  * not a measurement. See the SAT guide's "Timestamps" chapter. */
 size_t qnx_kernel_trace_get_out_of_order(void);
 
+/* Width in cycles of the opening burst emitted by _NTO_TRACE_START (the
+ * initial system-state dump). Events inside this window at the head of a trace
+ * are a thread snapshot, not scheduling. */
+uint64_t qnx_kernel_trace_dump_burst_cycles(void);
+
 #endif

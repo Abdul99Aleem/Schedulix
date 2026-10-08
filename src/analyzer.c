@@ -361,31 +361,42 @@ int analyzer_write_json(const char *path, const activation_analysis_t *acts, siz
     fprintf(f,"    \"5_under_what_conditions\": \"see manifest stress_level/cpu_affinity\"\n");
     fprintf(f,"  },\n");
     
-    // Decoupled activation details with explicit evidence parameters
-    fprintf(f, "  \"activations\": [\n");
-    for (size_t i = 0; i < n; i++) {
+    /* Activation detail. Emitting every activation produced a ~2 MB file for
+     * a 5 s run (2,500 activations x ~600 bytes), which is impractical to read
+     * or ship. Aggregate blocks keep the file small while preserving the
+     * per-task percentiles, and `misses` below keeps every deadline miss in
+     * full detail -- misses are what the RCA view needs, and they are rare.
+     *
+     * `context_switches` is deliberately NOT emitted per activation. It is
+     * copied from a single run-level counter, so repeating it on every row
+     * implies a per-task attribution that does not exist. */
+    uint64_t total_misses = 0;
+    for (size_t i = 0; i < n; i++) if (acts[i].deadline_miss) total_misses++;
+
+    size_t emitted = 0;
+    fprintf(f, "  \"misses\": [\n");
+    for (size_t i = 0; i < n && emitted < ANALYZER_JSON_MAX_DETAIL; i++) {
+        if (!acts[i].deadline_miss) continue;
         const char *ev_str = "UNKNOWN";
         if (acts[i].evidence_level == EVIDENCE_INFERRED) ev_str = "INFERRED";
         else if (acts[i].evidence_level == EVIDENCE_CONFIRMED) ev_str = "CONFIRMED";
-        
-        fprintf(f, "    {\n");
-        fprintf(f, "      \"task_id\": %u,\n", acts[i].task_id);
-        fprintf(f, "      \"activation_id\": %u,\n", acts[i].activation_id);
-        fprintf(f, "      \"correlation_id\": %u,\n", acts[i].correlation_id);
-        fprintf(f, "      \"response_ns\": %llu,\n", (unsigned long long)acts[i].response_ns);
-        fprintf(f, "      \"slack_ns\": %lld,\n", (long long)acts[i].slack_ns);
-        fprintf(f, "      \"cpu_first\": %d,\n", acts[i].cpu_first);
-        fprintf(f, "      \"root_cause\": \"%s\",\n", root_cause_to_string(acts[i].root_cause));
-        fprintf(f, "      \"evidence_level\": \"%s\",\n", ev_str);
-        fprintf(f, "      \"interferer_pid\": %u,\n", acts[i].interfering_pid);
-        fprintf(f, "      \"interferer_tid\": %u,\n", acts[i].interfering_tid);
-        fprintf(f, "      \"interferer_priority\": %u,\n", acts[i].interfering_priority);
-        fprintf(f, "      \"preemption_duration_ns\": %llu,\n", (unsigned long long)acts[i].preempt_ns);
-        fprintf(f, "      \"lateness_ns\": %llu,\n", (unsigned long long)acts[i].lateness_ns);
-        fprintf(f, "      \"context_switches\": %u\n", acts[i].cswitches);
-        fprintf(f, "    }%s\n", i + 1 < n ? "," : "");
+        if (emitted) fprintf(f, ",\n");
+        fprintf(f, "    {\"task_id\": %u, \"activation_id\": %u, \"response_ns\": %llu, "
+                   "\"slack_ns\": %lld, \"cpu_first\": %d, \"root_cause\": \"%s\", "
+                   "\"evidence_level\": \"%s\", \"interferer_pid\": %u, \"interferer_tid\": %u, "
+                   "\"interferer_priority\": %u, \"preemption_duration_ns\": %llu, "
+                   "\"lateness_ns\": %llu}",
+                acts[i].task_id, acts[i].activation_id,
+                (unsigned long long)acts[i].response_ns, (long long)acts[i].slack_ns,
+                acts[i].cpu_first, root_cause_to_string(acts[i].root_cause), ev_str,
+                acts[i].interfering_pid, acts[i].interfering_tid, acts[i].interfering_priority,
+                (unsigned long long)acts[i].preempt_ns, (unsigned long long)acts[i].lateness_ns);
+        emitted++;
     }
-    fprintf(f, "  ]\n");
+    fprintf(f, "\n  ],\n");
+    fprintf(f, "  \"detail_note\": \"%llu deadline misses total, %zu shown (cap %d)\",\n",
+            (unsigned long long)total_misses, emitted, ANALYZER_JSON_MAX_DETAIL);
+
     fprintf(f,"}\n");
     fclose(f); return 0;
 }

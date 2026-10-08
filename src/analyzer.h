@@ -101,6 +101,11 @@ int analyzer_print_report(const activation_analysis_t *acts, size_t n, const tra
 /* Delay attribution helper */
 void analyzer_delay_attribution(const activation_analysis_t *a, char *buf, size_t len);
 
+/* Cap on deadline-miss records written to analysis JSON. Per-activation records
+ * were ~600 bytes each and a 5 s run produced ~2,500 of them; misses are rare,
+ * so bounding them keeps the file readable without hiding the RCA evidence. */
+#define ANALYZER_JSON_MAX_DETAIL 200
+
 /* Stress helpers */
 int analyzer_load_vs_latency(const activation_analysis_t *acts, size_t n);
 int analyzer_write_json(const char *path, const activation_analysis_t *acts, size_t n, const trace_shm_header_t *hdr);

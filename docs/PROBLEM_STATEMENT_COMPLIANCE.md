@@ -10,7 +10,7 @@ as such.
 - **Legend** — ✅ verified on hardware · 🟡 implemented, not hardware-verified · 🔴 not implemented
 - **Evidence standard** — a claim is ✅ only if it was observed on a running
   board or passes an automated test that exercises the real code path.
-- **Last updated** 2026-10-07
+- **Last updated** 2026-10-08
 
 ---
 
@@ -22,7 +22,7 @@ as such.
 | GPIO timing marker | ✅ |
 | UART | ✅ |
 | CAN interface | 🔴 blocked at installer step 4 |
-| Workload tasks | 🟡 |
+| Workload tasks | ✅ |
 | Trace collector | ✅ |
 | Analyzer | ✅ |
 | Stress generator | ✅ |
@@ -32,7 +32,7 @@ as such.
 | Jitter | 🟡 |
 | CPU utilization | 🟡 |
 | Deadline misses | ✅ |
-| Context switches | 🟡 |
+| Context switches | ✅ |
 | CLI (mandatory deliverable) | ✅ |
 | Python/Qt/Web viewer (optional) | 🔴 mocked data path |
 
@@ -40,13 +40,24 @@ as such.
 blocked on target-side SPI startup, not on code — the driver builds and the
 installer runs.**
 
+**Updated 2026-10-08.** The context-switch claim is now ✅ — verified by a
+24 MB kernel-event capture on the replacement board. Workload tasks moved to ✅
+after a live S0 run (2,125 records, zero drops, zero misses). GPIO markers are
+now verified on **two independent boards**. See
+[`SESSION_LOG_2026-10-08.md`](SESSION_LOG_2026-10-08.md).
+
+**Still open:** the load sweep has not been run, so **jitter has no meaningful
+number yet** (it is zero at S0 by design). **CPU utilization is not measured** —
+the only value in the tree, `stress_generator_utilization()`, is the load level
+*requested*, not a measurement, and must not be reported as utilization.
+
 ---
 
 ## 1. Platform
 
 | Requirement | Status | Evidence |
 | --- | --- | --- |
-| QNX on Raspberry Pi 4/5 | ✅ | `QNX qnxpi 8.0.0 RaspberryPi4B aarch64le`, 4× Cortex-A72 @ 1500 MHz, 8128 MB, 38 processes / 258 threads. Built with SDP 8.0 `qcc` 12.2.0 targeting `aarch64le`. |
+| QNX on Raspberry Pi 4/5 | ✅ | 4× Cortex-A72 @ 1500 MHz, 8128 MB. **Re-confirmed 2026-10-08 on the replacement board** (original SD card moved into a new board): `CPU:AARCH64 Release:8.0.0`, 40 processes / 260 threads, 7,525 MB free, **instrumented kernel confirmed** by 24 MB of trace output. Built with SDP 8.0 `qcc` 12.2.0 targeting `aarch64le`. |
 
 Platform note: `gpio_marker.c` hard-codes the BCM2711 peripheral base
 `0xFE200000`, which is verified on **Pi 4 only**. Whether the same base is
@@ -74,10 +85,15 @@ The most rigorously verified part of the project. Evidence:
 | **Physical observation** | **LED on header pin 11 observed blinking** |
 | Timing accuracy | 200.9 ms measured vs 200 ms nominal (0.18–0.46% error) |
 | Mapping | `mmap(MAP_PHYS|MAP_SHARED, NOFD, PROT_NOCACHE, 0xFE200000)` — no `/dev/mem` on this image |
+| **Second board** | **Re-verified 2026-10-08 on a physically different board.** Pulses 200,548 / 200,926 / 200,945 µs (and 200,577 / 200,960 / 200,931 µs on a repeat run) — **0.27 %–0.48 % error**, agreeing with the first board within microseconds. `fsel` 0→1 and `GPLEV` readback confirmed on both. |
 
-Caveat: GPIO 4 is **TXD3** on this SoC, and BSP driver state appears to vary
-between boots (`fsel=3 alt=4 func=TXD3` in one inspection, `fsel=0` in another).
-Forcing it to output may disturb a driver that claims it.
+**Two independent boards now produce the same result to within microseconds.**
+That is materially stronger evidence than the original single-board run.
+
+Caveat, still open: GPIO 4 is **TXD3** on this SoC, and BSP driver state appears
+to vary between boots (`fsel=3 alt=4 func=TXD3` in one inspection, `fsel=0` in
+another). Forcing it to output may disturb a driver that claims it. Not
+established either way.
 
 ### 2.2 UART — ✅ complete
 
@@ -130,7 +146,7 @@ observed. So the *dispatch* half of the requirement is proven; only the
 
 | Component | Status | Evidence |
 | --- | --- | --- |
-| Workload Tasks | 🟡 | `BRAKE_CTL` (prio 20, 10 ms), `ADAS_FUSION` (prio 15, 20 ms), `DIAG_POLL` (prio 10, 50 ms). Config verified in source; a 20–95% sweep was previously observed running clean on a Pi 4 (`qnx_logs_7.txt`), not re-verified this session. |
+| Workload Tasks | ✅ | `BRAKE_CTL` (prio 20, 10 ms), `ADAS_FUSION` (prio 15, 20 ms), `DIAG_POLL` (prio 10, 50 ms). **Re-verified live 2026-10-08** via `experiment run S0`: 250 / 125 / 50 activations, mean response 2.01 / 8.01 / 5.01 ms, zero misses, 2,125 records, zero dropped. |
 | Trace Collector | ✅ | Lock-free MPSC ring in shared memory, fixed 48-byte records, zero heap allocation in the RT path |
 | Analyzer | ✅ | 13/13 Phase 6 + 3/3 integrity tests |
 | Stress Generator | ✅ | Scenarios S0–S6: baseline, load sweep, mutex priority inversion, CAN event storm, mixed, core affinity. Knee detection tested. |
@@ -155,30 +171,49 @@ including that new event types survive the `EVENT_ONLY` filter.
 | Deadline misses | ✅ | `analyzer.h` | `slack_ns` = deadline − response, `deadline_miss` flag; regression-tested |
 | Jitter | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; not independently re-verified |
 | CPU utilization | 🟡 | analyzer report | Present; not independently confirmed this session |
-| **Context switches** | 🟡 | `qnx_tracer.c` → `tracelogger` → `/tmp/schedulix.kev` | **Never substantiated.** See below. |
+| **Context switches** | ✅ | `qnx_tracer.c` → `tracelogger` → `/tmp/schedulix.kev` | **Substantiated 2026-10-08** — 24 MB capture from an instrumented kernel. See below. |
+| **Jitter** | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; **zero at S0 by design**, meaningful only under load. Load sweep not yet run. |
 
-### The context-switch claim
+### The context-switch claim — RESOLVED 2026-10-08
 
-This is the one claim in the project with a known provenance problem, and it
-should be stated plainly rather than quietly marked done.
+**This was the one claim in the project with a known provenance problem. It is
+now verified on hardware, and the reason it stayed broken for so long is
+identified.**
 
-Earlier reports cite a ~114 KB `/tmp/schedulix.kev` containing context-switch
-records and describe the run as originating from `root@qnxpi`. At the time of
-those runs, **only `qnxuser` access existed** — root SSH was still disabled and
-required the serial console. A `root@qnxpi` command line is therefore not
-something that could have run at that moment. Either the run happened later
-than the log claims, or the origin string was fabricated when the report was
-written.
+Earlier reports cited a ~114 KB `/tmp/schedulix.kev` and described the run as
+originating from `root@qnxpi`, when only `qnxuser` access existed at the time.
 
-Resolve it in five minutes on any working board:
+The root cause of the *unverifiability*: the documented command was
 
 ```sh
 tracelogger -T /tmp/schedulix.kev &
-sleep 3
-ls -l /tmp/schedulix.kev
 ```
 
-Until that runs, context-switch capture is **unverified**.
+**`-T` is not a `tracelogger` option.** The full SDP 8.0 syntax is
+`tracelogger [-acEPRruw] [-A attribute] [-b num] [-D seconds] [-d mode] [-F num]
+[-f file] [-k num] [-M -S size] [-n num] [-p addr] [-s num] [-v[v...]]`. `-f` is
+the output file. The command was **never runnable**, so nobody ever saw it
+succeed or fail — which is exactly why the claim sat unverified.
+
+Corrected command, run as root on 2026-10-08:
+
+```sh
+tracelogger -f /tmp/schedulix.kev -s 10 -w
+```
+
+**Result: 24,129,669 bytes.** Repeated captures gave 23.8 MB and 10.3 MB. The
+instrumented kernel is present and thread state events are being logged.
+
+Two honest caveats to state when presenting this:
+
+- `tracelogger` reports **`Help, we're not keeping up`** — kernel event buffers
+  overran and some events were lost. Raising buffer counts (`-b 512 -k 32`) did
+  **not** help; it is a write-bandwidth limit on a 1500 MHz A72, not a
+  configuration error. **Switch counts from these captures are a lower bound,
+  not an exact figure.**
+- Do not conflate this with `Trace: records 2125 dropped 0`, which is
+  Schedulix's *application* ring buffer (capacity 16,384). Different buffers,
+  both real.
 
 ---
 
@@ -248,20 +283,25 @@ to exactly the committed sizes: 148,840 release, 332,808 debug.
 
 | | Count | Items |
 | --- | --- | --- |
-| ✅ Verified | 12 | Platform, GPIO, UART TX, trace collector, analyzer, stress generator, shared memory, sampling/flush, latency, deadline misses, CLI, test suite |
-| 🟡 Implemented, unverified | 5 | Workload execution, jitter, CPU utilization, context switches, UART RX as trigger |
+| ✅ Verified | 14 | Platform, GPIO (2 boards), UART TX, workload execution, trace collector, analyzer, stress generator, shared memory, sampling/flush, latency, deadline misses, **context switches**, CLI, test suite |
+| 🟡 Implemented, unverified | 3 | Jitter (no meaningful number until the sweep runs), CPU utilization (not measured at all), UART RX as trigger |
 | 🔴 Not implemented / blocked | 3 | CAN on real bus, `qnx_can_adapter.c`, Qt data path |
 
 ### Critical path to completion
 
-1. **CAN on the target** — hardware-gated. Diagnose `spi-bcm2711` exit 1 via
-   `slog2info | grep -i spi`. See
-   [INCIDENT_SPI_DRIVER.md](INCIDENT_SPI_DRIVER.md).
+1. **Run the load sweep** — `experiment run S1:<pct>` at 20/35/50/65/80/95. The
+   only source of meaningful jitter, and the headline artifact. **Save
+   `analysis_s1.json` after each run: the filenames are identical every time and
+   overwrite.**
 2. **Qt JSON loader** — not hardware-gated, fully testable now. Removes the
-   fabricated-data problem from the primary deliverable's screenshots.
-3. **Resolve the context-switch claim** — five minutes on any working board.
-4. **Enable `qnx_can_adapter.c`** — swap in the `.stub`, fix the `/dev/can1`
-   paths, add to the Makefile. Depends on (1).
+   fabricated-data problem from the primary deliverable's screenshots. Requires
+   adding CPU-utilization fields to `analyzer_write_json`, which do not exist yet.
+3. ~~Resolve the context-switch claim~~ — **done 2026-10-08**, 24 MB capture.
+4. **Deploy the authoritative build** — the binary currently on the board is
+   150,520 bytes with unknown provenance; the real build is 333,560 bytes.
+   Deploy from `build/`, never `deploy/`.
+5. **Enable `qnx_can_adapter.c`** — swap in the `.stub`, fix the `/dev/can1`
+   paths, add to the Makefile. Depends on the CAN driver starting.
 5. **Confirm Pi 5 support** — `gpio test` on actual Pi 5 hardware. The marker
    base is hard-coded; whether BCM2712 keeps the same map is unverified.
 

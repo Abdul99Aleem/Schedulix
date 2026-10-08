@@ -9,7 +9,21 @@
 > The Phase 4 SPI incident and the ruled-out hypotheses:
 > [`docs/INCIDENT_SPI_DRIVER.md`](docs/INCIDENT_SPI_DRIVER.md).
 >
-> Host test suite, no board needed: `python tools/run_all_tests.py` → **39/39**.
+> Host test suite, no board needed: `python tools/run_all_tests.py` → **39/39**
+> (**26/26 + 1 skip from PowerShell** — `test_spi_conf_edit.py` needs `awk`;
+> run it from Git Bash for the full 39).
+>
+> **Latest session: [`docs/SESSION_LOG_2026-10-08.md`](docs/SESSION_LOG_2026-10-08.md).**
+> The board was replaced and the **original SD card moved into it**. Verified
+> live on 2026-10-08: instrumented kernel trace capture (**24 MB** — the
+> context-switch claim is now substantiated), GPIO markers on a **second
+> independent board** (0.27 %–0.48 % pulse error, microsecond agreement with
+> board 1), and a clean **S0 baseline** (2,125 records, 0 dropped, 0 misses).
+> Open: load sweep not yet run, so jitter has no meaningful number; CPU
+> utilization is not measured.
+>
+> **QNX shell gotcha:** the current directory is not searched. Use
+> `./schedulix_can`, never bare `schedulix_can`.
 
 ## 1. Repository Structure
 * **QNX Backend (`c:\Users\User\ide-8.0.3-workspace\schedulix_can`)**:
@@ -39,7 +53,8 @@
 * **Qt Frontend**: CMake based with Qt 6.8.3.
 
 ## 4. Targets
-* **QNX Target**: Raspberry Pi 4 QNX RTOS 8.0 (`aarch64le`) at IP address `192.168.10.5`. The board actually in hand is **not** the `192.168.10.2` board referenced by earlier reports. Confirmed identity: `QNX qnxpi 8.0.0 2025/07/30-19:17:34EDT RaspberryPi4B aarch64le`, 4× Cortex-A72 @1500 MHz, 8128 MB, 38 processes / 258 threads. A **passwordless root shell** is available over the serial console (`root@console:/#`, 115200 8N1).
+* **QNX Target**: Raspberry Pi 4 QNX RTOS 8.0 (`aarch64le`) at IP address `192.168.10.5`. **The board was replaced on 2026-10-08** after the power blockage in [`docs/INCIDENT_SPI_DRIVER.md`](docs/INCIDENT_SPI_DRIVER.md); the **original SD card was moved into the new board and boots correctly**. Re-confirmed identity on the replacement: `CPU:AARCH64 Release:8.0.0`, 4× Cortex-A72 @1500 MHz, 8128 MB, 40 processes / 260 threads, 7,525 MB free, **instrumented kernel present** (proven by 24 MB of `tracelogger` output). A **passwordless root shell** is available over the serial console (`root@console:/#`, 115200 8N1).
+  * **Not installed on this image:** `traceprinter`. It ships with the SDP at `C:\Users\User\qnx800\target\qnx\aarch64le\usr\bin\traceprinter` (191,544 B) and must be copied over. It requires a valid QNX licence key and exits without it — that is a licensing wall, not a trace problem.
   * **Three proven access paths.**
     1. **SSH** — working, verified 2026-10-07. The `-m` flag is **mandatory**:
        ```sh
@@ -108,6 +123,9 @@
 7. **Write the Qt JSON loader** to replace `MockProvider`.
 
 ## 8. Risks
+* **Kernel trace overruns are expected and not fixable by configuration.** `tracelogger` prints `Help, we're not keeping up` because the kernel fills event buffers faster than they can be written out. Raising buffer counts (`-b 512 -k 32`) does **not** help — this is write bandwidth on a 1500 MHz A72, not a misconfiguration. Dropping the process class (`-F3`) does reduce volume (23.8 MB → 10.3 MB). **Consequence: context-switch counts from these captures are a lower bound, not exact. Say so when reporting.** Do not conflate this with the application ring buffer's `dropped 0`, which measures something else entirely.
+* **`tracelogger -T` does not exist.** The output file is `-f`. The SDP 8.0 syntax is `tracelogger [-acEPRruw] [-A attribute] [-b num] [-D seconds] [-d mode] [-F num] [-f file] [-k num] [-M -S size] [-n num] [-p addr] [-s num] [-v[v...]]`. Documentation that said `-T` was never runnable, which is why the context-switch claim went unverified for several sessions. Corrected in `docs/PROBLEM_STATEMENT_COMPLIANCE.md`.
+* **`src/qnx_tracer.c:63` likely has a flag mix-up.** It spawns `tracelogger -f <path> -s 65536 -b 64`, but `-s` is **seconds**, so this asks for 18.2 hours of logging; `-b 64` is the buffer count and matches the default. Runs still terminate because `qnx_tracer_stop()` calls `slay tracelogger`. Not yet corrected.
 * **Blocking UART operations**: *Mitigated.* `uart_adapter_init()` opens the port with `O_NONBLOCK` and sets `VMIN = 0` / `VTIME = 5` (a 0.5 s read timeout), so `read()` cannot starve real-time tasks. If throughput ever requires it, move I/O to a dedicated low-priority helper thread.
 * **Physical Hardware Dependencies**: GPIO markers now have a **verified physical path** (LED observed blinking, `GPLEV` readback confirmed). Remaining caveats: marker wires on header pins 7/11/13 must be soldered **before** the RS485 CAN HAT is mounted, since the HAT covers them; and GPIO 4 is the **TXD3** pin, so confirm nothing on the image claims it before relying on it as a marker. Keep the software mocks enabled automatically when the physical mapping is missing — and treat any `MOCK` result as unproven rather than as a pass.
 * **Marker timing under load**: the 2026-10-07 verification measured a deliberate 200 ms pulse in a test harness. Marker jitter while `BRAKE_CTL` / `ADAS_FUSION` / `DIAG_POLL` are actually running is **not yet characterised**.

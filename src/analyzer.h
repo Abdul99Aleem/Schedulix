@@ -86,6 +86,10 @@ typedef struct {
     double   mean_response_ms;
     double   p50_ms, p95_ms, p99_ms, max_ms;
     double   worst_ms;
+    double   stddev_ms;
+    double   max_minus_p50_ms;
+    double   cpu_utilization_pct;  /* from kernel trace RUNNING states */
+    uint64_t cpu_running_ns;       /* total RUNNING time from kernel trace */
 } per_task_stats_t;
 
 /* Analyzer API */

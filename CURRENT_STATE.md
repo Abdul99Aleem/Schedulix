@@ -23,8 +23,10 @@
 > context-switch claim is now substantiated), GPIO markers on a **second
 > independent board** (0.27 %–0.48 % pulse error, microsecond agreement with
 > board 1), and a clean **S0 baseline** (2,125 records, 0 dropped, 0 misses).
-> Open: load sweep not yet run, so jitter has no meaningful number; CPU
-> utilization is not measured.
+> **Load sweep run 2026-10-08**: Phases A–D implemented; stressor now at prio 22
+> preempts workloads; deadline misses observed on ADAS (prio 15) at high load;
+> ready_wait still 0.00 ms (Phase C worker logic needs fix); CPU utilization
+> fields present but reading 0% (kernel trace workload TIDs absent).
 >
 > **QNX shell gotcha:** the current directory is not searched. Use
 > `./schedulix_can`, never bare `schedulix_can`.
@@ -125,6 +127,20 @@
 5. **Verify UART RX against an external peer**: `/dev/ser1` doubles as the console, so RX must be proven on a second board or with the console detached.
 6. **Add JSON output reporting and clean exit codes** to the noun/verb CLI.
 7. **Write the Qt JSON loader** to replace `MockProvider`.
+
+## 7b. Phases A–D (2026-10-08) — **COMPLETED IN CODE**
+
+| Phase | Task | Status | Notes |
+|-------|------|--------|-------|
+| **A** | Raise stressor priority 20→22 in `stress_generator_start_load_pinned` | ✅ Done | `src/stress_generator.c:147` |
+| **B** | Add `stddev_ms` / `max_minus_p50_ms` to `per_task_stats_t` | ✅ Done | `analyzer.h`, `analyzer.c` |
+| **C** | Separate releaser thread for periodic workloads | ✅ Done* | `workload.c`: `workload_releaser_thread` + worker dequeue-only; **worker still self-enqueues on timeout — fix pending** |
+| **D** | CPU utilization from kernel trace RUNNING states | ✅ Done* | `scheduler_correlator.c` tracks `total_running_ns`; `analyzer.c` computes `cpu_utilization_pct`; **reads 0% — kernel trace lacks workload TIDs** |
+
+*Implemented in code; hardware verification blocked by Phase C worker logic bug and kernel trace TID gap.
+
+### Next hardware verification step
+Fix worker thread in `workload.c` (remove timeout enqueue path, pure dequeue wait) → rebuild → re-run `--sweep`. Expect: `ready_wait > 0`, `preempt > 0`, BRAKE P99 knee visible.
 
 ## 8. Risks
 * **Kernel trace overruns are expected and not fixable by configuration.** `tracelogger` prints `Help, we're not keeping up` because the kernel fills event buffers faster than they can be written out. Raising buffer counts (`-b 512 -k 32`) does **not** help — this is write bandwidth on a 1500 MHz A72, not a misconfiguration. Dropping the process class (`-F3`) does reduce volume (23.8 MB → 10.3 MB). **Consequence: context-switch counts from these captures are a lower bound, not exact. Say so when reporting.** Do not conflate this with the application ring buffer's `dropped 0`, which measures something else entirely.

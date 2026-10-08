@@ -370,35 +370,26 @@ int handle_subcommands(int argc, char *argv[]) {
                 printf("Error parsing trace: %d\n", rc);
                 return 1;
             }
-            /* Show the first 40 rows but report the true totals. Capping the
-             * display at 256 made a 24 MB capture look like it held 256
-             * events, when the parser had stopped early. */
+            /* The parser counts incrementally across the whole file and retains
+             * only the most recent window, so `seen` is the true total and `n` is
+             * just what is available for display. It also locates the state dump
+             * itself, using timestamps that are now reconstructed correctly --
+             * the previous version recomputed the window here with an unsigned
+             * subtraction that underflowed and skipped the wrong region. */
+            uint64_t seen = qnx_kernel_trace_get_events_seen();
             size_t total = qnx_kernel_trace_get_events(NULL, 0);
             KernelTraceEvent *evs = malloc((total ? total : 1) * sizeof(KernelTraceEvent));
             if (!evs) { printf("Out of memory for %zu events\n", total); return 1; }
             size_t n = qnx_kernel_trace_get_events(evs, total);
-            printf("Parsed %zu events.\n", n);
-            if (!qnx_kernel_trace_is_complete()) {
-                printf("NOTE: this .kev holds more events than the parser keeps.\n");
-                printf("      Showing the FIRST %zu. Use a shorter capture for a complete\n", n);
-                printf("      decode:  tracelogger -f /tmp/demo.kev -s 2 -w -F3\n");
+            printf("Parsed %llu events.\n", (unsigned long long)seen);
+            if (seen > (uint64_t)n) {
+                printf("NOTE: retaining the most recent %zu for display; all %llu were counted.\n",
+                       n, (unsigned long long)seen);
             }
             printf("Cycles/sec: %llu\n", (unsigned long long)qnx_kernel_trace_get_cycles_per_sec());
 
-            /* Show rows from AFTER the state dump, which is what the caller
-             * actually wants to see. The snapshot at the head of the file is
-             * noise for this purpose. */
-            size_t dump_end = 0;
-            if (n > 0) {
-                uint64_t t0 = evs[0].timestamp_cycles;
-                size_t i = 1;
-                while (i < n && (evs[i].timestamp_cycles - t0) <= qnx_kernel_trace_dump_burst_cycles()) i++;
-                bool has_create = false;
-                for (size_t k = 0; k < i && k < 4096; k++) {
-                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
-                }
-                dump_end = has_create ? i : 0;
-            }
+            size_t dump_end = qnx_kernel_trace_get_dump_events();
+            if (dump_end > n) dump_end = n; /* dump fell outside the retained ring */
             size_t rows = n - dump_end < 30 ? n - dump_end : 30;
             if (dump_end) {
                 printf("(skipping %zu initial state-dump events)\n\n", dump_end);
@@ -415,80 +406,45 @@ int handle_subcommands(int argc, char *argv[]) {
             }
             if (n > rows) printf("... %zu more events\n", n - rows);
 
-            /* Count context switches, skipping two things that inflate the total:
-             *
-             * 1. The initial system-state dump. _NTO_TRACE_START emits one snapshot
-             *    of every live thread (CREATE/READY pairs, all clustered at the same
-             *    timestamp). Those are not scheduling events, and counting them
-             *    produced ~12,000 "switches" that were really just the snapshot.
-             *    Detection: CREATE events (state 24) appearing at the very start of
-             *    the trace. Skip until the first CREATE.
-             *
-             * 2. Timestamp regressions. A regression means the kernel overwrote an
-             *    in-progress buffer, so per-CPU thread state is no longer
-             *    meaningful across it -- reset, and mark the count unreliable.
-             */
-            /* Locate the _NTO_TRACE_START state dump. It is emitted as one burst: every
-             * live thread reported as CREATE/READY at effectively the same
-             * timestamp, before any real scheduling happens. Scanning for the
-             * first CREATE alone is not enough -- the dump interleaves
-             * RUNNING and INTR events, so CREATE continues for hundreds of
-             * rows. Bound the dump by timestamp instead: it occupies the
-             * opening burst, so walk forward while the timestamp stays within
-             * 1 ms of the first event, then start counting after that. */
-            size_t start = 0;
-            if (n > 0) {
-                uint64_t t0 = evs[0].timestamp_cycles;
-                uint64_t burst = qnx_kernel_trace_dump_burst_cycles();
-                size_t i = 1;
-                while (i < n && (evs[i].timestamp_cycles - t0) <= burst) i++;
-                /* Only treat it as a dump if it looks like one: it should
-                 * contain thread-creation events. Otherwise this is genuine
-                 * scheduling from the first row and we must not skip it. */
-                bool has_create = false;
-                for (size_t k = 0; k < i && k < 4096; k++) {
-                    if (evs[k].event_type == 24 /* STATE_CREATE */) { has_create = true; break; }
+            /* The count comes from the parser, which accumulated it incrementally as
+             * callbacks arrived -- so it covers every event in the file, not just the
+             * retained window. Recomputing it here could only see the last few thousand
+             * events, and did so with a heuristic that detected the wrong failure mode
+             * entirely (see the caveat below). */
+            uint64_t switches = qnx_kernel_trace_get_switches();
+            size_t gaps = qnx_kernel_trace_get_gaps();
+            size_t regressions = qnx_kernel_trace_get_regressions();
+            uint64_t lost_cycles = qnx_kernel_trace_get_dropped_cycles();
+            uint64_t cps = qnx_kernel_trace_get_cycles_per_sec();
+
+            printf("\nContext switches observed: %llu\n", (unsigned long long)switches);
+            printf("  counted across all %llu events, %zu skipped as the _NTO_TRACE_START dump\n",
+                   (unsigned long long)seen, dump_end);
+
+            if (gaps) {
+                /* Per the SAT guide's "Buffer overruns" chapter, the kernel "simply
+                 * drops all events logged for that CPU until that next buffer becomes
+                 * free", and the resumed timestamps "show a discontinuity". Each gap
+                 * is therefore MISSING events, which makes the count a LOWER bound.
+                 *
+                 * The previous code called this an UPPER bound on the grounds that
+                 * blocks were scrambled. That was wrong on both counts: scrambled
+                 * order does not inflate a switch tally, and the documented failure
+                 * mode is loss, which deflates it. */
+                printf("  CAVEAT: %zu per-CPU timestamp discontinuities (buffer overruns).\n", gaps);
+                if (cps) {
+                    printf("  The kernel dropped events on those CPUs; at least %.1f ms of\n",
+                           (double)lost_cycles * 1000.0 / (double)cps);
+                    printf("  that timeline is missing. This is a LOWER BOUND.\n");
+                } else {
+                    printf("  The kernel dropped events on those CPUs. This is a LOWER BOUND.\n");
                 }
-                start = has_create ? i : 0;
-            }
-
-            uint32_t switches = 0;
-            size_t resets = 0;
-            uint32_t cur_tid[MAX_CPUS] = {0};
-            uint64_t prev_cycles = 0;
-            bool have_prev = false;
-            bool ordered = true;
-            for (size_t i = start; i < n; i++) {
-                uint32_t c = evs[i].cpu < MAX_CPUS ? evs[i].cpu : 0;
-                if (have_prev && evs[i].timestamp_cycles < prev_cycles) {
-                    memset(cur_tid, 0, sizeof(cur_tid));
-                    resets++;
-                    ordered = false;
-                }
-                prev_cycles = evs[i].timestamp_cycles;
-                have_prev = true;
-                if (evs[i].event_type == 1 /* STATE_RUNNING */) {
-                    if (cur_tid[c] != 0 && cur_tid[c] != evs[i].tid) switches++;
-                    cur_tid[c] = evs[i].tid;
-                }
-            }
-
-            size_t parser_ooo = qnx_kernel_trace_get_out_of_order();
-            size_t span = n - start;
-
-            printf("\nContext switches observed: %u\n", switches);
-            printf("  %zu events counted, %zu skipped as the _NTO_TRACE_START state dump\n", span, start);
-
-            if (!ordered || parser_ooo) {
-                printf("  CAVEAT: %zu timestamp regressions -- buffer overruns scrambled\n", resets);
-                printf("  block order, so this is an UPPER BOUND, not a measurement.\n");
-                printf("  Reduce volume: tracelogger -f demo.kev -s 1 -w -F1 -F2 -F3 -F6\n");
-            } else if (!qnx_kernel_trace_is_complete()) {
-                printf("  Ordering OK in the decoded prefix, but the .kev held more\n");
-                printf("  events than %d. Switches are a lower bound on the whole trace.\n",
-                       MAX_KERNEL_EVENTS);
+                printf("  Fix at the source: raise -k (kernel buffers per CPU) in qnx_tracer.c.\n");
+            } else if (regressions) {
+                printf("  CAVEAT: %zu backward timestamp steps. The trace is sorted on read,\n", regressions);
+                printf("  so this points at clock-anchor reconstruction, not file ordering.\n");
             } else {
-                printf("  Ordering monotonic across a complete decode -- measurement.\n");
+                printf("  No discontinuities or backward steps -- count is a measurement.\n");
             }
             free(evs);
             return 0;

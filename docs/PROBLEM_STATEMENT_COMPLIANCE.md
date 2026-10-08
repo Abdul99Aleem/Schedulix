@@ -10,7 +10,7 @@ as such.
 - **Legend** — ✅ verified on hardware · 🟡 implemented, not hardware-verified · 🔴 not implemented
 - **Evidence standard** — a claim is ✅ only if it was observed on a running
   board or passes an automated test that exercises the real code path.
-- **Last updated** 2026-10-08
+- **Last updated** 2026-10-08 (Phases A–D implemented in code)
 
 ---
 
@@ -29,8 +29,8 @@ as such.
 | Shared memory | ✅ |
 | Sampling / trace flush | ✅ |
 | Task latency | ✅ |
-| Jitter | 🟡 |
-| CPU utilization | 🟡 |
+| **Jitter (stddev, p99)** | **🟡 Phase B implemented; needs Phase C fix for meaningful data** |
+| **CPU utilization** | **🟡 Phase D implemented; reads 0% — kernel trace lacks workload TIDs** |
 | Deadline misses | ✅ |
 | Context switches | 🟡 |
 | CLI (mandatory deliverable) | ✅ |
@@ -46,10 +46,14 @@ kernel trace **captures** successfully and the `libtraceparser` path has been
 corrected (five defects), but the **context-switch count is not yet a validated
 measurement** — see §4. Treat that row as 🟡, not ✅.
 
-**Still open:** the load sweep has not been run, so **jitter has no meaningful
-number yet** (it is zero at S0 by design). **CPU utilization is not measured** —
-the only value in the tree, `stress_generator_utilization()`, is the load level
-*requested*, not a measurement, and must not be reported as utilization.
+**Load sweep run 2026-10-08 (Phases A–D implemented):** Stressor at prio 22 now
+preempts workloads; ADAS (prio 15) deadline misses at 20%, 70–95% load; BRAKE
+(prio 20) P99 3–9 ms. `ready_wait=0.00` (Phase C worker bug); CPU utilization
+fields present but reading 0% (kernel trace lacks workload TIDs).
+
+**Still open:** **Jitter has no meaningful number** — `ready_wait=0.00` masks
+variance; Phase C worker thread fix needed. **CPU utilization reads 0%** —
+kernel trace decoder only yields PID 1 threads.
 
 ---
 
@@ -169,10 +173,9 @@ including that new event types survive the `EVENT_ONLY` filter.
 | --- | --- | --- | --- |
 | Task latency | ✅ | `analyzer.h` | `response_ns` = finish − release; plus `ready_wait_ns`, `execution_ns`, `blocked_ns`, `preempt_ns` |
 | Deadline misses | ✅ | `analyzer.h` | `slack_ns` = deadline − response, `deadline_miss` flag; regression-tested |
-| Jitter | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; not independently re-verified |
-| CPU utilization | 🟡 | analyzer report | Present; not independently confirmed this session |
+| **Jitter (stddev, p99)** | 🟡 | `analyzer.c` `per_task_stats_t` | **Phase B ✅ implemented** — `stddev_ms`, `max_minus_p50_ms` computed and emitted in JSON/console. **Not meaningful yet** — `ready_wait=0.00` masks variance (Phase C fix needed). |
+| **CPU utilization** | 🟡 | `analyzer.c` `per_task_stats_t` | **Phase D ✅ implemented** — `cpu_utilization_pct`, `cpu_running_ns` from kernel RUNNING states. **Reads 0%** — kernel trace decoder lacks workload TIDs. |
 | **Context switches** | 🟡 | `qnx_tracer.c` → `tracelogger` → `.kev` → `libtraceparser` | **Capture works; parser fixed; count still unverified.** See below. |
-| **Jitter** | 🟡 | `docs/timing-model.md`, p50/p95/p99 in output | Model documented and computed; **zero at S0 by design**, meaningful only under load. Load sweep not yet run. |
 
 ### The context-switch claim — RESOLVED 2026-10-08
 
@@ -314,25 +317,28 @@ to exactly the committed sizes: 148,840 release, 332,808 debug.
 | | Count | Items |
 | --- | --- | --- |
 | ✅ Verified | 13 | Platform, GPIO (2 boards), UART TX, workload execution, trace collector, analyzer, stress generator, shared memory, sampling/flush, latency, deadline misses, CLI, test suite |
-| 🟡 Implemented, unverified | 4 | **Context switches** (capture + decode verified, count not validated), jitter (no meaningful number until the sweep runs), CPU utilization (not measured at all), UART RX as trigger |
+| 🟡 Implemented, unverified | 4 | **Context switches** (capture + decode verified, count not validated), **Jitter stddev** (Phase B implemented; needs Phase C fix for meaningful data), **CPU utilization** (Phase D implemented; reads 0% — kernel trace lacks workload TIDs), UART RX as trigger |
 | 🔴 Not implemented / blocked | 3 | CAN on real bus, `qnx_can_adapter.c`, Qt data path |
 
 ### Critical path to completion
 
-1. **Run the load sweep** — `experiment run S1:<pct>` at 20/35/50/65/80/95. The
-   only source of meaningful jitter, and the headline artifact. **Save
+1. **Fix Phase C worker bug** — remove timeout enqueue in `workload_thread()`
+   (`src/workload.c`). Pure dequeue wait until `pending_releases > 0`.
+   Then re-run `--sweep`. Expect: `ready_wait > 0`, `preempt > 0`, BRAKE P99 knee.
+2. **Run the load sweep** — `experiment run S1:<pct>` at 20/35/50/65/80/95.
+   The only source of meaningful jitter, and the headline artifact. **Save
    `analysis_s1.json` after each run: the filenames are identical every time and
    overwrite.**
-2. **Qt JSON loader** — not hardware-gated, fully testable now. Removes the
+3. **Qt JSON loader** — not hardware-gated, fully testable now. Removes the
    fabricated-data problem from the primary deliverable's screenshots. Requires
-   adding CPU-utilization fields to `analyzer_write_json`, which do not exist yet.
-3. ~~Resolve the context-switch claim~~ — **done 2026-10-08**, 24 MB capture.
-4. **Deploy the authoritative build** — the binary currently on the board is
+   CPU-utilization fields in `analyzer_write_json` (now exist from Phase D).
+4. ~~Resolve the context-switch claim~~ — **done 2026-10-08**, 24 MB capture.
+5. **Deploy the authoritative build** — the binary currently on the board is
    150,520 bytes with unknown provenance; the real build is 333,560 bytes.
    Deploy from `build/`, never `deploy/`.
-5. **Enable `qnx_can_adapter.c`** — swap in the `.stub`, fix the `/dev/can1`
+6. **Enable `qnx_can_adapter.c`** — swap in the `.stub`, fix the `/dev/can1`
    paths, add to the Makefile. Depends on the CAN driver starting.
-5. **Confirm Pi 5 support** — `gpio test` on actual Pi 5 hardware. The marker
+7. **Confirm Pi 5 support** — `gpio test` on actual Pi 5 hardware. The marker
    base is hard-coded; whether BCM2712 keeps the same map is unverified.
 
 ---

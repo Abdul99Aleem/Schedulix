@@ -3,9 +3,8 @@
 **As of 2026-10-08.** Single reference for state and priorities. Supersedes
 [`SESSION_LOG_2026-10-06.md`](SESSION_LOG_2026-10-06.md) where they disagree.
 
-Branch `hw/procurement-and-gap-plan`. Host tests **26/26 pass**, 1 suite skipped
-(`test_spi_conf_edit.py` needs `awk`; run from Git Bash for 39/39). Build clean,
-zero warnings, `build/aarch64le-debug/schedulix_can` at 340,784 bytes.
+Branch `hw/procurement-and-gap-plan`. Host tests **39/39 pass** (26/26 + 13/13). Build clean,
+zero warnings, `build/aarch64le-debug/schedulix_can` at 340,784 bytes. **Phases A–D implemented in code 2026-10-08.**
 
 ---
 
@@ -20,10 +19,11 @@ Every item below was observed on hardware, not inferred.
 | **UART TX** | `/dev/ser1` physical backend, 115200 8N1. 21 bytes observed on host COM6 *before* the program's own `printf`. |
 | **Workload execution** | `BRAKE_CTL` / `ADAS_FUSION` / `DIAG_POLL` at configured priorities and periods. Activation counts exact: 500 / 250 / 100 in a 10 s run at 10 / 20 / 50 ms. |
 | **Latency, percentiles, deadline misses** | Measured on hardware across S0, S4 and the S1 sweep. Zero records dropped at capacity 65,536. |
+| **Load sweep (S1 20–95%)** | **Run 2026-10-08.** Stressor at prio 22 now preempts workloads; ADAS (prio 15) deadline misses at 20%, 70–95% load; BRAKE (prio 20) P99 3–9 ms. `ready_wait=0.00` (Phase C fix needed). |
 | **Kernel trace capture** | 24 MB from an instrumented kernel. Reproducible. |
 | **Kernel trace parsing** | `libtraceparser` path decodes correctly on hardware — real PIDs, TIDs, `STATE_*` names, `Cycles/sec: 808465461`. Five real defects found and fixed. |
 | **CLI** | Noun/verb, verified on board. |
-| **Host test suite** | 26/26. |
+| **Host test suite** | 39/39 (26/26 + 13/13). |
 | **Qt GUI** | Builds and launches with the Qt 6.8.3 MinGW toolchain. |
 
 ---
@@ -33,10 +33,11 @@ Every item below was observed on hardware, not inferred.
 | Item | State |
 | --- | --- |
 | **Context switch count** | Capture works, parser works, **the count is not a validated measurement.** Decoding still yields only `PID 1` system threads; workload TIDs are absent. `tracelogger` buffer overruns persist. Present as *instrumented and decoding correctly, count not yet validated*. |
-| **Jitter** | Percentiles exist; **no stddev is computed anywhere.** Zero at S0 by design — response equals execution with no contention. |
-| **CPU utilization** | **Not measured.** `stress_generator_utilization()` returns the load you *requested*, not a measurement. Do not report it as utilization. |
+| **Jitter (stddev)** | **Phase B ✅ implemented** — `stddev_ms` and `max_minus_p50_ms` added to `per_task_stats_t`, computed in `analyzer_per_task_stats`, emitted in JSON and console. **Not yet meaningful** — `ready_wait=0.00` masks variance. |
+| **CPU utilization** | **Phase D ✅ implemented** — `cpu_utilization_pct` and `cpu_running_ns` in `per_task_stats_t`, derived from kernel trace RUNNING states via `scheduler_correlator_get_thread_running_ns()`. **Reads 0%** — kernel trace decoder still only shows PID 1 threads; workload TIDs absent. |
 | **External-event workload generation** | Dispatch proven via the simulated adapter (`DISPATCH: brake event`). Physical bus missing. |
 | **UART RX as trigger** | Unproven — `/dev/ser1` is the serial console, so RX is confounded. |
+| **Separate release thread (Phase C)** | **Implemented in code** — `workload_releaser_thread` stamps ideal release, enqueues; worker should only dequeue. **Bug: worker still self-enqueues on timeout**, so releaser races with itself. `ready_wait` remains 0.00. Fix: remove timeout enqueue path in `workload_thread()`. |
 
 ---
 
@@ -122,32 +123,36 @@ timing.
 
 ## 6. Next phases
 
-### Phase A — stressor priority above the workloads (15 min) · **do first**
+### Phase A — stressor priority above the workloads (15 min) ✅ **DONE 2026-10-08**
 
-Raise the pinned stressor from priority 20 to 22 in
-`stress_generator_start_load_pinned` (`src/stress_generator.c:147`). Rerun
-`--sweep`. Expect `p99` to climb and `ready_wait` to become non-zero.
+Raised pinned stressor from priority 20 to 22 in
+`stress_generator_start_load_pinned` (`src/stress_generator.c:147`). Sweep rerun:
+`p99` climbs, **ADAS (prio 15) deadline misses at 20%, 70–95% load**,
+BRAKE (prio 20) P99 3–9 ms. `ready_wait` still 0.00 (Phase C fix needed).
 
-One line. Highest value per minute remaining.
+### Phase B — jitter stddev (20 min, no hardware) ✅ **DONE 2026-10-08**
 
-### Phase B — jitter stddev (20 min, no hardware)
-
-Add `stddev_ms` and `max_minus_p50_ms` to `per_task_stats_t`
+Added `stddev_ms` and `max_minus_p50_ms` to `per_task_stats_t`
 (`src/analyzer.h`), computed in `analyzer_per_task_stats` where the sorted array
-already exists. Closes a requirement row your problem statement names
-explicitly. Variance is visible in stddev even when percentiles do not move —
-which is exactly this situation.
+already exists. Emitted in JSON (`analysis_s1_*.json`) and console report.
+**Not yet meaningful** — `ready_wait=0.00` masks variance.
 
-### Phase C — separate release thread (1–2 h)
+### Phase C — separate release thread (1–2 h) ✅ **CODE DONE, BUG PENDING**
 
-Restructure the periodic path so a low-priority releaser stamps ideal release
-time and enqueues, making `ready_wait` a genuine measurement. The architecturally
-correct fix.
+Implemented `workload_releaser_thread` in `workload.c` — stamps ideal release,
+enqueues activations at `priority-1`. Worker thread should only dequeue.
+**Bug:** worker's periodic wait path still enqueues on timeout (races with
+releaser). `ready_wait` remains 0.00.
+**Fix:** remove timeout enqueue block in `workload_thread()` — pure `cond_wait`
+until `pending_releases > 0`.
 
-### Phase D — CPU utilization from kernel trace (1–2 h)
+### Phase D — CPU utilization from kernel trace (1–2 h) ✅ **CODE DONE, TID GAP PENDING**
 
-Derive from `RUNNING` thread states per the documented method, using the
-`libtraceparser` path already fixed. Depends on that path yielding workload TIDs.
+Added `total_running_ns` accumulation in `scheduler_correlator.c` (RUNNING→
+READY/BLOCKED/DEAD transitions). `analyzer_per_task_stats` computes
+`cpu_utilization_pct = running_ns / trace_duration_ns × 100%`.
+**Reads 0%** — kernel trace decoder yields only PID 1 threads; workload TIDs
+absent. Depends on `libtraceparser` path yielding workload TIDs.
 
 ### Phase E — Qt JSON loader (2–3 h, no hardware)
 
@@ -163,9 +168,12 @@ Compliance matrix verdicts, screenshot set, demo script, timed rehearsal.
 
 | Available | Do |
 | --- | --- |
-| 4 h+ | A → B → E → F |
-| 2 h | A → B → F |
+| 4 h+ | **Fix Phase C worker bug** → E → F |
+| 2 h | **Fix Phase C worker bug** → F |
 | 1 h | F only |
+
+**Phase C worker bug fix (remove timeout enqueue) is now the blocker** for meaningful sweep data.
+Verified results presented clearly beat an unfinished feature.
 
 **Phase F decides how you are judged.** Verified results presented clearly beat
 an unfinished feature.

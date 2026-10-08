@@ -63,17 +63,25 @@ int qnx_tracer_start(const char *kev_path, uint32_t flags){
     /* -s is SECONDS per the utilities reference, so the old "-s 65536" asked for
      * 18.2 hours of tracing and only qnx_tracer_stop()'s slay ever ended it.
      *
-     * The class filters matter more. In non-daemon mode tracelogger enables ALL
-     * classes, so kernel-call and interrupt traffic swamped the capture: the
-     * buffer overran on every run and the workload's own thread events were
-     * pushed past the parser's 32768-event window, so decoding showed only
-     * PID 1 boot threads. Keeping thread + system is all context-switch
-     * counting and the correlator need.
+     * -k and -D are what actually control data loss, and neither was ever set.
      *
-     * -w (wide) is deliberate: fast mode drops the data payload the correlator
-     * reads for PID/TID. -b 128 raises the flush buffer headroom. */
-    char *argv[] = {"tracelogger", "-f", g_kev, "-s", "30", "-w",
-                    "-F1", "-F2", "-F3", "-F6", "-b", "128", NULL};
+     * Per the SAT guide's "Buffer overruns" chapter, when a kernel ring buffer
+     * overruns "the kernel simply drops all events logged for that CPU until
+     * that next buffer becomes free", and one ring exists per CPU. So an overrun
+     * silently deletes a whole CPU's slice of the trace -- which is why the
+     * workload's own threads were missing from the capture while the low-rate
+     * PID 1 activity survived. That loss happens upstream of class filtering,
+     * which is why adding -F filters appeared to change nothing.
+     *
+     * -k is buffers PER CPU in kernel space. The documented default is 8 x 16 KB
+     * = 128 KB per CPU, ~506 KB across 4 CPUs -- the entire reservoir the kernel
+     * has to absorb bursts in. -b is a different thing entirely: staging
+     * buffers inside tracelogger, which do not slow the kernel down.
+     *
+     * 256 buffers/CPU is 2 MB per CPU, ~8 MB total on an 8 GB board. */
+    char *argv[] = {"tracelogger", "-f", g_kev, "-s", "30",
+                    "-F1", "-F2", "-F3", "-F6", "-F7",
+                    "-k", "256", "-D", "1", "-b", "128", NULL};
     extern char **environ;
     int rc = posix_spawnp(&pid, "tracelogger", NULL, NULL, argv, environ);
     if (rc != 0) {

@@ -144,7 +144,7 @@ int stress_generator_start_load_pinned(int percent, int cpu){
     if(percent>0 && exec==0) exec=1;
     stress_worker_config_t cfg={0};
     snprintf(cfg.name,sizeof(cfg.name),"STRESS_%d_P%d",percent,cpu);
-    cfg.priority=20; // S1-B same-CPU: same as BRAKE (20) to force READY queue, or 22 to preempt
+    cfg.priority=22; // S1-B same-CPU: above BRAKE (20) to genuinely preempt and force READY wait
     cfg.cpu_affinity=cpu;
     cfg.period_ms=10;
     cfg.exec_ms=exec;

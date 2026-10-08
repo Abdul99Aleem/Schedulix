@@ -74,6 +74,7 @@ size_t analyzer_correlate(activation_analysis_t **out, size_t *out_n) {
     
     // Attempt QNX kernel trace parsing
     int has_kernel = 0;
+    int has_kernel_lossy = 0;
     const char *kev_path = "/tmp/schedulix.kev";
     FILE *kf = fopen(kev_path, "rb");
     if (kf) {
@@ -88,6 +89,18 @@ size_t analyzer_correlate(activation_analysis_t **out, size_t *out_n) {
                     free(evs);
                     has_kernel = 1;
                 }
+            }
+            /* The correlator runs on the retained window, but whether the
+             * kernel trace can be treated as evidence at all depends on the
+             * whole file, which only the incremental counters see. */
+            if (!qnx_kernel_trace_is_lossless()) {
+                fprintf(stderr,
+                        "[analyzer] kernel trace is lossy: %zu CPU discontinuities, "
+                        "%zu backward steps. Correlator input is the retained window "
+                        "only; treat attribution as EVIDENCE_INFERRED.\n",
+                        qnx_kernel_trace_get_gaps(),
+                        qnx_kernel_trace_get_regressions());
+                has_kernel_lossy = 1;
             }
         }
     }
@@ -227,13 +240,13 @@ size_t analyzer_correlate(activation_analysis_t **out, size_t *out_n) {
                 );
                 if (overlap_found == 0) {
                     a->root_cause = RC_HIGH_PRIO_PREEMPT;
-                    a->evidence_level = qnx_kernel_trace_is_complete() ? EVIDENCE_CONFIRMED : EVIDENCE_INFERRED;
+                    a->evidence_level = (has_kernel && !has_kernel_lossy) ? EVIDENCE_CONFIRMED : EVIDENCE_INFERRED;
                     a->interfering_pid = int_pid;
                     a->interfering_tid = int_tid;
                     a->interfering_priority = 22; // default higher priority
                     a->preempt_ns = over_end - over_start;
                     a->preemptions = 1;
-                    a->confidence = qnx_kernel_trace_is_complete() ? 95 : 75;
+                    a->confidence = (has_kernel && !has_kernel_lossy) ? 95 : 75;
                     rca_resolved = 1;
                 }
             }
@@ -283,14 +296,38 @@ int analyzer_per_task_stats(const activation_analysis_t *acts, size_t n, per_tas
     // unique tasks
     uint32_t tids[16]; size_t nt=0;
     for(size_t i=0;i<n;i++){ int found=0; for(size_t k=0;k<nt;k++) if(tids[k]==acts[i].task_id) {found=1;break;} if(!found) tids[nt++]=acts[i].task_id; }
+    
+    /* Get trace time window from kernel trace */
+    uint64_t trace_start_ns = scheduler_correlator_get_trace_start_ns();
+    uint64_t trace_end_ns = scheduler_correlator_get_trace_end_ns();
+    uint64_t trace_duration_ns = (trace_end_ns > trace_start_ns) ? (trace_end_ns - trace_start_ns) : 0;
+    
     for(size_t ti=0;ti<nt;ti++){
         uint32_t tid=tids[ti];
         uint64_t *vals = malloc(n*sizeof(uint64_t));
         size_t vn=0; uint64_t misses=0; double sum=0; uint64_t worst=0;
+        uint32_t task_pid = 0, task_tid = 0;
+        
         for(size_t i=0;i<n;i++) if(acts[i].task_id==tid){
             uint64_t resp = acts[i].response_ns;
             vals[vn++]=resp; sum+=resp/1e6; if(resp>worst) worst=resp; if(acts[i].deadline_miss) misses++;
+            if (task_pid == 0) {
+                task_pid = acts[i].interfering_pid; /* Not the right field, need to find PID/TID from workload */
+                task_tid = acts[i].interfering_tid;
+            }
         }
+        
+        /* Find the actual PID/TID for this workload task from the workload table */
+        extern workload_context_t g_workloads[];
+        extern uint32_t g_workload_count;
+        for (uint32_t w = 0; w < g_workload_count; w++) {
+            if (g_workloads[w].task_id == tid) {
+                task_pid = g_workloads[w].pid;
+                task_tid = g_workloads[w].tid;
+                break;
+            }
+        }
+        
         qsort(vals,vn,sizeof(uint64_t),cmp_u64);
         per_task_stats_t *s=&stats[ti];
         s->task_id=tid; s->activations=vn; s->misses=misses; s->miss_ratio= vn? (double)misses/vn:0;
@@ -300,6 +337,31 @@ int analyzer_per_task_stats(const activation_analysis_t *acts, size_t n, per_tas
         s->p99_ms = vn? vals[vn*99/100]/1e6:0;
         s->max_ms = vn? vals[vn-1]/1e6:0;
         s->worst_ms = worst/1e6;
+
+        if (vn > 0) {
+            double mean = s->mean_response_ms;
+            double sum_sq = 0.0;
+            for (size_t i = 0; i < vn; i++) {
+                double val_ms = vals[i] / 1e6;
+                double diff = val_ms - mean;
+                sum_sq += diff * diff;
+            }
+            s->stddev_ms = sqrt(sum_sq / vn);
+            s->max_minus_p50_ms = s->max_ms - s->p50_ms;
+        } else {
+            s->stddev_ms = 0.0;
+            s->max_minus_p50_ms = 0.0;
+        }
+        
+        /* Compute CPU utilization from kernel trace RUNNING states */
+        if (trace_duration_ns > 0 && task_pid > 0 && task_tid > 0) {
+            s->cpu_running_ns = scheduler_correlator_get_thread_running_ns(task_pid, task_tid);
+            s->cpu_utilization_pct = (double)s->cpu_running_ns * 100.0 / (double)trace_duration_ns;
+        } else {
+            s->cpu_running_ns = 0;
+            s->cpu_utilization_pct = 0.0;
+        }
+        
         free(vals);
     }
     *stats_n=nt;
@@ -318,8 +380,8 @@ int analyzer_print_report(const activation_analysis_t *acts, size_t n, const tra
     analyzer_per_task_stats(acts,n,stats,&ns);
     for(size_t i=0;i<ns;i++){
         per_task_stats_t *s=&stats[i];
-        printf("Task %u: act %llu misses %llu (%.2f%%) mean %.2f p50 %.2f p95 %.2f p99 %.2f max %.2f\n",
-            s->task_id, (unsigned long long)s->activations,(unsigned long long)s->misses,s->miss_ratio*100, s->mean_response_ms,s->p50_ms,s->p95_ms,s->p99_ms,s->max_ms);
+        printf("Task %u: act %llu misses %llu (%.2f%%) mean %.2f p50 %.2f p95 %.2f p99 %.2f max %.2f stddev %.2f max-p50 %.2f cpu%% %.2f\n",
+            s->task_id, (unsigned long long)s->activations,(unsigned long long)s->misses,s->miss_ratio*100, s->mean_response_ms,s->p50_ms,s->p95_ms,s->p99_ms,s->max_ms,s->stddev_ms,s->max_minus_p50_ms,s->cpu_utilization_pct);
     }
     // highlight a miss
     for(size_t i=0;i<n;i++) if(acts[i].deadline_miss){
@@ -344,8 +406,8 @@ int analyzer_write_json(const char *path, const activation_analysis_t *acts, siz
     fprintf(f,"  \"trace\": {\"records\":%zu,\"dropped\":%llu},\n", n, hdr?(unsigned long long)hdr->records_dropped:0);
     fprintf(f,"  \"per_task\": [\n");
     for(size_t i=0;i<ns;i++){
-        fprintf(f,"    {\"task_id\":%u,\"activations\":%llu,\"misses\":%llu,\"miss_ratio\":%.4f,\"mean_ms\":%.3f,\"p50\":%.3f,\"p95\":%.3f,\"p99\":%.3f,\"max\":%.3f}%s\n",
-            stats[i].task_id,(unsigned long long)stats[i].activations,(unsigned long long)stats[i].misses,stats[i].miss_ratio,stats[i].mean_response_ms,stats[i].p50_ms,stats[i].p95_ms,stats[i].p99_ms,stats[i].max_ms, i+1<ns?",":"");
+        fprintf(f,"    {\"task_id\":%u,\"activations\":%llu,\"misses\":%llu,\"miss_ratio\":%.4f,\"mean_ms\":%.3f,\"p50\":%.3f,\"p95\":%.3f,\"p99\":%.3f,\"max\":%.3f,\"stddev\":%.3f,\"max_minus_p50\":%.3f,\"cpu_utilization_pct\":%.2f,\"cpu_running_ns\":%llu}%s\n",
+            stats[i].task_id,(unsigned long long)stats[i].activations,(unsigned long long)stats[i].misses,stats[i].miss_ratio,stats[i].mean_response_ms,stats[i].p50_ms,stats[i].p95_ms,stats[i].p99_ms,stats[i].max_ms,stats[i].stddev_ms,stats[i].max_minus_p50_ms,stats[i].cpu_utilization_pct,(unsigned long long)stats[i].cpu_running_ns, i+1<ns?",":"");
     }
     fprintf(f,"  ],\n");
     // 5 questions

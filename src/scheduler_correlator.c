@@ -23,11 +23,15 @@ typedef struct {
     uint32_t last_cpu;
     uint32_t last_state; /* 1=RUNNING, 2=READY, 3=BLOCKED, 4=DEAD */
     uint64_t state_change_ns;
+    uint64_t total_running_ns;  /* Accumulated RUNNING time */
+    uint64_t last_running_start_ns; /* When current RUNNING segment started */
 } thread_state_t;
 
 #define MAX_TRACKED_THREADS 2048
 static thread_state_t g_threads[MAX_TRACKED_THREADS];
 static size_t g_thread_count = 0;
+static uint64_t g_trace_start_ns = 0;
+static uint64_t g_trace_end_ns = 0;
 
 static thread_state_t* find_or_create_thread(uint32_t pid, uint32_t tid) {
     for (size_t i = 0; i < g_thread_count; i++) {
@@ -52,6 +56,8 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
     g_cswitches = 0;
     g_preemptions = 0;
     g_thread_count = 0;
+    g_trace_start_ns = 0;
+    g_trace_end_ns = 0;
     memset(g_cpus, 0, sizeof(g_cpus));
     memset(g_threads, 0, sizeof(g_threads));
 
@@ -60,12 +66,29 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
         uint32_t cpu = ev->cpu;
         if (cpu >= MAX_CPUS) cpu = 0;
 
+        /* Track trace time bounds */
+        if (g_trace_start_ns == 0 || ev->timestamp_ns < g_trace_start_ns) {
+            g_trace_start_ns = ev->timestamp_ns;
+        }
+        if (ev->timestamp_ns > g_trace_end_ns) {
+            g_trace_end_ns = ev->timestamp_ns;
+        }
+
         thread_state_t *t = find_or_create_thread(ev->pid, ev->tid);
 
         if (ev->event_type == 1 /* RUNNING */) {
             cpu_state_t *cpu_state = &g_cpus[cpu];
             uint32_t prev_pid = cpu_state->current_pid;
             uint32_t prev_tid = cpu_state->current_tid;
+
+            /* Accumulate RUNNING time for the thread that was preempted */
+            if (prev_tid != 0 && (prev_pid != ev->pid || prev_tid != ev->tid)) {
+                thread_state_t *prev_t = find_or_create_thread(prev_pid, prev_tid);
+                if (prev_t && prev_t->last_running_start_ns > 0) {
+                    prev_t->total_running_ns += ev->timestamp_ns - prev_t->last_running_start_ns;
+                    prev_t->last_running_start_ns = 0;
+                }
+            }
 
             if (prev_pid != ev->pid || prev_tid != ev->tid) {
                 // If it is not the first owner of this CPU, count context switch
@@ -97,9 +120,17 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
                 t->last_cpu = cpu;
                 t->last_state = 1; // RUNNING
                 t->state_change_ns = ev->timestamp_ns;
+                if (t->last_running_start_ns == 0) {
+                    t->last_running_start_ns = ev->timestamp_ns;
+                }
             }
         } 
         else if (ev->event_type == 2 /* READY */) {
+            /* Accumulate RUNNING time for the thread that was preempted */
+            if (t && t->last_state == 1 && t->last_running_start_ns > 0) {
+                t->total_running_ns += ev->timestamp_ns - t->last_running_start_ns;
+                t->last_running_start_ns = 0;
+            }
             // Preemption verification: if it went from RUNNING directly to READY
             if (t && t->last_state == 1) {
                 g_preemptions++;
@@ -125,6 +156,11 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
         else if (ev->event_type == 13 /* STATE_MUTEX */
               || ev->event_type == 14 /* STATE_CONDVAR */
               || ev->event_type == 17 /* STATE_SEM */) {
+            /* Accumulate RUNNING time for the thread that is now blocking */
+            if (t && t->last_state == 1 && t->last_running_start_ns > 0) {
+                t->total_running_ns += ev->timestamp_ns - t->last_running_start_ns;
+                t->last_running_start_ns = 0;
+            }
             if (t) {
                 t->last_state = 3; // BLOCKED
                 t->state_change_ns = ev->timestamp_ns;
@@ -142,6 +178,11 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
             }
         } 
         else if (ev->event_type == 25 /* STATE_DESTROY; STATE_CREATE is 24 */) {
+            /* Accumulate any remaining RUNNING time */
+            if (t && t->last_state == 1 && t->last_running_start_ns > 0) {
+                t->total_running_ns += ev->timestamp_ns - t->last_running_start_ns;
+                t->last_running_start_ns = 0;
+            }
             if (t) {
                 t->last_state = 4; // DEAD
                 t->state_change_ns = ev->timestamp_ns;
@@ -157,6 +198,15 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
                 f->prev_pid = 0;
                 f->prev_tid = 0;
             }
+        }
+    }
+
+    /* Accumulate RUNNING time for threads still RUNNING at trace end */
+    for (size_t i = 0; i < g_thread_count; i++) {
+        thread_state_t *t = &g_threads[i];
+        if (t->last_state == 1 && t->last_running_start_ns > 0) {
+            t->total_running_ns += g_trace_end_ns - t->last_running_start_ns;
+            t->last_running_start_ns = 0;
         }
     }
 
@@ -226,4 +276,21 @@ int scheduler_correlator_find_preemption_overlap(uint32_t target_pid, uint32_t t
     }
 
     return -1;
+}
+
+uint64_t scheduler_correlator_get_thread_running_ns(uint32_t pid, uint32_t tid) {
+    for (size_t i = 0; i < g_thread_count; i++) {
+        if (g_threads[i].pid == pid && g_threads[i].tid == tid) {
+            return g_threads[i].total_running_ns;
+        }
+    }
+    return 0;
+}
+
+uint64_t scheduler_correlator_get_trace_start_ns(void) {
+    return g_trace_start_ns;
+}
+
+uint64_t scheduler_correlator_get_trace_end_ns(void) {
+    return g_trace_end_ns;
 }

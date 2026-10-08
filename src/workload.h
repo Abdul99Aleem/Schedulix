@@ -36,6 +36,11 @@ typedef struct {
     _Atomic uint32_t pending_head;
     _Atomic uint32_t pending_tail;
 
+    /* Separate releaser thread for genuine ready_wait measurement (Phase C) */
+    pthread_t releaser_thread;
+    _Atomic int      releaser_running;
+    int              releaser_priority;  /* lower than workload priority */
+
     /* stats for Phase5 */
     uint64_t activations_started;
     uint64_t activations_finished;

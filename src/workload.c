@@ -45,6 +45,52 @@ static uint64_t mono_ns(void){
     struct timespec ts; clock_gettime(CLOCK_MONOTONIC,&ts); return (uint64_t)ts.tv_sec*1000000000ULL+ts.tv_nsec;
 }
 
+static void* workload_releaser_thread(void *arg){
+    workload_context_t *ctx = (workload_context_t*)arg;
+    const workload_config_t *cfg = ctx->config;
+    
+    /* Set releaser priority lower than workload to avoid preempting it */
+    struct sched_param sp; sp.sched_priority = ctx->releaser_priority;
+    pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
+    
+    uint64_t period = cfg->period_ns;
+    uint64_t t0 = 0;
+    struct timespec start_ts;
+    clock_gettime(CLOCK_MONOTONIC, &start_ts);
+    t0 = (uint64_t)start_ts.tv_sec * 1000000000ULL + start_ts.tv_nsec;
+    uint32_t act_idx = 0;
+    
+    while (!atomic_load(&ctx->should_stop)) {
+        uint64_t next_release_ns = t0 + (uint64_t)(act_idx + 1) * period;
+        struct timespec ts;
+        ts.tv_sec = next_release_ns / 1000000000ULL;
+        ts.tv_nsec = next_release_ns % 1000000000ULL;
+        
+        pthread_mutex_lock(&ctx->lock);
+        while (atomic_load(&ctx->pending_releases) == 0 && !atomic_load(&ctx->should_stop)) {
+            int rc = pthread_cond_timedwait(&ctx->cond, &ctx->lock, &ts);
+            if (rc == ETIMEDOUT) {
+                uint32_t pact = atomic_fetch_add(&ctx->activation_cnt, 1) + 1;
+                uint64_t now = mono_ns();
+                uint32_t tail = atomic_load(&ctx->pending_tail);
+                ctx->pending_acts[tail % WORKLOAD_PENDING_MAX] = pact;
+                ctx->pending_corrs[tail % WORKLOAD_PENDING_MAX] = pact;
+                ctx->pending_release_ts[tail % WORKLOAD_PENDING_MAX] = now;
+                atomic_store(&ctx->pending_tail, tail + 1);
+                atomic_fetch_add(&ctx->pending_releases, 1);
+                
+                uint64_t ideal_release = t0 + (uint64_t)act_idx * period;
+                uint64_t release_offset = now > ideal_release ? now - ideal_release : 0;
+                trace_emit(TRACE_WORKLOAD_RELEASE, ctx->task_id, pact, pact, ideal_release, release_offset);
+                act_idx++;
+                break;
+            }
+        }
+        pthread_mutex_unlock(&ctx->lock);
+    }
+    return NULL;
+}
+
 void workload_busy_exec_ns(uint64_t target_ns){
     uint64_t start = mono_ns();
     volatile uint64_t dummy=0;
@@ -70,77 +116,48 @@ static void* workload_thread(void *arg){
 #endif
     ctx->pid = getpid();
     ctx->tid = pthread_self();
-    uint64_t period = cfg->period_ns;
     uint64_t exec   = g_exec_overrides[ctx - g_workloads] ? g_exec_overrides[ctx - g_workloads] : cfg->target_exec_ns;
-    uint64_t t0 = 0;
-    uint32_t act_idx = 0;
-    struct timespec start_ts;
-    clock_gettime(CLOCK_MONOTONIC, &start_ts);
-    t0 = (uint64_t)start_ts.tv_sec * 1000000000ULL + start_ts.tv_nsec;
 
     while (!atomic_load(&ctx->should_stop)) {
         int has_release = 0;
         uint32_t act = 0;
         uint32_t corr = 0;
         uint64_t t_release = 0;
-        if (period > 0) {
-            uint64_t next_release_ns = t0 + (uint64_t)(act_idx + 1) * period;
-            struct timespec ts;
-            ts.tv_sec = next_release_ns / 1000000000ULL;
-            ts.tv_nsec = next_release_ns % 1000000000ULL;
-            pthread_mutex_lock(&ctx->lock);
-            while (atomic_load(&ctx->pending_releases) == 0 && !atomic_load(&ctx->should_stop)) {
+        
+        pthread_mutex_lock(&ctx->lock);
+        while (atomic_load(&ctx->pending_releases) == 0 && !atomic_load(&ctx->should_stop)) {
+            if (cfg->period_ns > 0) {
+                /* Periodic: wait with timeout to allow for periodic releases from releaser thread */
+                struct timespec ts;
+                uint64_t now = mono_ns();
+                /* Calculate next periodic release time based on ideal schedule */
+                uint64_t elapsed = now - ctx->pending_release_ts[(atomic_load(&ctx->pending_head)) % WORKLOAD_PENDING_MAX];
+                uint64_t next_period = cfg->period_ns - (elapsed % cfg->period_ns);
+                ts.tv_sec = (now + next_period) / 1000000000ULL;
+                ts.tv_nsec = (now + next_period) % 1000000000ULL;
                 int rc = pthread_cond_timedwait(&ctx->cond, &ctx->lock, &ts);
                 if (rc == ETIMEDOUT) {
-                    uint32_t pact = atomic_fetch_add(&ctx->activation_cnt, 1) + 1;
-                    uint64_t now = mono_ns();
-                    uint32_t tail = atomic_load(&ctx->pending_tail);
-                    ctx->pending_acts[tail % WORKLOAD_PENDING_MAX] = pact;
-                    ctx->pending_corrs[tail % WORKLOAD_PENDING_MAX] = pact;
-                    ctx->pending_release_ts[tail % WORKLOAD_PENDING_MAX] = now;
-                    atomic_store(&ctx->pending_tail, tail + 1);
-                    atomic_fetch_add(&ctx->pending_releases, 1);
-                    
-                    uint64_t ideal_release = t0 + (uint64_t)act_idx * period;
-                    uint64_t release_offset = now > ideal_release ? now - ideal_release : 0;
-                    trace_emit(TRACE_WORKLOAD_RELEASE, ctx->task_id, pact, pact, ideal_release, release_offset);
-                    /* READY deliberately not emitted here -- see the note at
-                     * the dispatch point in the worker loop below. */
-                    act_idx++;
-                    has_release = 1;
-                    break;
+                    /* Timeout - the releaser thread should have enqueued by now, continue to check queue */
+                    continue;
                 }
+            } else {
+                /* Event-driven: wait indefinitely */
+                pthread_cond_wait(&ctx->cond, &ctx->lock);
             }
-            if (atomic_load(&ctx->pending_releases) > 0) {
-                uint32_t head = atomic_load(&ctx->pending_head);
-                act = ctx->pending_acts[head % WORKLOAD_PENDING_MAX];
-                corr = ctx->pending_corrs[head % WORKLOAD_PENDING_MAX];
-                t_release = ctx->pending_release_ts[head % WORKLOAD_PENDING_MAX];
-                atomic_store(&ctx->pending_head, head + 1);
-                atomic_fetch_sub(&ctx->pending_releases, 1);
-                has_release = 1;
-                act_idx++;
-            }
-            pthread_mutex_unlock(&ctx->lock);
-            if (!has_release && atomic_load(&ctx->should_stop)) break;
-            if (!has_release) continue;
-            // for periodic timeout path, act/corr/t_release already set via queue pop
-            // for event-driven, they were set via pop as well
-        } else {
-            pthread_mutex_lock(&ctx->lock);
-            while (atomic_load(&ctx->pending_releases)==0 && !atomic_load(&ctx->should_stop))
-                pthread_cond_wait(&ctx->cond,&ctx->lock);
-            if (atomic_load(&ctx->should_stop)) { pthread_mutex_unlock(&ctx->lock); break; }
+        }
+        if (atomic_load(&ctx->should_stop)) { pthread_mutex_unlock(&ctx->lock); break; }
+        if (atomic_load(&ctx->pending_releases) > 0) {
             uint32_t head = atomic_load(&ctx->pending_head);
             act = ctx->pending_acts[head % WORKLOAD_PENDING_MAX];
             corr = ctx->pending_corrs[head % WORKLOAD_PENDING_MAX];
             t_release = ctx->pending_release_ts[head % WORKLOAD_PENDING_MAX];
-            atomic_store(&ctx->pending_head, head+1);
-            atomic_fetch_sub(&ctx->pending_releases,1);
-            pthread_mutex_unlock(&ctx->lock);
-            has_release=1;
+            atomic_store(&ctx->pending_head, head + 1);
+            atomic_fetch_sub(&ctx->pending_releases, 1);
+            has_release = 1;
         }
+        pthread_mutex_unlock(&ctx->lock);
         if (!has_release) continue;
+        
         ctx->activations_started++;
         // t_release is from the queue (producer time), not now.
         uint64_t t_start = mono_ns();
@@ -191,6 +208,8 @@ int workload_init_all(void){
         c->task_id=c->config->task_id;
         strncpy(c->name,c->config->name,sizeof(c->name)-1);
         c->priority=c->config->priority;
+        /* Releaser runs at priority (workload_priority - 1) but at least 1 */
+        c->releaser_priority = c->config->priority > 1 ? c->config->priority - 1 : 1;
         pthread_mutex_init(&c->lock,NULL);
         pthread_cond_init(&c->cond,NULL);
         atomic_store(&c->activation_cnt,0);
@@ -199,6 +218,7 @@ int workload_init_all(void){
         atomic_store(&c->pending_tail,0);
         atomic_store(&c->running,0);
         atomic_store(&c->should_stop,0);
+        atomic_store(&c->releaser_running,0);
     }
     return 0;
 }
@@ -207,11 +227,19 @@ int workload_start_all(void){
         workload_context_t *c=&g_workloads[i];
         if (c->config->task_id==TASK_ID_IDLE) continue; /* not auto started */
         pthread_attr_t attr; pthread_attr_init(&attr);
-        // QNX: set prio via attr if desired
         int rc=pthread_create(&c->thread,NULL,workload_thread,c);
         pthread_attr_destroy(&attr);
         if (rc!=0) return -1;
         atomic_store(&c->running,1);
+        /* Start releaser thread for periodic tasks */
+        if (c->config->period_ns > 0) {
+            atomic_store(&c->releaser_running,1);
+            rc=pthread_create(&c->releaser_thread,NULL,workload_releaser_thread,c);
+            if (rc!=0) {
+                atomic_store(&c->releaser_running,0);
+                return -1;
+            }
+        }
     }
     return 0;
 }
@@ -231,6 +259,10 @@ void workload_join_all(void){
         if (atomic_load(&c->running)){
             pthread_join(c->thread,NULL);
             atomic_store(&c->running,0);
+        }
+        if (atomic_load(&c->releaser_running)){
+            pthread_join(c->releaser_thread,NULL);
+            atomic_store(&c->releaser_running,0);
         }
         pthread_mutex_destroy(&c->lock);
         pthread_cond_destroy(&c->cond);

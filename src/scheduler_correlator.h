@@ -37,4 +37,11 @@ int scheduler_correlator_find_preemption_overlap(uint32_t target_pid, uint32_t t
                                                 uint32_t *interfering_pid, uint32_t *interfering_tid,
                                                 uint64_t *overlap_start_ns, uint64_t *overlap_end_ns);
 
+/* CPU utilization: get total RUNNING time (ns) for a thread from kernel trace */
+uint64_t scheduler_correlator_get_thread_running_ns(uint32_t pid, uint32_t tid);
+
+/* Get trace time window from kernel trace */
+uint64_t scheduler_correlator_get_trace_start_ns(void);
+uint64_t scheduler_correlator_get_trace_end_ns(void);
+
 #endif

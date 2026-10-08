@@ -118,7 +118,13 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
                 f->prev_tid = 0;
             }
         } 
-        else if (ev->event_type == 11 /* MUTEX */ || ev->event_type == 12 /* CONDVAR */ || ev->event_type == 15 /* SEM */) {
+        /* Real STATE_* values from <sys/states.h>: MUTEX=13, CONDVAR=14,
+         * SEM=17. The previous literals (11, 12, 15) were SIGWAITINFO,
+         * NANOSLEEP and JOIN -- so nanosleep between periodic activations was
+         * misread as a mutex block, and genuine mutex blocking was missed. */
+        else if (ev->event_type == 13 /* STATE_MUTEX */
+              || ev->event_type == 14 /* STATE_CONDVAR */
+              || ev->event_type == 17 /* STATE_SEM */) {
             if (t) {
                 t->last_state = 3; // BLOCKED
                 t->state_change_ns = ev->timestamp_ns;
@@ -135,7 +141,7 @@ int scheduler_correlator_process(const KernelTraceEvent *events, size_t n) {
                 f->prev_tid = 0;
             }
         } 
-        else if (ev->event_type == 23 /* DESTROY */) {
+        else if (ev->event_type == 25 /* STATE_DESTROY; STATE_CREATE is 24 */) {
             if (t) {
                 t->last_state = 4; // DEAD
                 t->state_change_ns = ev->timestamp_ns;

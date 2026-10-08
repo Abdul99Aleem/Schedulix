@@ -29,6 +29,7 @@
 #include "manifest.h"
 #include "uart_adapter.h"
 #include "qnx_kernel_trace_parser.h"
+#include "scheduler_correlator.h"
 #include <sys/stat.h>
 
 #ifdef ENABLE_TCP
@@ -361,17 +362,73 @@ int handle_subcommands(int argc, char *argv[]) {
                 printf("Error parsing trace: %d\n", rc);
                 return 1;
             }
-            KernelTraceEvent evs[256];
-            size_t n = qnx_kernel_trace_get_events(evs, 256);
-            printf("Successfully parsed %d events.\n", (int)n);
-            printf("%-18s %-18s %-4s %-10s %-8s %-8s\n", "Cycles", "Time(ns)", "CPU", "Event", "PID", "TID");
-            printf("--------------------------------------------------------------------------------\n");
-            for (size_t i = 0; i < n; i++) {
-                printf("%-18llu %-18llu %-4u %-10u %-8u %-8u\n",
-                       (unsigned long long)evs[i].timestamp_cycles,
-                       (unsigned long long)evs[i].timestamp_ns,
-                       evs[i].cpu, evs[i].event_type, evs[i].pid, evs[i].tid);
+            /* Show the first 40 rows but report the true totals. Capping the
+             * display at 256 made a 24 MB capture look like it held 256
+             * events, when the parser had stopped early. */
+            size_t total = qnx_kernel_trace_get_events(NULL, 0);
+            KernelTraceEvent *evs = malloc((total ? total : 1) * sizeof(KernelTraceEvent));
+            if (!evs) { printf("Out of memory for %zu events\n", total); return 1; }
+            size_t n = qnx_kernel_trace_get_events(evs, total);
+            printf("Parsed %zu events.\n", n);
+            if (!qnx_kernel_trace_is_complete()) {
+                printf("NOTE: this .kev holds more events than the parser keeps.\n");
+                printf("      Showing the FIRST %zu. Use a shorter capture for a complete\n", n);
+                printf("      decode:  tracelogger -f /tmp/demo.kev -s 2 -w -F3\n");
             }
+            printf("Cycles/sec: %llu\n", (unsigned long long)qnx_kernel_trace_get_cycles_per_sec());
+
+            size_t rows = n < 40 ? n : 40;
+            printf("\n%-18s %-14s %-4s %-10s %-8s %-8s %s\n",
+                   "Cycles", "Time(ms)", "CPU", "State", "PID", "TID", "Name");
+            printf("--------------------------------------------------------------------------------\n");
+            for (size_t i = 0; i < rows; i++) {
+                const char *st = thread_state_name(evs[i].event_type);
+                printf("%-18llu %-14.3f %-4u %-10u %-8u %-8u %s\n",
+                       (unsigned long long)evs[i].timestamp_cycles,
+                       (double)evs[i].timestamp_ns / 1e6,
+                       evs[i].cpu, evs[i].event_type, evs[i].pid, evs[i].tid, st);
+            }
+            if (n > rows) printf("... %zu more events\n", n - rows);
+
+            /* Count switches the way the correlator does: per CPU, a RUNNING event for a
+             * different TID than the last one seen on that CPU. A timestamp
+             * regression means the kernel overwrote in-progress buffers and the
+             * file has blocks out of order, so the per-CPU state is reset at
+             * each regression -- otherwise every out-of-place event inflates
+             * the count. The figure is only a measurement when there are no
+             * regressions. */
+            uint32_t switches = 0;
+            size_t resets = 0;
+            uint32_t cur_tid[MAX_CPUS] = {0};
+            uint64_t prev_cycles = 0;
+            bool have_prev = false;
+            for (size_t i = 0; i < n; i++) {
+                uint32_t c = evs[i].cpu < MAX_CPUS ? evs[i].cpu : 0;
+                if (have_prev && evs[i].timestamp_cycles < prev_cycles) {
+                    memset(cur_tid, 0, sizeof(cur_tid));
+                    resets++;
+                }
+                prev_cycles = evs[i].timestamp_cycles;
+                have_prev = true;
+                if (evs[i].event_type == 1 /* STATE_RUNNING */) {
+                    if (cur_tid[c] != 0 && cur_tid[c] != evs[i].tid) switches++;
+                    cur_tid[c] = evs[i].tid;
+                }
+            }
+
+            size_t parser_ooo = qnx_kernel_trace_get_out_of_order();
+            printf("\nContext switches observed: %u\n", switches);
+            printf("  across %zu events on %d CPUs\n", n, MAX_CPUS);
+            if (parser_ooo || resets) {
+                printf("  CAVEAT: trace has %zu out-of-order timestamps (%zu resets).\n",
+                       parser_ooo, resets);
+                printf("  Buffer overruns scrambled block order, so this is an\n");
+                printf("  UPPER BOUND, not a measurement. Recapture with:\n");
+                printf("    tracelogger -f /tmp/demo.kev -s 2 -w -F1 -F2 -F3 -F6\n");
+            } else {
+                printf("  Timestamps are monotonic -- this is a measurement.\n");
+            }
+            free(evs);
             return 0;
         } else {
             printf("Unknown trace subcommand: %s. Expected start|stop|flush|status|decode\n", sub);

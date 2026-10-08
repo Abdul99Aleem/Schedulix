@@ -32,6 +32,13 @@
 #include "scheduler_correlator.h"
 #include <sys/stat.h>
 
+/* Trace ring capacity. 16384 was enough for S0 (2125 records) but S4's event
+ * storm overran it and dropped 4926 records -- losing 23% of the trace, so the
+ * S4 latency figures described only the events that survived. At 48 bytes per
+ * record, 65536 costs about 3.2 MB of heap, which the Pi has in abundance
+ * (7.5 GB free). */
+#define SCHEDULIX_TRACE_CAPACITY 65536
+
 #ifdef ENABLE_TCP
 #include "can_injector.h"
 #endif
@@ -105,7 +112,7 @@ static int run_phase1_demo(void){
     workload_manifest_print();
     printf("\nInitializing workloads...\n");
     prepare_atomic_artifacts("trace_phase1.bin","manifest_phase1.json","analysis_phase1.json");
-    if(trace_collector_init_heap(8192, TRACE_MODE_FULL, 0)!=0){ write_failure_report("S0_PHASE1","trace init failed"); return 1; }
+    if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0)!=0){ write_failure_report("S0_PHASE1","trace init failed"); return 1; }
     trace_instr_init();
     gpio_marker_init();
     if(workload_init_all()!=0){ write_failure_report("S0_PHASE1","workload init failed"); return 1; }
@@ -134,7 +141,7 @@ static int run_full_demo(void){
     workload_config_print_table();
     prepare_atomic_artifacts("trace.bin","manifest.json","analysis.json");
     uint64_t t0 = 0; struct timespec ts0; clock_gettime(CLOCK_MONOTONIC,&ts0); t0=(uint64_t)ts0.tv_sec*1000000000ULL+ts0.tv_nsec;
-    if(trace_collector_init_heap(16384, TRACE_MODE_FULL, 0)!=0){ write_failure_report("FULL_CORE","trace init failed"); return 1; }
+    if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0)!=0){ write_failure_report("FULL_CORE","trace init failed"); return 1; }
     trace_instr_init();
     gpio_marker_init();
     int trc = qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD|QNX_TRACE_INT);
@@ -318,7 +325,7 @@ int handle_subcommands(int argc, char *argv[]) {
         }
         const char *sub = argv[2];
         if (!strcmp(sub, "start")) {
-            if (trace_collector_init_heap(16384, TRACE_MODE_FULL, 0) == 0) {
+            if (trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY, TRACE_MODE_FULL, 0) == 0) {
                 printf("Trace collector initialized with capacity 16384.\n");
                 return 0;
             } else {
@@ -708,7 +715,7 @@ int handle_subcommands(int argc, char *argv[]) {
             char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s%d.json",id);
             char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s%d.json",id);
             prepare_atomic_artifacts(trace,manifest,analysis);
-            if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
+            if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
             trace_instr_init(); gpio_marker_init();
             int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
             if(trc!=0) fprintf(stderr,"[%s] kernel trace unavailable\n", scenario_name((scenario_id_t)id));
@@ -803,7 +810,7 @@ int main(int argc, char *argv[]) {
                 char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s1_%d.json",pct);
                 char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s1_%d.json",pct);
                 prepare_atomic_artifacts(trace,manifest,analysis);
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report("S1_SWEEP","trace init failed"); continue; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report("S1_SWEEP","trace init failed"); continue; }
                 trace_instr_init(); gpio_marker_init();
                 int trc = qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[S1 %d%%] kernel trace unavailable (run as root)\n", pct);
@@ -859,7 +866,7 @@ int main(int argc, char *argv[]) {
             const char *arg = (i+1<argc)? argv[i+1] : "all";
             if(!strcmp(arg,"all")){
                 prepare_atomic_artifacts("trace_stress.bin","manifest_stress.json","analysis_stress.json");
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report("S0-S6","trace init failed"); return 1; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report("S0-S6","trace init failed"); return 1; }
                 trace_instr_init(); gpio_marker_init();
                 int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[S0-S6] kernel trace unavailable\n");
@@ -896,7 +903,7 @@ int main(int argc, char *argv[]) {
                 char manifest[64]; snprintf(manifest,sizeof(manifest),"manifest_s%d.json",id);
                 char analysis[64]; snprintf(analysis,sizeof(analysis),"analysis_s%d.json",id);
                 prepare_atomic_artifacts(trace,manifest,analysis);
-                if(trace_collector_init_heap(16384,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
+                if(trace_collector_init_heap(SCHEDULIX_TRACE_CAPACITY,TRACE_MODE_FULL,0)!=0){ write_failure_report(scenario_name((scenario_id_t)id),"trace init failed"); return 1; }
                 trace_instr_init(); gpio_marker_init();
                 int trc=qnx_tracer_start("/tmp/schedulix.kev", QNX_TRACE_THREAD);
                 if(trc!=0) fprintf(stderr,"[%s] kernel trace unavailable\n", scenario_name((scenario_id_t)id));

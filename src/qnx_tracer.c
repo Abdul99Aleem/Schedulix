@@ -90,7 +90,22 @@ int qnx_tracer_start(const char *kev_path, uint32_t flags){
 }
 int qnx_tracer_stop(void){
 #if defined(__QNX__)
-    if(g_running) system("slay tracelogger 2>/dev/null");
+    /* SIGINT, not SIGTERM: killing tracelogger mid-buffer write can discard the
+     * events still queued in the kernel's buffers. SIGINT lets it flush and
+     * exit cleanly, which matters because the scenario calls this immediately
+     * before writing analysis JSON that references the .kev. */
+    if(g_running) system("slay -s INT tracelogger 2>/dev/null");
+    /* Give the flush a moment. tracelogger holds up to -b dynamic buffers. */
+    for(int i=0;i<20;i++){
+        struct timespec ts={0,50000000}; /* 50 ms */
+        nanosleep(&ts,NULL);
+        struct stat st;
+        if(stat(g_kev,&st)!=0 || st.st_size==0) break;
+        /* Two consecutive stable sizes means the write has settled. */
+        size_t prev = st.st_size;
+        nanosleep(&ts,NULL);
+        if(stat(g_kev,&st)==0 && st.st_size==prev) break;
+    }
 #endif
     g_end_ns = mono_ns();
     g_running=0;
